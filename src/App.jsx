@@ -30,7 +30,7 @@ const ScrollToSection = ({ sectionId }) => {
 const MainContent = ({ sectionId }) => (
   <>
     <ScrollToSection sectionId={sectionId} />
-    <div id="top" className="max-w-7xl mx-auto pt-20 px-6">
+    <div id="top" className="mx-auto pt-20 px-6">
       <HeroSection />
       <div id="products" className="scroll-mt-20">
         <Products />
