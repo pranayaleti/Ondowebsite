@@ -122,6 +122,42 @@ export const checklistItems = [
   },
 ];
 
+export const workflowItems = [
+  // {
+  //   title: "Faster Product Launch",
+  //   description:
+  //     "Ship MVPs in weeks, not months with agile sprints and ready-to-deploy architecture.",
+  // },
+  // {
+  //   title: "Secure & Scalable Codebase",
+  //   description:
+  //     "Build future-proof apps with industry standards in auth, testing, and CI/CD.",
+  // },
+  // {
+  //   title: "Cross-Platform Development",
+  //   description:
+  //     "From web to mobile, we deliver consistent user experiences across all platforms.",
+  // },
+  {
+    title: "🚀 Accelerated Product Launch",
+    description:
+      "Launch production-ready MVPs in weeks—powered by agile sprints and pre-configured, reliable architecture.",
+  },
+  {
+    title: "🔒 Secure & Future-Proof Architecture",
+    description:
+      "Industry-grade authentication, automated testing, and CI/CD pipelines ensure your software is scalable, maintainable, and ready for growth.",
+  },
+  {
+    title: "🌐 Unified Cross-Platform Experience",
+    description:
+      "Consistent, high-performing applications across web, mobile, and desktop—engineered for seamless user experiences.",
+  },
+];
+
+
+
+
 // export const checklistItems = [
 //   {
 //     title: "Property Manager",
