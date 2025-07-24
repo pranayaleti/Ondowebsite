@@ -1,6 +1,7 @@
 // import video1 from "../assets/video1.mp4";
 // import video2 from "../assets/video2.mp4";
 
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
@@ -18,12 +19,12 @@ const HeroSection = () => {
         business!
       </p>
       <div className="flex justify-center my-10">
-        <a
-          
+        <Link
+          to="/contact"
           className="bg-gradient-to-r from-orange-500 to-orange-800 py-3 px-4 mx-3 rounded-md"
         >
           Get Started
-        </a>
+        </Link>
       </div>
       {/* <div className="flex mt-10 justify-center">
         <video

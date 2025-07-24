@@ -94,8 +94,9 @@ const AppRoutes = () => {
 };
 
 export default function App() {
+  const basename = import.meta.env.DEV ? "/" : "/Ondowebsite";
   return (
-    <Router>
+    <Router basename={basename}>
       <AppRoutes />
     </Router>
   );
