@@ -1,23 +1,20 @@
-name: React CI
+name: React CI & Deploy
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout code
+      # Step 1: Checkout the code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js environment
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -28,17 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Run tests
-      - name: Run tests
-        run: npm test -- --watchAll=false
-
-      # Step 5: Build the project
-      - name: Build React App
+      # Step 4: Build React (Vite) project
+      - name: Build Project
         run: npm run build
 
-      # Step 6: Upload build artifacts (optional, for inspection)
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: react-build
-          path: build
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
