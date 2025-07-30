@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center mt-10 text-neutral-400 text-sm border-t border-neutral-700 pt-6">
-        <div>© 2025 OnDo. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} OndoSoft. All rights reserved.</div>
         <div className="flex space-x-4 mt-2 md:mt-0">
           <Link to="#">Privacy Policy</Link>
           <Link to="#">Terms of Service</Link>

@@ -13,7 +13,7 @@ const Contact = () => {
           <h3 className="text-2xl font-semibold text-white mb-6">Contact Information</h3>
           <div className="flex items-center mb-4 text-neutral-300">
             <Mail className="mr-3 text-orange-500" />
-            <span>contact@ondo.com</span>
+            <span>contact@ondosoft.com</span>
           </div>
           <div className="flex items-center mb-4 text-neutral-300">
             <Phone className="mr-3 text-orange-500" />
