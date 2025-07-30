@@ -75,7 +75,7 @@ const Navbar = () => {
               onClick={handleLogoClick}
               className="text-xl tracking-tight ml-1"
             >
-              OnDo
+              OndoSoft
             </Link>
           </div>
           <ul className="hidden lg:flex ml-14 space-x-12">
