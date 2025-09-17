@@ -14,6 +14,7 @@ import Pricing from "./components/Pricing";
 import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import Products from "./components/Products";
+import About from "./components/About";
 
 const ScrollToSection = ({ sectionId }) => {
   useEffect(() => {
@@ -88,6 +89,7 @@ const AppRoutes = () => {
           element={<MainContent sectionId="testimonials" />}
         />
         <Route path="/contact" element={<MainContent sectionId="contact" />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </>
   );
