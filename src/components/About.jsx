@@ -18,34 +18,34 @@ const About = () => {
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative max-w-7xl mx-auto px-4 py-24">
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-6">
-            About <span className="text-orange-500">Me</span>
+            About <span className="text-orange-500">OndoSoft</span>
           </h1>
           <p className="text-2xl text-gray-300 max-w-3xl">
-            Software engineer, product builder, and founder focused on crafting reliable,
-            scalable, and delightful software products—from idea to production.
+            A software freelancing company specializing in custom technology solutions 
+            for businesses of all sizes—from local startups to established enterprises.
           </p>
 
           {/* Key Stats Banner */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
             <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">10+</div>
-              <div className="text-white mt-2">Years in Tech</div>
+              <div className="text-4xl font-bold text-orange-400">50+</div>
+              <div className="text-white mt-2">Projects Delivered</div>
+              <div className="text-gray-400 text-sm">Websites • Apps • SaaS</div>
+            </div>
+            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
+              <div className="text-4xl font-bold text-orange-400">25+</div>
+              <div className="text-white mt-2">Happy Clients</div>
+              <div className="text-gray-400 text-sm">Small Business • Startups</div>
+            </div>
+            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
+              <div className="text-4xl font-bold text-orange-400">5+</div>
+              <div className="text-white mt-2">Years Experience</div>
               <div className="text-gray-400 text-sm">Full Stack • Cloud</div>
             </div>
             <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">12+</div>
-              <div className="text-white mt-2">Products Launched</div>
-              <div className="text-gray-400 text-sm">SaaS • Mobile • APIs</div>
-            </div>
-            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">100+</div>
-              <div className="text-white mt-2">Projects Built</div>
-              <div className="text-gray-400 text-sm">Web & Mobile Apps</div>
-            </div>
-            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">99.9%</div>
-              <div className="text-white mt-2">Uptime Achieved</div>
-              <div className="text-gray-400 text-sm">SRE • Observability</div>
+              <div className="text-4xl font-bold text-orange-400">100%</div>
+              <div className="text-white mt-2">Client Satisfaction</div>
+              <div className="text-gray-400 text-sm">Quality • Support</div>
             </div>
           </div>
         </div>
@@ -60,20 +60,20 @@ const About = () => {
             <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
               <div className="flex items-center mb-6">
                 <User className="text-orange-400 h-7 w-7 mr-4" />
-                <h2 className="text-3xl font-bold text-white">Who I Am</h2>
+                <h2 className="text-3xl font-bold text-white">Who We Are</h2>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                Hi, I'm <strong className="text-orange-400">Pranay Reddy Aleti</strong>
+                <strong className="text-orange-400">OndoSoft</strong> is a software freelancing company founded by 
+                <strong className="text-orange-400"> Pranay Reddy Aleti</strong>, a software engineer with a Master's degree in Computer Science.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed">
-                A <strong className="text-orange-400">software engineer, product thinker, and entrepreneur</strong> with a
-                Master's degree in Computer Science. I specialize in building modern
-                <strong className="text-orange-400"> React/Node.js</strong> applications, scalable APIs, and cloud-native systems on
-                AWS with CI/CD, testing, and observability baked in.
+                We specialize in building <strong className="text-orange-400">custom technology solutions</strong> for businesses of all sizes. 
+                From simple websites for local businesses to complex SaaS platforms for startups, 
+                we deliver <strong className="text-orange-400">reliable, scalable, and user-friendly</strong> software that drives growth.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed">
-                I love solving hard problems, designing clean architectures, and delivering products
-                that users actually enjoy using.
+                Our mission is to make professional software development accessible to every business, 
+                regardless of size or technical expertise.
               </p>
             </div>
 
@@ -81,15 +81,16 @@ const About = () => {
             <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
               <div className="flex items-center mb-6">
                 <TrendingUp className="text-orange-400 h-7 w-7 mr-4" />
-                <h2 className="text-3xl font-bold text-white">My Vision</h2>
+                <h2 className="text-3xl font-bold text-white">Our Vision</h2>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                Great software should be <strong className="text-orange-400">reliable, fast, and human-centered</strong>.
-                With OndoSoft, my goal is to <strong className="text-orange-400">bridge idea to production</strong> by
-                streamlining product development, infrastructure automation, and continuous delivery.
+                We believe that <strong className="text-orange-400">every business deserves access to professional software solutions</strong>.
+                Our goal is to <strong className="text-orange-400">democratize technology</strong> by making custom development 
+                accessible and affordable for businesses of all sizes.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed">
-                It's engineering reimagined—where quality, velocity, and trust are at the core.
+                From local restaurants needing a simple website to startups building the next big SaaS platform, 
+                we're here to turn your <strong className="text-orange-400">vision into reality</strong>.
               </p>
             </div>
 
@@ -97,34 +98,34 @@ const About = () => {
             <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
               <div className="flex items-center mb-6">
                 <Star className="text-orange-400 h-7 w-7 mr-4" />
-                <h2 className="text-3xl font-bold text-white">Why Work With Me?</h2>
+                <h2 className="text-3xl font-bold text-white">Why Work With Us?</h2>
               </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Technical Excellence</h4>
+                    <h4 className="text-white font-bold mb-2">Affordable Solutions</h4>
                     <p className="text-gray-400 text-sm">
-                      Strong foundations in system design, API architecture, testing, performance, and security.
+                      Competitive pricing without compromising quality. We work within your budget to deliver maximum value.
                     </p>
                   </div>
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Product Thinking</h4>
+                    <h4 className="text-white font-bold mb-2">Personalized Service</h4>
                     <p className="text-gray-400 text-sm">
-                      Outcomes over output—user research, rapid iteration, and data-informed decisions.
+                      Direct communication with the developer. No middlemen, no corporate bureaucracy—just results.
                     </p>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Security & Reliability</h4>
+                    <h4 className="text-white font-bold mb-2">Fast Delivery</h4>
                     <p className="text-gray-400 text-sm">
-                      Threat modeling, auth best practices, observability, and SRE principles for high uptime.
+                      Quick turnaround times without sacrificing quality. We understand that time is money for your business.
                     </p>
                   </div>
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Hands-On Execution</h4>
+                    <h4 className="text-white font-bold mb-2">Ongoing Support</h4>
                     <p className="text-gray-400 text-sm">
-                      I design, code, and ship—owning features end-to-end from spec to production.
+                      We don't just build and disappear. We provide maintenance, updates, and support to keep your solution running smoothly.
                     </p>
                   </div>
                 </div>

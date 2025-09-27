@@ -6,11 +6,15 @@ const Workflow = () => {
   return (
     <div className="mt-20">
       <h2 className="text-3xl sm:text-5xl lg:text-6xl text-center mt-6 tracking-wide">
-      Build, Launch, Scale.<br></br>
+      Our Development<br></br>
         <span className="bg-gradient-to-r from-orange-500 to-orange-800 text-transparent bg-clip-text">
-        From MVP's to Enterprise Apps.
+        Process
         </span>
       </h2>
+      <p className="text-center text-neutral-400 text-lg mt-4 max-w-3xl mx-auto">
+        From initial consultation to final deployment, we follow a proven process 
+        that ensures your project is delivered on time, on budget, and exceeds expectations.
+      </p>
       <div className="flex flex-wrap justify-center">
         <div className="p-2 w-full lg:w-1/2">
           <img src={codeImg} alt="Coding" />

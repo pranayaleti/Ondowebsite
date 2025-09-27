@@ -2,94 +2,43 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
 } from "react-router-dom";
-import { useEffect } from "react";
+import { HelmetProvider } from "react-helmet-async";
 import Navbar from "./components/Navbar";
-import HeroSection from "./components/HeroSection";
-import Services from "./components/Services";
-import Workflow from "./components/Workflow";
-import Footer from "./components/Footer";
-import Pricing from "./components/Pricing";
-import Testimonials from "./components/Testimonials";
-import Contact from "./components/Contact";
-import Products from "./components/Products";
-import About from "./components/About";
+import SchemaMarkup from "./components/SchemaMarkup";
+import AboutPage from "./pages/AboutPage";
 
-const ScrollToSection = ({ sectionId }) => {
-  useEffect(() => {
-    if (sectionId) {
-      const el = document.getElementById(sectionId);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [sectionId]);
-  return null;
-};
-
-const MainContent = ({ sectionId }) => (
-  <>
-    <ScrollToSection sectionId={sectionId} />
-    <div id="top" className="mx-auto pt-20">
-      <HeroSection />
-      <div id="products" className="scroll-mt-20">
-        <Products />
-      </div>
-      <div id="services" className="scroll-mt-20">
-        <Services />
-      </div>
-      <div id="workflow" className="scroll-mt-20">
-        <Workflow />
-      </div>
-      <div id="pricing" className="scroll-mt-20">
-        <Pricing />
-      </div>
-      <div id="testimonials" className="scroll-mt-20">
-        <Testimonials />
-      </div>
-      <div id="contact" className="scroll-mt-20">
-        <Contact />
-      </div>
-      <Footer />
-    </div>
-  </>
-);
+// Import page components
+import HomePage from "./pages/HomePage";
+import ProductsPage from "./pages/ProductsPage";
+import ServicesPage from "./pages/ServicesPage";
+import WorkflowPage from "./pages/WorkflowPage";
+import PricingPage from "./pages/PricingPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
+import ContactPage from "./pages/ContactPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import SitemapPage from "./pages/SitemapPage";
+import RobotsPage from "./pages/RobotsPage";
+import FAQPage from "./pages/FAQPage";
 
 const AppRoutes = () => {
-  const location = useLocation();
-  let sectionId = null;
-  if (location.pathname === "/services") sectionId = "services";
-  else if (location.pathname === "/workflow") sectionId = "workflow";
-  else if (location.pathname === "/pricing") sectionId = "pricing";
-  else if (location.pathname === "/testimonials") sectionId = "testimonials";
-  else if (location.pathname === "/contact") sectionId = "contact";
-  // else sectionId = null for home
-
   return (
     <>
+      <SchemaMarkup />
       <Navbar />
       <Routes>
-        <Route path="/" element={<MainContent sectionId={null} />} />
-        <Route
-          path="/products"
-          element={<MainContent sectionId="products" />}
-        />
-        <Route
-          path="/services"
-          element={<MainContent sectionId="services" />}
-        />
-        <Route
-          path="/workflow"
-          element={<MainContent sectionId="workflow" />}
-        />
-        <Route path="/pricing" element={<MainContent sectionId="pricing" />} />
-        <Route
-          path="/testimonials"
-          element={<MainContent sectionId="testimonials" />}
-        />
-        <Route path="/contact" element={<MainContent sectionId="contact" />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/services" element={<ServicesPage />} />
+        <Route path="/workflow" element={<WorkflowPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/testimonials" element={<TestimonialsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/sitemap.xml" element={<SitemapPage />} />
+        <Route path="/robots.txt" element={<RobotsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
@@ -97,8 +46,10 @@ const AppRoutes = () => {
 
 export default function App() {
   return (
-    <Router basename={import.meta.env.BASE_URL}>
-      <AppRoutes />
-    </Router>
+    <HelmetProvider>
+      <Router basename={import.meta.env.BASE_URL}>
+        <AppRoutes />
+      </Router>
+    </HelmetProvider>
   );
 }

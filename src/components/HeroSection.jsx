@@ -7,23 +7,33 @@ const HeroSection = () => {
   return (
     <div className="flex flex-col items-center mt-6 lg:mt-20">
       <h1 className="text-4xl sm:text-6xl lg:text-7xl text-center tracking-wide">
-        We build
+        Full Stack Software
         <span className="bg-gradient-to-r from-orange-500 to-red-800 text-transparent bg-clip-text">
           {" "}
-          your Vision
+          Development
+        </span>
+        <br />
+        <span className="text-3xl sm:text-4xl lg:text-5xl text-neutral-400">
+          & SaaS Solutions
         </span>
       </h1>
       <p className="mt-10 text-lg text-center text-neutral-500 max-w-4xl">
-        Empower your creativity and bring your business into life with our
-        intuitive development strategies. Get started today to add value to your
-        business!
+        <strong className="text-orange-500">Hire a developer today</strong> - Ondosoft delivers end-to-end software development, 
+        freelancing services, and SaaS platform solutions for businesses across the USA. 
+        From React and Node.js web apps to cloud-native applications, we build scalable technology that drives growth.
       </p>
       <div className="flex justify-center my-10">
         <Link
           to="/contact"
-          className="bg-gradient-to-r from-orange-500 to-orange-800 py-3 px-4 mx-3 rounded-md"
+          className="bg-gradient-to-r from-orange-500 to-orange-800 py-3 px-6 mx-3 rounded-md text-lg font-semibold hover:from-orange-600 hover:to-orange-900 transition-all duration-300"
         >
-          Get Started
+          Launch Your SaaS with Ondosoft
+        </Link>
+        <Link
+          to="/services"
+          className="bg-transparent border-2 border-orange-500 text-orange-500 py-3 px-6 mx-3 rounded-md text-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300"
+        >
+          Freelance & Enterprise Solutions
         </Link>
       </div>
       {/* <div className="flex mt-10 justify-center">
