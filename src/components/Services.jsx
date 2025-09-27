@@ -5,13 +5,17 @@ const Services = () => {
     <div className="relative mt-20 border-b border-neutral-800 min-h-[800px]">
       <div className="text-center">   
         <h2 className="text-3xl sm:text-5xl lg:text-6xl mt-10 lg:mt-20 tracking-wide pb-4">
-          Our
+          Full Stack
           <span className="bg-gradient-to-r from-orange-500 to-orange-800 text-transparent bg-clip-text">
-            Services
+            {" "}Development
+          </span>
+          <br />
+          <span className="text-2xl sm:text-3xl lg:text-4xl text-neutral-400">
+            & SaaS Solutions
           </span>
         </h2>
         <span className="bg-neutral-900 text-orange-500 rounded-full h-6 text-sm font-medium px-2 py-1 ">
-        Comprehensive web solutions tailored to your business needs
+        Hire developers for React, Node.js, Python, Java, and cloud-native applications
         </span>
       </div>
       <div className="flex flex-wrap mt-10 lg:mt-20">

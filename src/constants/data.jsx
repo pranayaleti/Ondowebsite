@@ -19,140 +19,138 @@ export const navItems = [
   { label: "Workflow", href: "/workflow" },
   { label: "Pricing", href: "/pricing" },
   { label: "Testimonials", href: "/testimonials" },
+  { label: "FAQ", href: "/faq" },
   { label: "About", href: "/about" },
 ];
 
 export const testimonials = [
   {
-    user: "John Doe",
-    company: "Stellar Solutions",
+    user: "Sarah Martinez",
+    company: "Local Restaurant Owner",
     image: user1,
-    text: "I am extremely satisfied with the services provided. The team was responsive, professional, and delivered results beyond my expectations.",
+    text: "OndoSoft built us a beautiful website that actually brings in customers! Our online orders increased by 300% in the first month. The best investment we've made for our business.",
   },
   {
-    user: "Jane Smith",
-    company: "Blue Horizon Technologies",
+    user: "Mike Chen",
+    company: "Tech Startup Founder",
     image: user2,
-    text: "I couldn't be happier with the outcome of our project. The team's creativity and problem-solving skills were instrumental in bringing our vision to life",
+    text: "We needed a custom web app for our startup and OndoSoft delivered exactly what we needed. Professional, fast, and affordable. They understood our vision and brought it to life perfectly.",
   },
   {
-    user: "David Johnson",
-    company: "Quantum Innovations",
+    user: "Lisa Thompson",
+    company: "Small Business Owner",
     image: user3,
-    text: "Working with this company was a pleasure. Their attention to detail and commitment to excellence are commendable. I would highly recommend them to anyone looking for top-notch service.",
+    text: "As a small business owner, I was worried about the cost of getting a professional website. OndoSoft worked within my budget and created something I'm proud to show customers. Highly recommended!",
   },
   {
-    user: "Ronee Brown",
-    company: "Fusion Dynamics",
+    user: "James Rodriguez",
+    company: "E-commerce Entrepreneur",
     image: user4,
-    text: "Working with the team at XYZ Company was a game-changer for our project. Their attention to detail and innovative solutions helped us achieve our goals faster than we thought possible. We are grateful for their expertise and professionalism!",
+    text: "OndoSoft built our entire e-commerce platform from scratch. The attention to detail and user experience is outstanding. Our sales have tripled since launching the new site.",
   },
   {
-    user: "Michael Wilson",
-    company: "Visionary Creations",
+    user: "Amanda Foster",
+    company: "Service Business Owner",
     image: user5,
-    text: "I am amazed by the level of professionalism and dedication shown by the team. They were able to exceed our expectations and deliver outstanding results.",
+    text: "The team at OndoSoft made the entire process so easy. They listened to our needs, provided great suggestions, and delivered a website that perfectly represents our brand. Excellent service!",
   },
   {
-    user: "Emily Davis",
-    company: "Synergy Systems",
+    user: "David Kim",
+    company: "SaaS Startup CEO",
     image: user6,
-    text: "The team went above and beyond to ensure our project was a success. Their expertise and dedication are unmatched. I look forward to working with them again in the future.",
+    text: "We needed a complex SaaS platform and OndoSoft delivered beyond our expectations. The architecture is solid, the code is clean, and the support has been fantastic. They're our go-to development partner.",
   },
 ];
 
 export const features = [
   {
-    icon: <BotMessageSquare />, // You can change icons as needed
-    text: "UI/UX Design",
+    icon: <BotMessageSquare />,
+    text: "Small Business Websites",
     description:
-      "Design pixel-perfect interfaces with user-tested workflows that increase product adoption and reduce churn.",
-    stack: "🛠 Tools: Figma, Adobe XD, React, Tailwind, Storybook",
+      "Professional, responsive websites that establish your online presence. Perfect for local businesses, restaurants, and service providers who need a clean, modern website to attract customers.",
+    stack: "🛠 Tools: React, Next.js, Tailwind CSS, WordPress, SEO Optimization",
+    alt: "Small business website development services with React and modern web technologies",
   },
   {
     icon: <PlugZap />,
-    text: "API Integration & Handling",
+    text: "Custom Web Applications",
     description:
-      "Build secure, scalable integrations with REST, GraphQL, and third-party APIs for seamless backend extensibility.",
-    stack: "🛠 Stack: Postman, Swagger, Node.js, Express, OAuth2",
+      "Tailored web applications built to your specific business requirements. From internal tools to customer portals, we create solutions that streamline your operations and boost productivity.",
+    stack: "🛠 Stack: React, Node.js, PostgreSQL, REST APIs, Authentication",
+    alt: "Custom web application development with React, Node.js, and modern backend technologies",
   },
   {
     icon: <ShieldHalf />,
-    text: "Ecommerce Platforms",
+    text: "E-commerce Solutions",
     description:
-      "Launch full-fledged ecommerce platforms with blazing-fast storefronts, real-time inventory, and integrated payment gateways.",
-    stack: "🛠 Stack: Shopify, Stripe, Razorpay, Next.js, Sanity CMS",
+      "Complete online stores with payment processing, inventory management, and customer accounts. From simple product catalogs to complex multi-vendor marketplaces.",
+    stack: "🛠 Stack: Shopify, Stripe, WooCommerce, Custom Solutions",
+    alt: "E-commerce website development with payment processing and inventory management",
   },
   {
     icon: <GlobeLock />,
-    text: "Analytics Dashboards",
+    text: "SaaS Platform Development",
     description:
-      "Build real-time dashboards powered by custom KPIs, charts, and drill-down analytics for data-backed decisions.",
-    stack: "🛠 Stack: React, D3.js, Chart.js, Supabase, PostgreSQL",
+      "End-to-end SaaS products from concept to scale. We handle architecture, development, deployment, and ongoing maintenance to help you build a sustainable software business.",
+    stack: "🛠 Stack: React, Node.js, AWS, PostgreSQL, Stripe, Analytics",
+    alt: "SaaS platform development and cloud deployment services for scalable software solutions",
   },
   {
     icon: <Fingerprint />,
-    text: "CRM Solutions",
+    text: "Business Process Automation",
     description:
-      "Custom CRM systems tailored to your workflows — manage contacts, automate lead nurturing, and scale your pipeline.",
-    stack: "🛠 Stack: Node.js, PostgreSQL, React, Prisma, JWT Auth",
+      "Streamline your workflows with custom automation tools. Reduce manual work, eliminate errors, and scale your operations with intelligent software solutions.",
+    stack: "🛠 Stack: Python, Node.js, APIs, Database Integration, Workflow Automation",
+    alt: "Business process automation and workflow optimization software development",
   },
   {
     icon: <BatteryCharging />,
     text: "Mobile App Development",
     description:
-      "Build cross-platform apps using Flutter or React Native with a native performance edge.",
+      "Native and cross-platform mobile apps that extend your business reach. From simple utility apps to complex business applications with offline capabilities.",
+    stack: "🛠 Stack: React Native, Flutter, iOS, Android, App Store Deployment",
+    alt: "Mobile app development services for iOS and Android with React Native and Flutter",
   },
 ];
 
 export const checklistItems = [
   {
-    title: "Property Manager Dashboard",
+    title: "Small Business Websites",
     description:
-      "Effortlessly oversee multiple properties, manage owners and tenants, and streamline day-to-day operations with advanced tools.",
+      "Professional websites for local businesses, restaurants, and service providers. Mobile-responsive designs with SEO optimization to help you attract and convert customers online.",
   },
   {
-    title: "Property Owner Insights",
+    title: "Custom Web Applications",
     description:
-      "Easily list and track properties, monitor earnings, and rely on verified tenants and professional management for hassle-free ownership.",
+      "Tailored software solutions for specific business needs. From customer portals to internal management tools, we build applications that streamline your operations and boost productivity.",
   },
   {
-    title: "Tenant Experience",
+    title: "SaaS Platform Development",
     description:
-      "Quickly find properties, submit service requests, and enjoy responsive support for a seamless renting experience.",
+      "Complete software-as-a-service solutions from concept to scale. We handle everything from initial architecture to deployment, helping you build a sustainable software business.",
   },
 ];
 
 export const workflowItems = [
-  // {
-  //   title: "Faster Product Launch",
-  //   description:
-  //     "Ship MVPs in weeks, not months with agile sprints and ready-to-deploy architecture.",
-  // },
-  // {
-  //   title: "Secure & Scalable Codebase",
-  //   description:
-  //     "Build future-proof apps with industry standards in auth, testing, and CI/CD.",
-  // },
-  // {
-  //   title: "Cross-Platform Development",
-  //   description:
-  //     "From web to mobile, we deliver consistent user experiences across all platforms.",
-  // },
   {
-    title: "🚀 Accelerated Product Launch",
+    title: "📋 Discovery & Planning",
     description:
-      "Launch production-ready MVPs in weeks—powered by agile sprints and pre-configured, reliable architecture.",
+      "We start with a detailed consultation to understand your business goals, target audience, and technical requirements. This ensures we build exactly what you need.",
   },
   {
-    title: "🔒 Secure & Future-Proof Architecture",
+    title: "🎨 Design & Prototyping",
     description:
-      "Industry-grade authentication, automated testing, and CI/CD pipelines ensure your software is scalable, maintainable, and ready for growth.",
+      "Create wireframes and prototypes to visualize your project before development begins. This saves time and ensures we're aligned on the final product.",
   },
   {
-    title: "🌐 Unified Cross-Platform Experience",
+    title: "⚡ Development & Testing",
     description:
-      "Consistent, high-performing applications across web, mobile, and desktop—engineered for seamless user experiences.",
+      "Agile development with regular updates and testing. We build your solution using modern technologies and best practices, ensuring quality and performance.",
+  },
+  {
+    title: "🚀 Launch & Support",
+    description:
+      "Deploy your project with proper hosting, security, and monitoring. We provide ongoing support and maintenance to keep your solution running smoothly.",
   },
 ];
 
@@ -179,38 +177,39 @@ export const workflowItems = [
 
 export const pricingOptions = [
   {
-    title: "Base",
-    price: "$50",
+    title: "Small Business",
+    price: "$2,500",
     features: [
-      "Complete Web App (Frontend + Backend)",
-      "your own infrastructure for API&DB setup",
-      "GitHub Repo + Hosting Configured",
-      "Fully Responsive + Tested",
-      "Handover with Documentation"
+      "Professional Website (5-10 pages)",
+      "Mobile-Responsive Design",
+      "SEO Optimization",
+      "Contact Forms & Analytics",
+      "Basic Content Management",
+      "1 Month Support Included"
     ],
   },
   {
-    title: "Pro",
-    price: "$100",
+    title: "Custom Web App",
+    price: "$8,500",
     features: [
-      "We manage Server & DB setup for you",
-      "CI/CD Monitoring & Fixes",
-      "Performance Tuning",
-      "Domain & SSL Management",
-      "Backups, Logs & Alerts",
-      "Uptime Monitoring & Reports"
+      "Custom Web Application",
+      "User Authentication & Database",
+      "Admin Dashboard",
+      "API Integration",
+      "Testing & Quality Assurance",
+      "3 Months Support Included"
     ],
   },
   {
-    title: "Enterprise",
-    price: "$250",
+    title: "SaaS Platform",
+    price: "$25,000",
     features: [
-      "Feature Enhancements",
-      "Bug Fixes & Emergency Patches",
-      "Tech Stack Migration Support",
-      "Design Tweaks / UI Adjustments",
-      "API Integration with New Services",
-      "Response SLA"
+      "Complete SaaS Solution",
+      "Multi-tenant Architecture",
+      "Payment Processing (Stripe)",
+      "User Management & Billing",
+      "Scalable Cloud Infrastructure",
+      "6 Months Support Included"
     ],
   },
 ];

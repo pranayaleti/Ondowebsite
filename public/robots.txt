@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://ondosoft.com/sitemap.xml
+
+# Disallow admin areas (if any)
+Disallow: /admin/
+Disallow: /private/
+
+# Allow all city-service pages
+Allow: /services/*
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
