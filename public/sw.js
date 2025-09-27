@@ -71,6 +71,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Skip Vite dev server requests and dynamic imports in development
+  if (url.pathname.includes('/src/') || 
+      url.pathname.includes('?t=') || 
+      url.pathname.includes('.jsx') ||
+      url.pathname.includes('.ts') ||
+      url.pathname.includes('.tsx') ||
+      url.searchParams.has('t') ||
+      url.searchParams.has('v')) {
+    // Let Vite handle these requests directly
+    return;
+  }
+  
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
