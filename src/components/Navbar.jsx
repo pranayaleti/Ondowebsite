@@ -1,6 +1,6 @@
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import logo2 from "../assets/logo1.png";
+import logo2 from "../assets/logo2.png";
 import { navItems } from "../constants/data";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -56,8 +56,8 @@ const Navbar = () => {
     <nav
       className={`sticky top-0 z-50 py-3 transition-all duration-300 ${
         scrolled
-          ? "backdrop-blur-lg border-b border-neutral-700/80 bg-neutral-900/80"
-          : "bg-transparent border-transparent"
+          ? "backdrop-blur-lg border-b border-neutral-700/80 bg-white/95"
+          : "bg-white/90 border-transparent"
       }`}
     >
       <div className="container px-4 mx-auto relative lg:text-sm">
@@ -66,14 +66,14 @@ const Navbar = () => {
             <Link
               to="/"
               onClick={handleLogoClick}
-              className="h-10 w-10 mr-2 bg-neutral-900/80 backdrop-blur-lg border border-neutral-700/80 rounded-full flex items-center justify-center"
+              className="h-10 w-10 mr-2 bg-orange-500 rounded-full flex items-center justify-center shadow-lg"
             >
               <img className="h-8 w-8 rounded-full" src={logo2} alt="Logo" />
             </Link>
             <Link
               to="/"
               onClick={handleLogoClick}
-              className="text-xl tracking-tight ml-1"
+              className="text-xl tracking-tight ml-1 text-gray-800 font-bold"
             >
               OndoSoft
             </Link>
@@ -86,8 +86,8 @@ const Navbar = () => {
                   onClick={item.label === "Home" ? handleLogoClick : undefined}
                   className={
                     isActive(item.href)
-                      ? "bg-gradient-to-r from-orange-500 to-orange-800 bg-clip-text text-transparent font-semibold"
-                      : "text-white hover:text-orange-400 transition-colors"
+                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-md font-semibold shadow-md"
+                      : "text-gray-700 hover:text-orange-500 hover:bg-orange-50 px-3 py-2 rounded-md transition-all duration-200 font-medium"
                   }
                 >
                   {item.label}
@@ -98,29 +98,32 @@ const Navbar = () => {
           <div className="hidden lg:flex justify-center space-x-12 items-center">
             <Link
               to="/contact"
-              className="bg-gradient-to-r from-orange-500 to-orange-800 py-2 px-3 rounded-md"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 px-4 rounded-md font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
             >
              Contact Us
             </Link>
           </div>
           <div className="lg:hidden md:flex flex-col justify-end">
-            <button onClick={toggleNavbar}>
-              {mobileDrawerOpen ? <X /> : <Menu />}
+            <button 
+              onClick={toggleNavbar}
+              className="text-gray-700 hover:text-orange-500 p-2 rounded-md hover:bg-orange-50 transition-colors"
+            >
+              {mobileDrawerOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
         {mobileDrawerOpen && (
-          <div className="fixed right-0 z-20 bg-neutral-900 w-full p-12 flex flex-col justify-center items-center lg:hidden">
-            <ul>
+          <div className="fixed right-0 z-20 bg-white w-full p-12 flex flex-col justify-center items-center lg:hidden shadow-lg border-t border-gray-200">
+            <ul className="space-y-4">
               {navItems.map((item, index) => (
-                <li key={index} className="py-4">
+                <li key={index}>
                   <Link
                     to={item.href}
                     onClick={e => handleMobileNavClick(e, item)}
                     className={
                       isActive(item.href)
-                        ? "bg-gradient-to-r from-orange-500 to-orange-800 bg-clip-text text-transparent font-semibold"
-                        : "text-white hover:text-orange-400 transition-colors"
+                        ? "block py-3 px-4 rounded-md bg-orange-500 text-white font-semibold shadow-md"
+                        : "block py-3 px-4 rounded-md text-gray-700 hover:text-orange-500 hover:bg-orange-50 transition-all duration-200 font-medium"
                     }
                   >
                     {item.label}
@@ -128,10 +131,10 @@ const Navbar = () => {
                 </li>
               ))}
             </ul>
-            <div className="flex space-x-6">
+            <div className="mt-8">
               <button
                 onClick={handleContactClick}
-                className="py-2 px-3 rounded-md bg-gradient-to-r from-orange-500 to-orange-800 text-white"
+                className="py-3 px-6 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
               >
                 Contact Us
               </button>
