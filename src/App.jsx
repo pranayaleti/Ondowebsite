@@ -4,43 +4,59 @@ import {
   Route,
 } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { Suspense, lazy } from "react";
 import Navbar from "./components/Navbar";
 import SchemaMarkup from "./components/SchemaMarkup";
-import AboutPage from "./pages/AboutPage";
+import PerformanceMonitor from "./components/PerformanceMonitor";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-// Import page components
-import HomePage from "./pages/HomePage";
-import ProductsPage from "./pages/ProductsPage";
-import ServicesPage from "./pages/ServicesPage";
-import WorkflowPage from "./pages/WorkflowPage";
-import PricingPage from "./pages/PricingPage";
-import TestimonialsPage from "./pages/TestimonialsPage";
-import ContactPage from "./pages/ContactPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import SitemapPage from "./pages/SitemapPage";
-import RobotsPage from "./pages/RobotsPage";
-import FAQPage from "./pages/FAQPage";
+// Lazy load page components for better performance
+const HomePage = lazy(() => import("./pages/HomePage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const ProductsPage = lazy(() => import("./pages/ProductsPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const WorkflowPage = lazy(() => import("./pages/WorkflowPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const TestimonialsPage = lazy(() => import("./pages/TestimonialsPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const SitemapPage = lazy(() => import("./pages/SitemapPage"));
+const RobotsPage = lazy(() => import("./pages/RobotsPage"));
+const FAQPage = lazy(() => import("./pages/FAQPage"));
+
+// Loading component
+const PageLoader = () => (
+  <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+      <p className="text-white">Loading...</p>
+    </div>
+  </div>
+);
 
 const AppRoutes = () => {
   return (
-    <>
+    <ErrorBoundary>
+      <PerformanceMonitor />
       <SchemaMarkup />
       <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/workflow" element={<WorkflowPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/testimonials" element={<TestimonialsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/sitemap.xml" element={<SitemapPage />} />
-        <Route path="/robots.txt" element={<RobotsPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/workflow" element={<WorkflowPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/testimonials" element={<TestimonialsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+          <Route path="/sitemap.xml" element={<SitemapPage />} />
+          <Route path="/robots.txt" element={<RobotsPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 

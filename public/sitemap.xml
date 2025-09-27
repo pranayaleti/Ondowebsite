@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main Pages -->
   <url>
     <loc>https://ondosoft.com/</loc>
     <lastmod>2024-01-15</lastmod>
@@ -52,225 +53,100 @@
     <loc>https://ondosoft.com/faq</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
   </url>
-  <!-- City Service Pages - Software Development Services by City -->
-  <!-- Web Development Services -->
+  
+  <!-- State Service Pages -->
   <url>
-    <loc>https://ondosoft.com/services/web-development/los-angeles-ca</loc>
+    <loc>https://ondosoft.com/services/california</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/new-york-ny</loc>
+    <loc>https://ondosoft.com/services/texas</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/chicago-il</loc>
+    <loc>https://ondosoft.com/services/new-york</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/houston-tx</loc>
+    <loc>https://ondosoft.com/services/florida</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/phoenix-az</loc>
+    <loc>https://ondosoft.com/services/illinois</loc>
+    <lastmod>2024-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- City Service Pages -->
+  <url>
+    <loc>https://ondosoft.com/services/los-angeles-ca</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/philadelphia-pa</loc>
+    <loc>https://ondosoft.com/services/new-york-ny</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/san-antonio-tx</loc>
+    <loc>https://ondosoft.com/services/chicago-il</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/san-diego-ca</loc>
+    <loc>https://ondosoft.com/services/houston-tx</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/dallas-tx</loc>
+    <loc>https://ondosoft.com/services/dallas-tx</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/san-jose-ca</loc>
+    <loc>https://ondosoft.com/services/miami-fl</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/austin-tx</loc>
+    <loc>https://ondosoft.com/services/atlanta-ga</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/san-francisco-ca</loc>
+    <loc>https://ondosoft.com/services/seattle-wa</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/seattle-wa</loc>
+    <loc>https://ondosoft.com/services/san-francisco-ca</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ondosoft.com/services/web-development/denver-co</loc>
+    <loc>https://ondosoft.com/services/boston-ma</loc>
     <lastmod>2024-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://ondosoft.com/services/web-development/washington-dc</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Mobile App Development Services -->
-  <url>
-    <loc>https://ondosoft.com/services/mobile-app-development/los-angeles-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/mobile-app-development/new-york-ny</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/mobile-app-development/chicago-il</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/mobile-app-development/houston-tx</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/mobile-app-development/san-francisco-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/mobile-app-development/seattle-wa</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- SaaS Development Services -->
-  <url>
-    <loc>https://ondosoft.com/services/saas-development/los-angeles-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/saas-development/new-york-ny</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/saas-development/san-francisco-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/saas-development/seattle-wa</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/saas-development/austin-tx</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Freelancing Services -->
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/los-angeles-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/new-york-ny</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/chicago-il</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/houston-tx</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/san-francisco-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/seattle-wa</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/austin-tx</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/denver-co</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/freelancing/washington-dc</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <!-- Note: This sitemap includes sample city-service pages for SEO. These pages are not accessible to users but help search engines understand service coverage. -->
 </urlset>

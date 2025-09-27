@@ -168,6 +168,47 @@ const SEOHead = ({
       <link rel="icon" type="image/png" href="/logo2.png" />
       <link rel="apple-touch-icon" href="/logo2.png" />
       
+        {/* Analytics - Google Analytics 4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-XXXXXXXXXX', {
+              page_title: '${title}',
+              page_location: '${canonicalUrl}',
+              send_page_view: true,
+              custom_map: {
+                'custom_parameter_1': 'page_category'
+              }
+            });
+            
+            // Enhanced ecommerce tracking
+            gtag('config', 'G-XXXXXXXXXX', {
+              send_page_view: false
+            });
+            
+            // Track page views manually for SPA
+            gtag('event', 'page_view', {
+              page_title: '${title}',
+              page_location: '${canonicalUrl}',
+              page_category: '${keywords.split(',')[0] || 'software development'}'
+            });
+          `}
+        </script>
+      
+      {/* Google Search Console Verification */}
+      <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
+      
+      {/* Bing Webmaster Tools */}
+      <meta name="msvalidate.01" content="YOUR_BING_VERIFICATION_CODE" />
+      
+      {/* Preconnect to external domains for performance */}
+      <link rel="preconnect" href="https://www.googletagmanager.com" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      
       {/* Structured Data */}
       <script type="application/ld+json">
         {JSON.stringify(finalStructuredData)}

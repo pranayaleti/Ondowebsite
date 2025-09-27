@@ -18,13 +18,13 @@ const FAQPage = () => {
       
       <div className="min-h-screen bg-gray-50">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+        <section className="bg-gradient-to-r from-orange-500 to-orange-700 text-white py-20">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
                 Frequently Asked Questions
               </h1>
-              <p className="text-xl md:text-2xl mb-8 text-blue-100">
+              <p className="text-xl md:text-2xl mb-8 text-orange-100 drop-shadow-md">
                 Everything you need to know about Ondosoft's software development services
               </p>
             </div>
@@ -36,10 +36,10 @@ const FAQPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">
+                <h2 className="text-3xl font-bold text-gray-800 mb-4 drop-shadow-sm">
                   Frequently Asked Questions
                 </h2>
-                <p className="text-lg text-gray-600">
+                <p className="text-lg text-gray-700 leading-relaxed">
                   Find answers to common questions about our software development, freelancing, and SaaS services
                 </p>
               </div>
@@ -49,25 +49,25 @@ const FAQPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-blue-600 text-white">
+        <section className="py-16 bg-orange-600 text-white">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white drop-shadow-lg">
                 Still Have Questions?
               </h2>
-              <p className="text-xl mb-8 text-blue-100">
+              <p className="text-xl mb-8 text-orange-100 drop-shadow-md">
                 Contact our team for personalized answers about your specific project needs
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/contact"
-                  className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors"
+                  className="bg-white text-orange-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg"
                 >
                   Contact Us Today
                 </a>
                 <a
                   href="tel:+15551234567"
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors"
+                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-orange-600 transition-all duration-200"
                 >
                   Call (555) 123-4567
                 </a>
