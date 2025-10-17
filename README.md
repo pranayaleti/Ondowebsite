@@ -123,7 +123,3 @@ This project is private and proprietary to OndoSoft.
 ## 🤝 Contributing
 
 This is a private project. For internal contributions, please follow the established coding standards and component patterns.
-
----
-
-Built with ❤️ using React and Vite

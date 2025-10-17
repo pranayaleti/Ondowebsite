@@ -168,36 +168,6 @@ const SEOHead = ({
       <link rel="icon" type="image/png" href="/logo2.png" />
       <link rel="apple-touch-icon" href="/logo2.png" />
       
-        {/* Analytics - Google Analytics 4 */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script>
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX', {
-              page_title: '${title}',
-              page_location: '${canonicalUrl}',
-              send_page_view: true,
-              custom_map: {
-                'custom_parameter_1': 'page_category'
-              }
-            });
-            
-            // Enhanced ecommerce tracking
-            gtag('config', 'G-XXXXXXXXXX', {
-              send_page_view: false
-            });
-            
-            // Track page views manually for SPA
-            gtag('event', 'page_view', {
-              page_title: '${title}',
-              page_location: '${canonicalUrl}',
-              page_category: '${keywords.split(',')[0] || 'software development'}'
-            });
-          `}
-        </script>
-      
       {/* Google Search Console Verification */}
       <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />
       
