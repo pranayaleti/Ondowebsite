@@ -9,9 +9,13 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          // Core React libraries
           vendor: ['react', 'react-dom'],
+          // Routing
           router: ['react-router-dom'],
-          ui: ['lucide-react', '@heroicons/react'],
+          // UI components
+          ui: ['lucide-react'],
+          // SEO and meta
           seo: ['react-helmet-async']
         }
       }
@@ -19,12 +23,36 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     minify: 'esbuild',
     esbuild: {
-      drop: ['console', 'debugger']
+      drop: ['console', 'debugger'],
+      legalComments: 'none'
+    },
+    // Enable compression
+    reportCompressedSize: true,
+    // Optimize dependencies
+    commonjsOptions: {
+      include: [/node_modules/]
     }
+  },
+  // Performance optimizations
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'lucide-react',
+      'react-helmet-async'
+    ],
+    exclude: ['@vite/client', '@vite/env']
+  },
+  // CSS optimization
+  css: {
+    devSourcemap: true
   },
   server: {
     port: 3000,
-    open: true
+    open: true,
+    // Enable compression in dev
+    middlewareMode: false
   },
   preview: {
     port: 4173,

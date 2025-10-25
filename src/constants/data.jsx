@@ -16,6 +16,8 @@ export const navItems = [
   { label: "Home", href: "/" },
   { label: "Products", href: "/products" },
   { label: "Services", href: "/services" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "Blog", href: "/blog" },
   { label: "Workflow", href: "/workflow" },
   { label: "Pricing", href: "/pricing" },
   { label: "Testimonials", href: "/testimonials" },
@@ -177,39 +179,51 @@ export const workflowItems = [
 
 export const pricingOptions = [
   {
-    title: "Small Business",
+    title: "Starter Website",
+    price: "$1,200",
+    features: [
+      "Professional Website (3-5 pages)",
+      "Mobile-Responsive Design",
+      "Basic SEO Optimization",
+      "Contact Forms",
+      "1 Month Support Included",
+      "Perfect for small businesses"
+    ],
+  },
+  {
+    title: "Business Website",
     price: "$2,500",
     features: [
       "Professional Website (5-10 pages)",
       "Mobile-Responsive Design",
-      "SEO Optimization",
+      "Advanced SEO Optimization",
       "Contact Forms & Analytics",
-      "Basic Content Management",
-      "1 Month Support Included"
-    ],
-  },
-  {
-    title: "Custom Web App",
-    price: "$8,500",
-    features: [
-      "Custom Web Application",
-      "User Authentication & Database",
-      "Admin Dashboard",
-      "API Integration",
-      "Testing & Quality Assurance",
+      "Content Management System",
       "3 Months Support Included"
     ],
   },
   {
+    title: "Custom Web App",
+    price: "$4,500",
+    features: [
+      "Custom Web Application",
+      "User Authentication",
+      "Admin Dashboard",
+      "Database Integration",
+      "API Development",
+      "6 Months Support Included"
+    ],
+  },
+  {
     title: "SaaS Platform",
-    price: "$25,000",
+    price: "$8,500",
     features: [
       "Complete SaaS Solution",
       "Multi-tenant Architecture",
-      "Payment Processing (Stripe)",
+      "Payment Processing",
       "User Management & Billing",
-      "Scalable Cloud Infrastructure",
-      "6 Months Support Included"
+      "Cloud Infrastructure",
+      "12 Months Support Included"
     ],
   },
 ];

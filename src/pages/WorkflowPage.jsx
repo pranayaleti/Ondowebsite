@@ -8,7 +8,7 @@ const WorkflowPage = () => {
     <>
       <SEOHead
         title="Software Development Process | Ondosoft Workflow & Methodology"
-        description="Learn about Ondosoft's proven software development workflow. Our agile methodology ensures successful delivery of React, Node.js, Python, and SaaS projects for businesses across the USA."
+        description="Learn about Ondosoft's proven software development workflow. Our agile methodology ensures successful delivery of React, Node.js, Python, and SaaS projects for businesses across the USA. 40% faster delivery than industry average."
         keywords="software development process, agile methodology, development workflow, project management, React development process, SaaS development workflow, freelancing process"
         canonicalUrl="https://ondosoft.com/workflow"
       />

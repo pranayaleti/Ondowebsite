@@ -7,8 +7,8 @@ const ProductsPage = () => {
   return (
     <>
       <SEOHead
-        title="Software Development Products | Ondosoft Solutions & Technologies"
-        description="Explore Ondosoft's software development products and solutions. From React web applications to SaaS platforms, we build scalable software products for businesses across the USA."
+        title="Software Development Products & Solutions | Ondosoft Portfolio"
+        description="Explore Ondosoft's software development products and solutions. From React web applications to SaaS platforms, we build scalable software products for businesses across the USA. View our portfolio of successful projects."
         keywords="software development products, React applications, SaaS products, web applications, mobile apps, software solutions, development technologies"
         canonicalUrl="https://ondosoft.com/products"
       />

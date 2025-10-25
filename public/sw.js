@@ -1,122 +1,114 @@
-// Service Worker for Ondosoft Website
-// Provides offline functionality and caching
-
+// Service Worker for Ondosoft.com
 const CACHE_NAME = 'ondosoft-v1.0.0';
 const STATIC_CACHE = 'ondosoft-static-v1.0.0';
 const DYNAMIC_CACHE = 'ondosoft-dynamic-v1.0.0';
 
-// Files to cache for offline functionality
-const STATIC_FILES = [
+// Assets to cache immediately
+const STATIC_ASSETS = [
   '/',
-  '/index.html',
-  '/logo2.png',
-  '/manifest.json'
+  '/assets/logo2.png',
+  '/assets/code.jpg',
+  '/assets/user1.jpg',
+  '/assets/user2.jpg',
+  '/assets/user3.jpg',
+  '/assets/user4.jpg',
+  '/assets/user5.jpg',
+  '/assets/user6.jpg',
+  '/manifest.json',
+  '/robots.txt',
+  '/sitemap.xml'
 ];
 
-// Install event - cache static files
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
-  
+  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('Service Worker: Caching static files');
-        return cache.addAll(STATIC_FILES);
+        console.log('Caching static assets...');
+        return cache.addAll(STATIC_ASSETS);
       })
       .then(() => {
-        console.log('Service Worker: Installation complete');
+        console.log('Static assets cached successfully');
         return self.skipWaiting();
       })
       .catch((error) => {
-        console.error('Service Worker: Installation failed', error);
+        console.error('Failed to cache static assets:', error);
       })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
-  
+  console.log('Service Worker activating...');
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              console.log('Service Worker: Deleting old cache', cacheName);
+              console.log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       })
       .then(() => {
-        console.log('Service Worker: Activation complete');
+        console.log('Service Worker activated');
         return self.clients.claim();
       })
   );
 });
 
-// Fetch event - serve from cache or network
+// Fetch event - serve from cache with network fallback
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  
+
   // Skip non-GET requests
   if (request.method !== 'GET') {
     return;
   }
-  
+
   // Skip external requests
   if (url.origin !== location.origin) {
     return;
   }
-  
-  // Skip Vite dev server requests and dynamic imports in development
-  if (url.pathname.includes('/src/') || 
-      url.pathname.includes('?t=') || 
-      url.pathname.includes('.jsx') ||
-      url.pathname.includes('.ts') ||
-      url.pathname.includes('.tsx') ||
-      url.searchParams.has('t') ||
-      url.searchParams.has('v')) {
-    // Let Vite handle these requests directly
-    return;
-  }
-  
+
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
         // Return cached version if available
         if (cachedResponse) {
-          console.log('Service Worker: Serving from cache', request.url);
+          console.log('Serving from cache:', request.url);
           return cachedResponse;
         }
-        
+
         // Otherwise fetch from network
         return fetch(request)
-          .then((response) => {
+          .then((networkResponse) => {
             // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
             }
-            
+
             // Clone the response
-            const responseToCache = response.clone();
-            
-            // Cache dynamic content
+            const responseToCache = networkResponse.clone();
+
+            // Cache the response
             caches.open(DYNAMIC_CACHE)
               .then((cache) => {
                 cache.put(request, responseToCache);
               });
-            
-            return response;
+
+            return networkResponse;
           })
           .catch((error) => {
-            console.error('Service Worker: Fetch failed', error);
+            console.error('Fetch failed:', error);
             
             // Return offline page for navigation requests
             if (request.mode === 'navigate') {
-              return caches.match('/index.html');
+              return caches.match('/');
             }
             
             throw error;
@@ -127,20 +119,22 @@ self.addEventListener('fetch', (event) => {
 
 // Background sync for form submissions
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'contact-form-sync') {
-    console.log('Service Worker: Background sync for contact form');
-    event.waitUntil(syncContactForm());
+  if (event.tag === 'contact-form') {
+    event.waitUntil(
+      // Handle form submission sync
+      console.log('Syncing contact form data...')
+    );
   }
 });
 
-// Push notifications (for future use)
+// Push notifications (if needed in future)
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: '/logo2.png',
-      badge: '/logo2.png',
+      icon: '/assets/logo2.png',
+      badge: '/assets/logo2.png',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -150,16 +144,16 @@ self.addEventListener('push', (event) => {
         {
           action: 'explore',
           title: 'View Details',
-          icon: '/logo2.png'
+          icon: '/assets/logo2.png'
         },
         {
           action: 'close',
           title: 'Close',
-          icon: '/logo2.png'
+          icon: '/assets/logo2.png'
         }
       ]
     };
-    
+
     event.waitUntil(
       self.registration.showNotification(data.title, options)
     );
@@ -169,7 +163,7 @@ self.addEventListener('push', (event) => {
 // Notification click handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
+
   if (event.action === 'explore') {
     event.waitUntil(
       clients.openWindow('/')
@@ -177,43 +171,61 @@ self.addEventListener('notificationclick', (event) => {
   }
 });
 
-// Helper function for contact form sync
-async function syncContactForm() {
-  try {
-    // Get pending form submissions from IndexedDB
-    const pendingSubmissions = await getPendingSubmissions();
-    
-    for (const submission of pendingSubmissions) {
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submission)
-        });
-        
-        if (response.ok) {
-          // Remove from pending submissions
-          await removePendingSubmission(submission.id);
-          console.log('Service Worker: Form submission synced successfully');
+// Cache strategies for different types of content
+const cacheStrategies = {
+  // Static assets - cache first
+  static: (request) => {
+    return caches.match(request)
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
         }
-      } catch (error) {
-        console.error('Service Worker: Failed to sync form submission', error);
-      }
-    }
-  } catch (error) {
-    console.error('Service Worker: Background sync failed', error);
+        return fetch(request);
+      });
+  },
+
+  // API calls - network first
+  api: (request) => {
+    return fetch(request)
+      .then((networkResponse) => {
+        if (networkResponse.ok) {
+          const responseClone = networkResponse.clone();
+          caches.open(DYNAMIC_CACHE)
+            .then((cache) => cache.put(request, responseClone));
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(request);
+      });
+  },
+
+  // Images - cache first with network fallback
+  images: (request) => {
+    return caches.match(request)
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        return fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse.ok) {
+              const responseClone = networkResponse.clone();
+              caches.open(DYNAMIC_CACHE)
+                .then((cache) => cache.put(request, responseClone));
+            }
+            return networkResponse;
+          });
+      });
   }
-}
+};
 
-// IndexedDB helpers (simplified)
-async function getPendingSubmissions() {
-  // In a real implementation, you would use IndexedDB
-  return [];
-}
-
-async function removePendingSubmission(id) {
-  // In a real implementation, you would remove from IndexedDB
-  console.log('Service Worker: Removing pending submission', id);
-}
+// Performance monitoring
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'PERFORMANCE_METRICS') {
+    console.log('Performance metrics received:', event.data.metrics);
+    
+    // Send metrics to analytics
+    // This would integrate with your analytics service
+  }
+});

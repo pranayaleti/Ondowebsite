@@ -7,9 +7,21 @@ Sitemap: https://ondosoft.com/sitemap.xml
 # Disallow admin areas (if any)
 Disallow: /admin/
 Disallow: /private/
+Disallow: /_next/
+Disallow: /api/
 
-# Allow all city-service pages
-Allow: /services/*
+# Allow all important pages
+Allow: /services/
+Allow: /products/
+Allow: /pricing/
+Allow: /contact/
+Allow: /about/
+Allow: /workflow/
+Allow: /testimonials/
+Allow: /faq/
 
-# Crawl-delay for respectful crawling
+# Crawl delay for better server performance
 Crawl-delay: 1
+
+# Host directive
+Host: https://ondosoft.com

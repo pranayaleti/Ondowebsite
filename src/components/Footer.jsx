@@ -27,8 +27,10 @@ const Footer = () => {
             },
             "address": {
               "@type": "PostalAddress",
+              "streetAddress": "2701 N Thanksgiving Way",
               "addressLocality": "Lehi",
               "addressRegion": "Utah",
+              "postalCode": "84043",
               "addressCountry": "US"
             },
             "areaServed": {
@@ -64,7 +66,7 @@ const Footer = () => {
               applications. We serve clients across all 50 states.
             </p>
             <p className="mt-3 text-sm">
-              📍 Headquarters: <span className="font-semibold">Lehi, Utah</span><br />
+              📍 Headquarters: <span className="font-semibold">2701 N Thanksgiving Way, Lehi, UT 84043</span><br />
               📧 <a href="mailto:contact@ondosoft.com" className="hover:underline">contact@ondosoft.com</a><br />
               📞 <a href="tel:+15551234567" className="hover:underline">(555) 123-4567</a>
             </p>
@@ -76,8 +78,8 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="hover:underline">Home</Link></li>
               <li><Link to="/services" className="hover:underline">Services</Link></li>
-              <li><Link to="/products" className="hover:underline">Portfolio</Link></li>
-              <li><Link to="/faq" className="hover:underline">Blog</Link></li>
+              <li><Link to="/portfolio" className="hover:underline">Portfolio</Link></li>
+              <li><Link to="/blog" className="hover:underline">Blog</Link></li>
               <li><Link to="/contact" className="hover:underline">Contact</Link></li>
             </ul>
           </div>

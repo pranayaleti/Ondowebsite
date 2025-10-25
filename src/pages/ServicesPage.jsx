@@ -2,6 +2,8 @@ import React from "react";
 import SEOHead from "../components/SEOHead";
 import ServiceSchema from "../components/ServiceSchema";
 import Services from "../components/Services";
+import HeroCTA from "../components/HeroCTA";
+import ConsultationWidget from "../components/ConsultationWidget";
 import Footer from "../components/Footer";
 
 const ServicesPage = () => {
@@ -67,7 +69,7 @@ const ServicesPage = () => {
     <>
       <SEOHead
         title="Software Development Services | Full Stack, SaaS & Freelancing | Ondosoft"
-        description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies."
+        description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies. Get your free quote today!"
         keywords="software development services, full stack development, SaaS development, freelancing services, web app development, mobile app development, React, Node.js, Python, Java, cloud deployment, hire developers"
         canonicalUrl="https://ondosoft.com/services"
         structuredData={servicesStructuredData}
@@ -84,6 +86,13 @@ const ServicesPage = () => {
             <Services />
           </div>
         </div>
+        
+        {/* Hero CTA Section */}
+        <HeroCTA />
+        
+        {/* Consultation Widget */}
+        <ConsultationWidget />
+        
         <Footer />
       </div>
     </>

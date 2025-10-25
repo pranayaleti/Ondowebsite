@@ -143,7 +143,7 @@ const Contact = () => {
           </div>
           <div className="flex items-center text-neutral-300">
             <MapPin className="mr-3 text-orange-500" />
-            <span>Lehi, Utah, USA</span>
+            <span>2701 N Thanksgiving Way, Lehi, UT 84043</span>
           </div>
         </div>
         

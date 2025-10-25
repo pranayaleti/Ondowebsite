@@ -250,9 +250,17 @@ const About = () => {
               <p className="text-gray-300 text-sm mb-4">
                 Let's discuss how we can design, build, and ship your next product.
               </p>
-              <a href="/contact" className="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+              <a href="/contact" className="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors mb-4">
                 Schedule a Meeting
               </a>
+              <div className="text-center">
+                <a href="/services" className="text-orange-400 hover:text-orange-300 text-sm font-medium mr-4">
+                  Our Services →
+                </a>
+                <a href="/testimonials" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
+                  Client Reviews →
+                </a>
+              </div>
             </div>
           </div>
         </div>

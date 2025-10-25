@@ -6,28 +6,36 @@ export const generateSitemap = () => {
   const cityServiceCombinations = generateAllCityServiceCombinations();
   
   let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">`;
 
-  // Add main pages
+  // Add main pages with enhanced metadata
   const mainPages = [
-    { url: '/', priority: '1.0', changefreq: 'weekly' },
-    { url: '/services', priority: '0.9', changefreq: 'weekly' },
-    { url: '/products', priority: '0.8', changefreq: 'monthly' },
-    { url: '/pricing', priority: '0.8', changefreq: 'monthly' },
-    { url: '/contact', priority: '0.7', changefreq: 'monthly' },
-    { url: '/about', priority: '0.6', changefreq: 'monthly' },
-    { url: '/workflow', priority: '0.6', changefreq: 'monthly' },
-    { url: '/testimonials', priority: '0.6', changefreq: 'monthly' },
-    { url: '/faq', priority: '0.6', changefreq: 'monthly' }
+    { url: '/', priority: '1.0', changefreq: 'weekly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/services', priority: '0.9', changefreq: 'weekly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/products', priority: '0.8', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/portfolio', priority: '0.8', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/pricing', priority: '0.8', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/contact', priority: '0.7', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/about', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/workflow', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/testimonials', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/faq', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] }
   ];
 
   mainPages.forEach(page => {
     sitemap += `
   <url>
     <loc>${baseUrl}${page.url}</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
+    <image:image>
+      <image:loc>${baseUrl}/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>`;
   });
 
@@ -72,9 +80,24 @@ Sitemap: ${baseUrl}/sitemap.xml
 # Disallow admin areas (if any)
 Disallow: /admin/
 Disallow: /private/
+Disallow: /_next/
+Disallow: /api/
 
-# Allow all city-service pages
-Allow: /services/*`;
+# Allow all important pages
+Allow: /services/
+Allow: /products/
+Allow: /pricing/
+Allow: /contact/
+Allow: /about/
+Allow: /workflow/
+Allow: /testimonials/
+Allow: /faq/
+
+# Crawl delay for better server performance
+Crawl-delay: 1
+
+# Host directive
+Host: ${baseUrl}`;
 };
 
 // Generate sitemap and save to public directory

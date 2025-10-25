@@ -31,7 +31,7 @@ const AboutPage = () => {
     <>
       <SEOHead
         title="About Ondosoft | Full Stack Software Development Team & Company"
-        description="Learn about Ondosoft's mission to deliver exceptional software development, SaaS solutions, and freelancing services. Our team of React, Node.js, and Python developers serves businesses across the USA."
+        description="Learn about Ondosoft's mission to deliver exceptional software development, SaaS solutions, and freelancing services. Our team of React, Node.js, and Python developers serves businesses across the USA. Founded by Pranay Reddy Aleti, MS Computer Science."
         keywords="about ondosoft, software development company, full stack developers, SaaS development team, freelancing company, React developers, Node.js team, Python developers"
         canonicalUrl="https://ondosoft.com/about"
         structuredData={aboutStructuredData}

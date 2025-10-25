@@ -38,7 +38,7 @@ const SchemaMarkup = () => {
     ],
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "123 Tech Drive",
+      "streetAddress": "2701 N Thanksgiving Way",
       "addressLocality": "Lehi",
       "addressRegion": "Utah",
       "postalCode": "84043",
@@ -265,7 +265,7 @@ const SchemaMarkup = () => {
     "email": "contact@ondosoft.com",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "123 Tech Drive",
+      "streetAddress": "2701 N Thanksgiving Way",
       "addressLocality": "Lehi",
       "addressRegion": "Utah",
       "postalCode": "84043",
