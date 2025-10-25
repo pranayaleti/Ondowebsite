@@ -34,6 +34,10 @@ const SEOHead = ({
         },
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "2701 N Thanksgiving Way",
+          "addressLocality": "Lehi",
+          "addressRegion": "Utah",
+          "postalCode": "84043",
           "addressCountry": "US"
         },
         "sameAs": [
@@ -102,6 +106,10 @@ const SEOHead = ({
         "telephone": "+1-555-0123",
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "2701 N Thanksgiving Way",
+          "addressLocality": "Lehi",
+          "addressRegion": "Utah",
+          "postalCode": "84043",
           "addressCountry": "US"
         },
         "areaServed": {
@@ -140,14 +148,21 @@ const SEOHead = ({
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Freelancing Services" />
       <meta property="og:site_name" content="Ondosoft" />
+      <meta property="og:locale" content="en_US" />
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@ondosoft" />
+      <meta name="twitter:creator" content="@ondosoft" />
       <meta name="twitter:url" content={canonicalUrl} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Freelancing Services" />
       
       {/* Additional SEO Meta Tags */}
       <meta name="author" content="Ondosoft" />
@@ -159,6 +174,21 @@ const SEOHead = ({
       <meta name="distribution" content="global" />
       <meta name="rating" content="general" />
       <meta name="revisit-after" content="7 days" />
+      
+      {/* Additional Social Media Tags */}
+      <meta property="article:author" content="Ondosoft" />
+      <meta property="article:publisher" content="https://ondosoft.com" />
+      <meta property="article:section" content="Technology" />
+      <meta property="article:tag" content="Software Development" />
+      <meta property="article:tag" content="SaaS Development" />
+      <meta property="article:tag" content="Freelancing" />
+      
+      {/* Business/Organization Tags */}
+      <meta name="business:contact_data:street_address" content="2701 N Thanksgiving Way" />
+      <meta name="business:contact_data:locality" content="Lehi" />
+      <meta name="business:contact_data:region" content="Utah" />
+      <meta name="business:contact_data:postal_code" content="84043" />
+      <meta name="business:contact_data:country_name" content="United States" />
       
       {/* Mobile Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />

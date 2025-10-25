@@ -1,152 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Main Pages -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
     <loc>https://ondosoft.com/</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/services</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/products</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/pricing</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/contact</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/about</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/workflow</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/testimonials</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
   <url>
     <loc>https://ondosoft.com/faq</loc>
-    <lastmod>2024-01-15</lastmod>
+    <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-  </url>
-  
-  <!-- State Service Pages -->
-  <url>
-    <loc>https://ondosoft.com/services/california</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/texas</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/new-york</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/florida</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/illinois</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <!-- City Service Pages -->
-  <url>
-    <loc>https://ondosoft.com/services/los-angeles-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/new-york-ny</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/chicago-il</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/houston-tx</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/dallas-tx</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/miami-fl</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/atlanta-ga</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/seattle-wa</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/san-francisco-ca</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://ondosoft.com/services/boston-ma</loc>
-    <lastmod>2024-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo2.png</image:loc>
+      <image:title>Ondosoft - Full Stack Software Development</image:title>
+      <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
   </url>
 </urlset>

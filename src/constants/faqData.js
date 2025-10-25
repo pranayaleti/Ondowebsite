@@ -9,7 +9,7 @@ export const faqData = [
   },
   {
     question: "How much do freelancing software developers cost?",
-    answer: "Our freelancing rates vary based on project complexity and scope. We offer competitive pricing for full stack development, SaaS applications, and custom software solutions. Contact us for a personalized quote that fits your budget. Our transparent pricing ensures you get excellent value for your software development investment."
+    answer: "Our freelancing rates start from $1,200 for starter websites and range up to $25,000+ for enterprise SaaS platforms. We offer competitive pricing for full stack development, SaaS applications, and custom software solutions. Contact us for a personalized quote that fits your budget. Our transparent pricing ensures you get excellent value for your software development investment."
   },
   {
     question: "Can I hire a freelancing developer for a short-term project?",

@@ -1,6 +1,14 @@
 import React from "react";
 import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
+import HeroCTA from "../components/HeroCTA";
+import TestimonialCarousel from "../components/TestimonialCarousel";
+import NewsletterSignup from "../components/NewsletterSignup";
+import TrustBadges from "../components/TrustBadges";
+import ConsultationWidget from "../components/ConsultationWidget";
+import ProjectCostEstimator from "../components/ProjectCostEstimator";
+import LiveChatWidget from "../components/LiveChatWidget";
+import ResourcesSection from "../components/ResourcesSection";
 import Footer from "../components/Footer";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { 
@@ -44,6 +52,10 @@ const HomePage = () => {
         },
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "2701 N Thanksgiving Way",
+          "addressLocality": "Lehi",
+          "addressRegion": "Utah",
+          "postalCode": "84043",
           "addressCountry": "US"
         },
         "sameAs": [
@@ -251,6 +263,7 @@ const HomePage = () => {
         title="Best Software Development Company Near Me | Ondosoft - Hire Freelance Developers for Custom Web Apps & SaaS"
         description="Looking for the best software development company near you? Ondosoft is a nationwide leader in custom web app development, SaaS applications, and freelance software development. Hire expert developers for React, Node.js, Python projects. Serving all 50 states with end-to-end solutions from small business websites to enterprise SaaS platforms. Get your free quote today!"
         keywords="best software development company near me, freelance developers for hire, build a SaaS application, custom web app development, hire software developers, software development companies, React developers, Node.js developers, Python developers, mobile app development, web application development, SaaS development, custom software development, software development services, hire developers near me, freelance software development, full stack developers, software development company USA, custom web development, mobile app developers, cloud application development, software development agency, hire developers online, software development consulting, custom software solutions, web development services, mobile development services, software development freelancers, tech consulting, software development near me, hire developers USA"
+        canonicalUrl="https://ondosoft.com"
         structuredData={homeStructuredData}
       />
       <div className="min-h-screen bg-black">
@@ -455,32 +468,29 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 bg-black">
-          <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Build Something Amazing?
-            </h2>
-            <p className="text-xl text-neutral-300 mb-8 leading-relaxed">
-              Whether you're a startup with a big idea or an enterprise looking to modernize, 
-              we have the expertise to bring your vision to life.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="/contact" 
-                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                Get Free Quote Today
-              </a>
-              <a 
-                href="/services" 
-                className="border-2 border-orange-500 text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300"
-              >
-                View Our Services
-              </a>
-            </div>
-          </div>
-        </section>
+        {/* Hero CTA Section */}
+        <HeroCTA />
+
+        {/* Testimonial Carousel */}
+        <TestimonialCarousel />
+
+        {/* Trust Badges & Success Story */}
+        <TrustBadges />
+
+        {/* Project Cost Estimator */}
+        <ProjectCostEstimator />
+
+        {/* Newsletter Signup */}
+        <NewsletterSignup />
+
+        {/* Consultation Widget */}
+        <ConsultationWidget />
+
+        {/* Live Chat Widget */}
+        <LiveChatWidget />
+
+        {/* Resources Section */}
+        <ResourcesSection />
 
         <Footer />
         

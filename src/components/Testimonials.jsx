@@ -25,6 +25,11 @@ const Testimonials = () => {
                   <span className="text-sm font-normal italic text-neutral-400">
                     {testimonial.company}
                   </span>
+                  <div className="mt-2">
+                    <a href="/services" className="text-orange-400 hover:text-orange-300 text-xs font-medium">
+                      View Services →
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

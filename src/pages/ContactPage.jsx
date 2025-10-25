@@ -20,6 +20,10 @@ const ContactPage = () => {
       },
       "address": {
         "@type": "PostalAddress",
+        "streetAddress": "2701 N Thanksgiving Way",
+        "addressLocality": "Lehi",
+        "addressRegion": "Utah",
+        "postalCode": "84043",
         "addressCountry": "US"
       }
     }
@@ -29,7 +33,7 @@ const ContactPage = () => {
     <>
       <SEOHead
         title="Contact Ondosoft | Hire Developers for Software Development & SaaS Solutions"
-        description="Contact Ondosoft for professional software development, freelancing services, and SaaS solutions. Get a free quote for your React, Node.js, Python, or Java project. Serving businesses across the USA."
+        description="Contact Ondosoft for professional software development, freelancing services, and SaaS solutions. Get a free quote for your React, Node.js, Python, or Java project. Serving businesses across the USA. Call (555) 123-4567 or email us today!"
         keywords="contact ondosoft, hire developers, software development contact, SaaS development quote, freelancing services, React developers, Node.js developers, Python developers"
         canonicalUrl="https://ondosoft.com/contact"
         structuredData={contactStructuredData}

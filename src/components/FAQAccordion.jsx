@@ -31,22 +31,22 @@ const FAQAccordion = ({ faqs }) => {
       {faqs.map((faq, index) => (
         <div
           key={index}
-          className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden"
+          className="bg-gray-800 rounded-lg shadow-md border border-gray-700 overflow-hidden"
         >
           <button
-            className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+            className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-inset"
             onClick={() => toggleItem(index)}
             aria-expanded={openItems.has(index)}
             aria-controls={`faq-answer-${index}`}
           >
-            <h3 className="text-lg font-semibold text-gray-800 pr-4">
+            <h3 className="text-lg font-semibold text-white pr-4">
               {faq.question}
             </h3>
             <div className="flex-shrink-0">
               {openItems.has(index) ? (
-                <ChevronUpIcon className="h-5 w-5 text-gray-500" />
+                <ChevronUpIcon className="h-5 w-5 text-gray-400" />
               ) : (
-                <ChevronDownIcon className="h-5 w-5 text-gray-500" />
+                <ChevronDownIcon className="h-5 w-5 text-gray-400" />
               )}
             </div>
           </button>
@@ -60,7 +60,7 @@ const FAQAccordion = ({ faqs }) => {
             } overflow-hidden`}
           >
             <div className="px-6 pb-4">
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-300 leading-relaxed">
                 {faq.answer}
               </p>
             </div>

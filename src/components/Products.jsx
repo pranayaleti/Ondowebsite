@@ -37,12 +37,12 @@ const Products = () => {
   return (
     <div className="mt-16">
       <div className="text-center">
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl mt-10 lg:mt-20 tracking-wide pb-4">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl mt-10 lg:mt-20 tracking-wide pb-4">
           Our
           <span className="bg-gradient-to-r from-orange-500 to-orange-800 text-transparent bg-clip-text">
             Portfolio
           </span>
-        </h2>
+        </h1>
         <span className="bg-neutral-900 text-orange-500 rounded-full h-6 text-sm font-medium px-2 py-1">
           Real projects delivered for real businesses
         </span>
@@ -69,8 +69,16 @@ const Products = () => {
                 <CheckCircle2 />
               </div>
               <div>
-                <h5 className="mt-1 mb-2 text-xl">{item.title}</h5>
-                <p className="text-md text-neutral-500">{item.description}</p>
+                <h2 className="mt-1 mb-2 text-xl">{item.title}</h2>
+                <p className="text-md text-neutral-500 mb-4">{item.description}</p>
+                <div className="flex gap-4">
+                  <a href="/services" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
+                    Our Services →
+                  </a>
+                  <a href="/contact" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
+                    Start Your Project →
+                  </a>
+                </div>
               </div>
             </div>
           ))}

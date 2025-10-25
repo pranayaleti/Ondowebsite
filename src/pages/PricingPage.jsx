@@ -17,21 +17,21 @@ const PricingPage = () => {
       {
         "@type": "Offer",
         "name": "Small Business Website",
-        "price": "2500",
+        "price": "1200",
         "priceCurrency": "USD",
         "description": "Professional website with 5-10 pages, mobile-responsive design, and SEO optimization"
       },
       {
         "@type": "Offer",
         "name": "Custom Web Application",
-        "price": "8500",
+        "price": "4500",
         "priceCurrency": "USD",
         "description": "Custom web application with user authentication, database, and admin dashboard"
       },
       {
         "@type": "Offer",
         "name": "SaaS Platform",
-        "price": "25000",
+        "price": "8500",
         "priceCurrency": "USD",
         "description": "Complete SaaS solution with multi-tenant architecture and payment processing"
       }
@@ -42,7 +42,7 @@ const PricingPage = () => {
     <>
       <SEOHead
         title="Software Development Pricing | Ondosoft Freelancing & SaaS Solutions"
-        description="Transparent pricing for software development services. Get quotes for React, Node.js, Python web apps, SaaS platforms, and freelancing solutions. Serving businesses across the USA."
+        description="Transparent pricing for software development services. Get quotes for React, Node.js, Python web apps, SaaS platforms, and freelancing solutions. Serving businesses across the USA. Starting from $1,200 for starter websites."
         keywords="software development pricing, hire developers cost, SaaS development pricing, freelancing rates, React development cost, Node.js pricing, web app development cost"
         canonicalUrl="https://ondosoft.com/pricing"
         structuredData={pricingStructuredData}

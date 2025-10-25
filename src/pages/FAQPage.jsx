@@ -11,12 +11,12 @@ const FAQPage = () => {
     <>
       <SEOHead
         title="Frequently Asked Questions | Ondosoft Software Development"
-        description="Get answers to common questions about Ondosoft's software development, freelancing, and SaaS services. Learn how to hire developers, build your SaaS app, and scale your business."
+        description="Get answers to common questions about Ondosoft's software development, freelancing, and SaaS services. Learn how to hire developers, build your SaaS app, and scale your business. Expert answers from our development team."
         keywords="FAQ, software development questions, hire developers, SaaS development, freelancing, Ondosoft services, development timeline, technology stack"
         structuredData={faqStructuredData}
       />
       
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-black">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-orange-500 to-orange-700 text-white py-20">
           <div className="container mx-auto px-4">
@@ -36,10 +36,10 @@ const FAQPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4 drop-shadow-sm">
+                <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-sm">
                   Frequently Asked Questions
                 </h2>
-                <p className="text-lg text-gray-700 leading-relaxed">
+                <p className="text-lg text-gray-300 leading-relaxed">
                   Find answers to common questions about our software development, freelancing, and SaaS services
                 </p>
               </div>
@@ -61,13 +61,13 @@ const FAQPage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/contact"
-                  className="bg-white text-orange-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg"
+                  className="bg-black text-orange-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg"
                 >
                   Contact Us Today
                 </a>
                 <a
                   href="tel:+15551234567"
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-orange-600 transition-all duration-200"
+                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-black hover:text-orange-600 transition-all duration-200"
                 >
                   Call (555) 123-4567
                 </a>
