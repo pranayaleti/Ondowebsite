@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ShareButtons from '../components/ShareButtons';
 import EmailCapture from '../components/EmailCapture';
+import ConsultationWidget from '../components/ConsultationWidget';
+import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
 import { getPostBySlug, getRelatedPosts, blogCategories } from '../data/blogData';
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react';
 
 const BlogPostPage = () => {
   const { slug } = useParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const post = getPostBySlug(slug);
   const relatedPosts = post ? getRelatedPosts(post, 3) : [];
 
@@ -172,6 +175,8 @@ const BlogPostPage = () => {
         </article>
 
         <Footer />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
   );

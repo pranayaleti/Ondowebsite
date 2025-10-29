@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import Testimonials from "../components/Testimonials";
+import ConsultationWidget from "../components/ConsultationWidget";
+import ConsultationModal from "../components/ConsultationModal";
 import Footer from "../components/Footer";
 
 const TestimonialsPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const testimonialsStructuredData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -53,6 +57,8 @@ const TestimonialsPage = () => {
           </div>
         </div>
         <Footer />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
   );

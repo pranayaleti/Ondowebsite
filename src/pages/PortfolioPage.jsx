@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import SEOHead from '../components/SEOHead';
+import ConsultationWidget from '../components/ConsultationWidget';
+import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
 import { ArrowRight, TrendingUp, Users, Clock, CheckCircle, Star, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import PMT from '../assets/PMT_optimized.webm';
@@ -7,6 +9,7 @@ import { checklistItems } from '../constants/data';
 
 const PortfolioPage = () => {
   const [selectedProject, setSelectedProject] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef(null);
 
   const toggleFullScreen = () => {
@@ -431,6 +434,8 @@ const PortfolioPage = () => {
         </section>
 
         <Footer />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
   );

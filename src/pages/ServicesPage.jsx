@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import ServiceSchema from "../components/ServiceSchema";
 import Services from "../components/Services";
 import HeroCTA from "../components/HeroCTA";
 import ConsultationWidget from "../components/ConsultationWidget";
+import ConsultationModal from "../components/ConsultationModal";
 import Footer from "../components/Footer";
 
 const ServicesPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const servicesStructuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -90,10 +93,9 @@ const ServicesPage = () => {
         {/* Hero CTA Section */}
         <HeroCTA />
         
-        {/* Consultation Widget */}
-        <ConsultationWidget />
-        
         <Footer />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
   );

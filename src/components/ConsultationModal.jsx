@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react';
 
-const ConsultationModal = ({ isOpen, onClose }) => {
+const ConsultationModal = ({ isOpen, onClose, preset }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     company: '',
+    selectedPlan: preset?.name || '',
     projectType: '',
     timeline: '',
     budget: '',
@@ -66,25 +68,61 @@ const ConsultationModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
-    
+
+    const payload = {
+      ...formData,
+      selectedPlan: formData.selectedPlan || preset?.name || '',
+      selectedPlanPrice: preset?.price || '',
+      timestamp: new Date().toISOString(),
+      pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
+    };
+
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('Consultation booking:', formData);
-      
-      // In a real implementation, you would:
-      // 1. Send data to your backend
-      // 2. Create calendar event via Google Calendar API
-      // 3. Send confirmation email
-      // 4. Integrate with Calendly or similar service
-      
+      // Save locally for a lightweight record
+      const key = 'consultation_leads';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.push(payload);
+      localStorage.setItem(key, JSON.stringify(existing));
+
+      // Optional webhook to your backend/automation (Zapier, Make, Cloud Function, etc.)
+      if (companyInfo.leadWebhookUrl) {
+        try {
+          await fetch(companyInfo.leadWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (err) {
+          // Non-blocking: ignore webhook failure
+          console.warn('Lead webhook failed', err);
+        }
+      }
+
       setSubmitStatus('success');
+
+      // Build Calendly URL with helpful context
+      const params = new URLSearchParams({
+        utm_source: 'website',
+        utm_medium: 'pricing',
+        utm_campaign: 'consultation',
+        utm_content: payload.selectedPlan || 'unknown',
+        a1: payload.selectedPlan || '',
+        a2: payload.email || '',
+        a3: payload.company || ''
+      });
+      const calendlyUrl = `${companyInfo.calendlyUrl}?${params.toString()}`;
+
+      // Redirect to Calendly
+      window.location.href = calendlyUrl;
+
+      // Reset form in the background
       setFormData({
         name: '',
         email: '',
         phone: '',
         company: '',
+        selectedPlan: preset?.name || '',
         projectType: '',
         timeline: '',
         budget: '',
@@ -100,16 +138,26 @@ const ConsultationModal = ({ isOpen, onClose }) => {
   };
 
   const openCalendly = () => {
-    // In a real implementation, this would open Calendly widget
-    window.open('https://calendly.com/ondosoft/consultation', '_blank');
+    window.open('https://calendly.com/pranay_ondo', '_blank');
   };
+
+  useEffect(() => {
+    if (isOpen && preset?.name) {
+      setFormData(prev => ({
+        ...prev,
+        selectedPlan: preset.name,
+        message: prev.message || `Plan Selected: ${preset.name} (${preset.price} ${preset.cadence}).\n\nPlease describe your specific requirements: \n- What are the core features you need? \n- Who is the primary user? \n- Any deadlines or milestones? \n- Integrations or existing systems?`
+      }));
+    }
+  }, [isOpen, preset]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+        {/* Header */
+        }
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center">
             <div className="bg-orange-500 p-3 rounded-lg mr-4">
@@ -130,6 +178,13 @@ const ConsultationModal = ({ isOpen, onClose }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
+          {preset?.name && (
+            <div className="mb-6 p-4 rounded-lg border border-orange-200 bg-orange-50 text-sm text-gray-800">
+              <div className="font-semibold">Selected Plan: {preset.name}</div>
+              <div className="mt-1 text-gray-700">{preset.price} {preset.cadence}</div>
+              <div className="mt-3 text-gray-700">We'll tailor questions to your needs. Please share specifics below.</div>
+            </div>
+          )}
           {/* Success/Error Messages */}
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
@@ -338,30 +393,12 @@ const ConsultationModal = ({ isOpen, onClose }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center disabled:opacity-70"
             >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Booking...
-                </>
-              ) : (
-                <>
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Book Free Consultation
-                </>
-              )}
+              <Calendar className="h-5 w-5 mr-2" />
+              {isSubmitting ? 'Saving...' : 'Continue to Booking'}
             </button>
-            
-            <button
-              type="button"
-              onClick={openCalendly}
-              className="px-6 py-4 border-2 border-orange-500 text-orange-500 rounded-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300 flex items-center justify-center"
-            >
-              <Clock className="h-5 w-5 mr-2" />
-              Use Calendly
-            </button>
-            
+
             <button
               type="button"
               onClick={onClose}
@@ -371,10 +408,10 @@ const ConsultationModal = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          {/* Contact Info */}
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Or call us directly: <a href="tel:+15551234567" className="text-orange-600 font-semibold">(555) 123-4567</a></p>
-          </div>
+          {/* Urgent requests note */}
+          <p className="text-xs text-gray-500 mt-4 text-center">
+            For urgent requests or mobile services, please call us at <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-600 font-semibold">{companyInfo.urgentPhoneDisplay}</a>
+          </p>
         </form>
       </div>
     </div>
