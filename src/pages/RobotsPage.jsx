@@ -1,7 +1,11 @@
 import { generateRobotsTxt } from '../utils/sitemapGenerator';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import ConsultationWidget from '../components/ConsultationWidget';
+import ConsultationModal from '../components/ConsultationModal';
 
 const RobotsPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   useEffect(() => {
     const robotsTxt = generateRobotsTxt();
     
@@ -27,6 +31,8 @@ const RobotsPage = () => {
         <h1 className="text-2xl font-bold mb-4">Robots.txt Generated</h1>
         <p className="text-gray-600">Your robots.txt file has been downloaded.</p>
       </div>
+      <ConsultationWidget />
+      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

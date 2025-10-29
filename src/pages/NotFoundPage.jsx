@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Home, ArrowLeft } from "lucide-react";
 import SEOHead from "../components/SEOHead";
+import ConsultationWidget from "../components/ConsultationWidget";
+import ConsultationModal from "../components/ConsultationModal";
 import Footer from "../components/Footer";
 
 const NotFoundPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <>
       <SEOHead
@@ -40,6 +43,8 @@ const NotFoundPage = () => {
         </div>
       </div>
       <Footer />
+      <ConsultationWidget />
+      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
   );

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
+import ConsultationWidget from '../components/ConsultationWidget';
+import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
 import { blogPosts, blogCategories, getFeaturedPosts, getRecentPosts } from '../data/blogData';
 import { Search, Filter } from 'lucide-react';
@@ -9,6 +11,7 @@ const BlogPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const featuredPosts = getFeaturedPosts();
   const recentPosts = getRecentPosts(6);
@@ -183,6 +186,8 @@ const BlogPage = () => {
         </section>
 
         <Footer />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
     </>
   );

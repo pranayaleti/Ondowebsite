@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import About from "../components/About";
+import ConsultationWidget from "../components/ConsultationWidget";
+import ConsultationModal from "../components/ConsultationModal";
 
 const AboutPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const aboutStructuredData = {
     "@context": "https://schema.org",
     "@type": "AboutPage",
@@ -37,6 +41,8 @@ const AboutPage = () => {
         structuredData={aboutStructuredData}
       />
       <About />
+      <ConsultationWidget />
+      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

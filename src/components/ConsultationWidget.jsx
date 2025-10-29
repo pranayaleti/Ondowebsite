@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, CheckCircle, AlertCircle, Send } from 'lucide-react';
+import { companyInfo } from "../constants/companyInfo";
+import { X, Calendar, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 const ConsultationWidget = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,13 +29,50 @@ const ConsultationWidget = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
-    
+
+    const payload = {
+      ...formData,
+      selectedPlan: '',
+      selectedPlanPrice: '',
+      timestamp: new Date().toISOString(),
+      pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
+    };
+
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('Consultation form submitted:', formData);
+      // Save locally
+      const key = 'consultation_leads';
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.push(payload);
+      localStorage.setItem(key, JSON.stringify(existing));
+
+      // Optional webhook
+      if (companyInfo.leadWebhookUrl) {
+        try {
+          await fetch(companyInfo.leadWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (err) {
+          console.warn('Lead webhook failed', err);
+        }
+      }
+
       setSubmitStatus('success');
+
+      // Redirect to Calendly with context
+      const params = new URLSearchParams({
+        utm_source: 'website',
+        utm_medium: 'floating_widget',
+        utm_campaign: 'consultation',
+        utm_content: formData.projectType || 'general',
+        a2: formData.email || '',
+        a3: formData.company || ''
+      });
+      const calendlyUrl = `${companyInfo.calendlyUrl}?${params.toString()}`;
+      window.location.href = calendlyUrl;
+
       setFormData({
         name: '',
         email: '',
@@ -293,21 +331,12 @@ const ConsultationWidget = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center disabled:opacity-70"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Scheduling...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-5 w-5 mr-2" />
-                      Book Free Consultation
-                    </>
-                  )}
+                  <Calendar className="h-5 w-5 mr-2" />
+                  {isSubmitting ? 'Saving...' : 'Continue to Booking'}
                 </button>
-                
+
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -317,10 +346,10 @@ const ConsultationWidget = () => {
                 </button>
               </div>
 
-              {/* Contact Info */}
-              <div className="mt-6 text-center text-sm text-gray-600">
-                <p>Or call us directly: <a href="tel:+15551234567" className="text-orange-600 font-semibold">(555) 123-4567</a></p>
-              </div>
+              {/* Urgent requests note */}
+              <p className="text-xs text-gray-500 mt-4 text-center">
+                For urgent requests or mobile services, please call us at <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-600 font-semibold">{companyInfo.urgentPhoneDisplay}</a>
+              </p>
             </form>
           </div>
         </div>

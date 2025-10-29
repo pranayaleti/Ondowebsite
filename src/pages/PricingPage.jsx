@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import Pricing from "../components/Pricing";
+import ConsultationWidget from "../components/ConsultationWidget";
+import ConsultationModal from "../components/ConsultationModal";
 import Footer from "../components/Footer";
 
 const PricingPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [preset, setPreset] = useState(null);
+  
   const pricingStructuredData = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -50,10 +55,12 @@ const PricingPage = () => {
       <div className="min-h-screen bg-black">
         <div className="mx-auto pt-20">
           <div id="pricing" className="scroll-mt-20">
-            <Pricing />
+            <Pricing onConsult={(plan) => { setPreset(plan); setIsModalOpen(true); }} />
           </div>
         </div>
         <Footer />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} preset={preset} />
       </div>
     </>
   );

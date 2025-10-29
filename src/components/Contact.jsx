@@ -1,6 +1,7 @@
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { sanitizeInput, validateFormData, validationRules, rateLimiter, generateCSRFToken } from "../utils/security";
+import { companyInfo } from "../constants/companyInfo";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -169,19 +170,19 @@ const Contact = () => {
           </p>
           <div className="flex items-center mb-4 text-neutral-300">
             <Mail className="mr-3 text-orange-500" />
-            <a href="mailto:contact@ondosoft.com" className="hover:text-orange-400 transition-colors">
-              contact@ondosoft.com
+            <a href={`mailto:${companyInfo.email}`} className="hover:text-orange-400 transition-colors">
+              {companyInfo.email}
             </a>
           </div>
           <div className="flex items-center mb-4 text-neutral-300">
             <Phone className="mr-3 text-orange-500" />
-            <a href="tel:+15551234567" className="hover:text-orange-400 transition-colors">
-              +1 (555) 123-4567
+            <a href={`tel:${companyInfo.phoneE164}`} className="hover:text-orange-400 transition-colors">
+              {companyInfo.phoneDisplay}
             </a>
           </div>
           <div className="flex items-center text-neutral-300">
             <MapPin className="mr-3 text-orange-500" />
-            <span>2701 N Thanksgiving Way, Lehi, UT 84043</span>
+            <span>{`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}</span>
           </div>
         </div>
         

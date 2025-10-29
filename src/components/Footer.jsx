@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { SERVICE_AREAS } from "../utils/unifiedData";
+import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 
 const Footer = () => {
   // Get service areas data from consolidated utility
@@ -14,25 +15,12 @@ const Footer = () => {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "Ondosoft",
+            "name": companyInfo.name,
             "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
-            "url": "https://ondosoft.com",
+            "url": companyInfo.urls.website,
             "logo": "https://ondosoft.com/logo2.png",
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+1-555-123-4567",
-              "contactType": "customer service",
-              "email": "contact@ondosoft.com",
-              "availableLanguage": "English"
-            },
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "2701 N Thanksgiving Way",
-              "addressLocality": "Lehi",
-              "addressRegion": "Utah",
-              "postalCode": "84043",
-              "addressCountry": "US"
-            },
+            "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
+            "address": getPostalAddressSchema(),
             "areaServed": {
               "@type": "Country",
               "name": "United States"
@@ -66,9 +54,9 @@ const Footer = () => {
               applications. We serve clients across all 50 states.
             </p>
             <p className="mt-3 text-sm">
-              📍 Headquarters: <span className="font-semibold">2701 N Thanksgiving Way, Lehi, UT 84043</span><br />
-              📧 <a href="mailto:contact@ondosoft.com" className="hover:underline">contact@ondosoft.com</a><br />
-              📞 <a href="tel:+15551234567" className="hover:underline">(555) 123-4567</a>
+              📍 Headquarters: <span className="font-semibold">{`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}</span><br />
+              📧 <a href={`mailto:${companyInfo.email}`} className="hover:underline">{companyInfo.email}</a><br />
+              📞 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a>
             </p>
           </div>
 

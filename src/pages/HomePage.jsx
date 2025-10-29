@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
 import HeroCTA from "../components/HeroCTA";
@@ -6,9 +6,11 @@ import TestimonialCarousel from "../components/TestimonialCarousel";
 import NewsletterSignup from "../components/NewsletterSignup";
 import TrustBadges from "../components/TrustBadges";
 import ConsultationWidget from "../components/ConsultationWidget";
+import ConsultationModal from "../components/ConsultationModal";
 import LiveChatWidget from "../components/LiveChatWidget";
 import Footer from "../components/Footer";
 import { SERVICE_AREAS } from "../utils/unifiedData";
+import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { 
   CheckCircle, 
   Star, 
@@ -26,63 +28,53 @@ import {
 } from "lucide-react";
 
 const HomePage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const homeStructuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://ondosoft.com/#organization",
-        "name": "Ondosoft",
-        "url": "https://ondosoft.com",
+        "@id": `${companyInfo.urls.website}/#organization`,
+        "name": companyInfo.name,
+        "url": companyInfo.urls.website,
         "logo": {
           "@type": "ImageObject",
-          "url": "https://ondosoft.com/logo2.png",
+          "url": `${companyInfo.urls.website}/logo2.png`,
           "width": 200,
           "height": 60
         },
         "description": "Full stack software development, freelancing, and SaaS solutions company serving businesses across the USA",
         "foundingDate": "2024",
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": "+1-555-0123",
-          "contactType": "customer service",
-          "availableLanguage": "English"
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "2701 N Thanksgiving Way",
-          "addressLocality": "Lehi",
-          "addressRegion": "Utah",
-          "postalCode": "84043",
-          "addressCountry": "US"
-        },
+        "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
+        "address": getPostalAddressSchema(),
         "sameAs": [
           "https://linkedin.com/company/ondosoft",
-          "https://github.com/ondosoft"
+          companyInfo.urls.github
         ]
       },
       {
         "@type": "WebSite",
-        "@id": "https://ondosoft.com/#website",
-        "url": "https://ondosoft.com",
-        "name": "Ondosoft",
+        "@id": `${companyInfo.urls.website}/#website`,
+        "url": companyInfo.urls.website,
+        "name": companyInfo.name,
         "description": "Full Stack Software Development, Freelancing & SaaS Solutions",
         "publisher": {
-          "@id": "https://ondosoft.com/#organization"
+          "@id": `${companyInfo.urls.website}/#organization`
         },
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://ondosoft.com/search?q={search_term_string}",
+          "target": `${companyInfo.urls.website}/search?q={search_term_string}`,
           "query-input": "required name=search_term_string"
         }
       },
       {
         "@type": "Service",
-        "@id": "https://ondosoft.com/#services",
+        "@id": `${companyInfo.urls.website}/#services`,
         "name": "Software Development Services",
         "description": "Full stack software development, web applications, mobile apps, and SaaS platform development",
         "provider": {
-          "@id": "https://ondosoft.com/#organization"
+          "@id": `${companyInfo.urls.website}/#organization`
         },
         "serviceType": "Software Development",
         "areaServed": [
@@ -576,6 +568,8 @@ const HomePage = () => {
           </ul>
         </div>
       </div>
+      <ConsultationWidget />
+      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

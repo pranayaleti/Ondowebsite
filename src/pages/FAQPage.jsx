@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SEOHead from '../components/SEOHead';
 import FAQAccordion from '../components/FAQAccordion';
+import ConsultationWidget from '../components/ConsultationWidget';
+import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
 import { faqData, generateFAQStructuredData } from '../constants/faqData';
+import { companyInfo } from "../constants/companyInfo";
 
 const FAQPage = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const faqStructuredData = generateFAQStructuredData(faqData);
 
   return (
@@ -66,10 +70,10 @@ const FAQPage = () => {
                   Contact Us Today
                 </a>
                 <a
-                  href="tel:+15551234567"
+                  href={`tel:${companyInfo.phoneE164}`}
                   className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-black hover:text-orange-600 transition-all duration-200"
                 >
-                  Call (555) 123-4567
+                  Call {companyInfo.phoneDisplay}
                 </a>
               </div>
             </div>
@@ -78,6 +82,8 @@ const FAQPage = () => {
       </div>
       
       <Footer />
+      <ConsultationWidget />
+      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };
