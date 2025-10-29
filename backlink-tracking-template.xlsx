@@ -1,0 +1,38 @@
+Backlink Tracking Template
+
+Sheet 1: Target Websites
+Website Name | URL | Contact Email | Contact Name | DA | Relevance | Status | Notes | Date Contacted | Response | Follow-up Date
+---|---|---|---|---|---|---|---|---|---|---
+TechCrunch | techcrunch.com | tips@techcrunch.com | Editor | 95 | High | Pending | Startup coverage | 2024-01-15 | No response | 2024-01-22
+Hacker Noon | hackernoon.com | hello@hackernoon.com | Editor | 88 | High | Contacted | Developer content | 2024-01-10 | Positive | 2024-01-17
+Smashing Magazine | smashingmagazine.com | contact@smashingmagazine.com | Editor | 92 | High | Pending | Web development | 2024-01-12 | No response | 2024-01-19
+
+Sheet 2: Content Assets
+Content Title | URL | Type | Target Keywords | Backlinks Gained | DA of Links | Date Published | Status
+---|---|---|---|---|---|---|---
+Complete Guide to SaaS Development | /blog/saas-development-guide | Ultimate Guide | SaaS development, software development | 12 | 45 | 2024-01-15 | Published
+React vs Vue vs Angular Comparison | /blog/react-vue-angular-2024 | Comparison | React, Vue, Angular, frontend | 8 | 52 | 2024-01-20 | Published
+Small Business Digital Transformation | /blog/digital-transformation-checklist | Checklist | Digital transformation, small business | 15 | 38 | 2024-01-25 | Published
+
+Sheet 3: Outreach Campaigns
+Campaign Name | Target Audience | Emails Sent | Responses | Positive Responses | Backlinks Gained | Conversion Rate | Start Date | End Date
+---|---|---|---|---|---|---|---|---
+Resource Page Outreach | Tech blogs | 50 | 12 | 8 | 6 | 16% | 2024-01-01 | 2024-01-31
+Guest Post Campaign | Developer blogs | 30 | 8 | 5 | 5 | 16.7% | 2024-01-15 | 2024-02-15
+Broken Link Building | All targets | 25 | 6 | 4 | 3 | 16% | 2024-01-20 | 2024-02-20
+
+Sheet 4: Directory Submissions
+Directory Name | URL | Category | Status | Date Submitted | Approval Date | Link Value | Notes
+---|---|---|---|---|---|---|---
+Google My Business | business.google.com | Software Development | Approved | 2024-01-01 | 2024-01-02 | High | Primary local listing
+Clutch.co | clutch.co | Software Development | Approved | 2024-01-05 | 2024-01-10 | High | Industry-specific
+Better Business Bureau | bbb.org | Software Development | Pending | 2024-01-10 | - | Medium | Local credibility
+GoodFirms | goodfirms.co | IT Services | Approved | 2024-01-12 | 2024-01-15 | Medium | Tech focus
+DesignRush | designrush.com | Web Development | Pending | 2024-01-15 | - | Medium | Design focus
+
+Sheet 5: Monthly Metrics
+Month | New Backlinks | Total Backlinks | Domain Authority | Organic Traffic | Top Keywords | Ranking Improvements | Notes
+---|---|---|---|---|---|---|---
+January 2024 | 15 | 45 | 25 | 1,200 | software development, web development | 5 keywords in top 10 | Strong start
+February 2024 | 22 | 67 | 28 | 1,450 | SaaS development, React development | 8 keywords in top 10 | Good momentum
+March 2024 | 18 | 85 | 30 | 1,680 | custom web applications, mobile apps | 12 keywords in top 10 | Steady growth

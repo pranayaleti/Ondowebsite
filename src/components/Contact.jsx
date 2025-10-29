@@ -10,6 +10,8 @@ const Contact = () => {
     projectType: '',
     message: ''
   });
+  const [selectedPackage, setSelectedPackage] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState('');
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
@@ -18,6 +20,33 @@ const Contact = () => {
   // Generate CSRF token on component mount
   useEffect(() => {
     setCsrfToken(generateCSRFToken());
+    
+    // Read URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const packageParam = urlParams.get('package');
+    const priceParam = urlParams.get('price');
+    
+    if (packageParam && priceParam) {
+      setSelectedPackage(decodeURIComponent(packageParam));
+      setSelectedPrice(decodeURIComponent(priceParam));
+      
+      // Map package names to project types
+      let projectType = '';
+      if (packageParam.includes('UI/UX Master Suite')) {
+        projectType = 'website';
+      } else if (packageParam.includes('Full Stack Development Platform')) {
+        projectType = 'webapp';
+      } else if (packageParam.includes('Complete SaaS Ecosystem')) {
+        projectType = 'saas';
+      }
+      
+      // Pre-populate form with selected package info
+      setFormData(prev => ({
+        ...prev,
+        projectType: projectType,
+        message: `I'm interested in the ${decodeURIComponent(packageParam)} package (${decodeURIComponent(priceParam)}). Please provide more details about this service.`
+      }));
+    }
   }, []);
 
   const validateForm = () => {
@@ -105,6 +134,15 @@ const Contact = () => {
         Ready to take your business to the next level? Let's discuss your project 
         and see how we can help you achieve your goals.
       </p>
+      
+      {/* Selected Package Indicator */}
+      {selectedPackage && selectedPrice && (
+        <div className="max-w-4xl mx-auto mb-6 p-4 bg-orange-900/20 border border-orange-500/50 rounded-lg">
+          <p className="text-orange-400 text-center">
+            <span className="font-semibold">Selected Package:</span> {selectedPackage} - {selectedPrice}
+          </p>
+        </div>
+      )}
       
       {/* Success/Error Messages */}
       {submitStatus === 'success' && (

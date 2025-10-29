@@ -27,10 +27,6 @@ const HeroSection = () => {
             <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text drop-shadow-lg">
               Software Developers
             </span>
-            <br />
-            <span className="text-3xl sm:text-4xl lg:text-5xl text-white drop-shadow-lg">
-              Near You
-            </span>
           </h1>
           
           <p className="text-xl text-neutral-300 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
@@ -47,11 +43,11 @@ const HeroSection = () => {
             </div>
             <div className="flex items-center text-neutral-300">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
-              <span>10+ Years Experience</span>
+              <span>13+ Years Experience</span>
             </div>
             <div className="flex items-center text-neutral-300">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
-              <span>500+ Projects Delivered</span>
+              <span>50+ Projects Delivered</span>
             </div>
             <div className="flex items-center text-neutral-300">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
@@ -89,7 +85,7 @@ const HeroSection = () => {
               <span className="text-sm">4.9/5 Client Rating</span>
             </div>
             <div className="text-sm">
-              <span className="text-orange-400 font-semibold">200+</span> Happy Clients
+              <span className="text-orange-400 font-semibold">50+</span> Happy Clients
             </div>
             <div className="text-sm">
               <span className="text-orange-400 font-semibold">50</span> States Served

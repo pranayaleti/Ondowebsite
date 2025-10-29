@@ -71,14 +71,6 @@ const Products = () => {
               <div>
                 <h2 className="mt-1 mb-2 text-xl">{item.title}</h2>
                 <p className="text-md text-neutral-500 mb-4">{item.description}</p>
-                <div className="flex gap-4">
-                  <a href="/services" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
-                    Our Services →
-                  </a>
-                  <a href="/contact" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
-                    Start Your Project →
-                  </a>
-                </div>
               </div>
             </div>
           ))}

@@ -16,21 +16,21 @@ const PricingPage = () => {
     "offers": [
       {
         "@type": "Offer",
-        "name": "Small Business Website",
+        "name": "UI/UX Master Suite",
         "price": "1200",
         "priceCurrency": "USD",
-        "description": "Professional website with 5-10 pages, mobile-responsive design, and SEO optimization"
+        "description": "Professional website with 5-8 pages, mobile-responsive design, and basic SEO optimization"
       },
       {
         "@type": "Offer",
-        "name": "Custom Web Application",
-        "price": "4500",
+        "name": "Full Stack Development",
+        "price": "3000",
         "priceCurrency": "USD",
-        "description": "Custom web application with user authentication, database, and admin dashboard"
+        "description": "Professional website with custom web application features, user authentication, admin dashboard, and database integration"
       },
       {
         "@type": "Offer",
-        "name": "SaaS Platform",
+        "name": "Complete SaaS Ecosystem",
         "price": "8500",
         "priceCurrency": "USD",
         "description": "Complete SaaS solution with multi-tenant architecture and payment processing"
