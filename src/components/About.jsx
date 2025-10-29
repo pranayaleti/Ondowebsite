@@ -254,9 +254,6 @@ const About = () => {
                 Schedule a Meeting
               </a>
               <div className="text-center">
-                <a href="/services" className="text-orange-400 hover:text-orange-300 text-sm font-medium mr-4">
-                  Our Services →
-                </a>
                 <a href="/testimonials" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
                   Client Reviews →
                 </a>

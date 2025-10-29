@@ -1,10 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import SEOHead from '../components/SEOHead';
 import Footer from '../components/Footer';
 import { ArrowRight, TrendingUp, Users, Clock, CheckCircle, Star, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import PMT from '../assets/PMT_optimized.webm';
+import { checklistItems } from '../constants/data';
 
 const PortfolioPage = () => {
   const [selectedProject, setSelectedProject] = useState(0);
+  const videoRef = useRef(null);
+
+  const toggleFullScreen = () => {
+    const videoElement = videoRef.current;
+
+    if (!document.fullscreenElement) {
+      // Enter fullscreen
+      if (videoElement.requestFullscreen) {
+        videoElement.requestFullscreen();
+      } else if (videoElement.mozRequestFullScreen) {
+        videoElement.mozRequestFullScreen(); // Firefox
+      } else if (videoElement.webkitRequestFullscreen) {
+        videoElement.webkitRequestFullscreen(); // Chrome, Safari
+      } else if (videoElement.msRequestFullscreen) {
+        videoElement.msRequestFullscreen(); // IE/Edge
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+  };
 
   const portfolioProjects = [
     {
@@ -157,6 +188,49 @@ const PortfolioPage = () => {
                 Real projects, real results. See how we've helped businesses transform their operations 
                 with custom software solutions.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Video Section */}
+        <section className="py-16 bg-black">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+                See Our Work in <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text">Action</span>
+              </h2>
+              <span className="bg-neutral-900 text-orange-500 rounded-full h-6 text-sm font-medium px-4 py-2">
+                Real projects delivered for real businesses
+              </span>
+            </div>
+
+            <div className="flex flex-col lg:flex-row justify-center items-center gap-12">
+              <div className="p-2 w-full lg:w-1/2">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  loop
+                  muted
+                  onClick={toggleFullScreen}
+                  className="rounded-lg w-full border border-orange-700 shadow-sm shadow-orange-400 mx-auto cursor-pointer"
+                >
+                  <source src={PMT} type="video/webm" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div className="pt-12 w-full lg:w-1/2">
+                {checklistItems.map((item, index) => (
+                  <div key={index} className="flex mb-12">
+                    <div className="text-green-400 mx-6 bg-neutral-900 h-10 w-10 p-2 justify-center items-center rounded-full">
+                      <CheckCircle />
+                    </div>
+                    <div>
+                      <h3 className="mt-1 mb-2 text-xl text-white">{item.title}</h3>
+                      <p className="text-md text-neutral-400 mb-4">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

@@ -21,9 +21,9 @@ const Pricing = () => {
             <div className="p-10 border border-neutral-700 rounded-xl bg-neutral-900/50 backdrop-blur-sm">
               <p className="text-4xl mb-8 text-white">
                 {option.title}
-                {option.title === "Custom Web App" && (
+                {option.title === "Full Stack Development" && (
                   <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text text-xl mb-4 ml-2 font-semibold">
-                    (Most Popular)
+                    (Popular)
                   </span>
                 )}
               </p>
@@ -40,7 +40,7 @@ const Pricing = () => {
                 ))}
               </ul>
               <a
-                href="/contact"
+                href={`/contact?package=${encodeURIComponent(option.title)}&price=${encodeURIComponent(option.price)}`}
                 className="inline-flex justify-center items-center text-center w-full h-12 p-5 mt-20 tracking-tight text-xl bg-gradient-to-r from-orange-500 to-orange-800 text-white rounded-md transition duration-200 hover:from-orange-600 hover:to-orange-900"
               >
                 Get Quote

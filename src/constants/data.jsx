@@ -14,11 +14,9 @@ import user6 from "../assets/profile-pictures/user6.jpg";
 
 export const navItems = [
   { label: "Home", href: "/" },
-  { label: "Products", href: "/products" },
-  { label: "Services", href: "/services" },
   { label: "Portfolio", href: "/portfolio" },
+  { label: "Services", href: "/services" },
   { label: "Blog", href: "/blog" },
-  { label: "Workflow", href: "/workflow" },
   { label: "Pricing", href: "/pricing" },
   { label: "Testimonials", href: "/testimonials" },
   { label: "FAQ", href: "/faq" },
@@ -179,51 +177,51 @@ export const workflowItems = [
 
 export const pricingOptions = [
   {
-    title: "Starter Website",
+    title: "UI/UX Master Suite",
     price: "$1,200",
     features: [
-      "Professional Website (3-5 pages)",
-      "Mobile-Responsive Design",
-      "Basic SEO Optimization",
-      "Contact Forms",
-      "1 Month Support Included",
-      "Perfect for small businesses"
+      "Professional Website Design (5-8 Pages)",
+      "Mobile-First Responsive Design",
+      "Advanced UI/UX Design System",
+      "Custom Brand Identity Integration",
+      "SEO-Optimized Content Structure",
+      "Interactive Contact Forms",
+      "Social Media Integration",
+      "Google Analytics & Search Console Setup",
+      "Basic Security Implementation",
+      "1 Month Post-Launch Support"
     ],
   },
   {
-    title: "Business Website",
-    price: "$2,500",
+    title: "Full Stack Development",
+    price: "$3,000",
     features: [
-      "Professional Website (5-10 pages)",
-      "Mobile-Responsive Design",
-      "Advanced SEO Optimization",
-      "Contact Forms & Analytics",
-      "Content Management System",
-      "3 Months Support Included"
+      "Comprehensive Website (8-12 Pages)",
+      "Custom Web Application Development",
+      "User Authentication & Authorization",
+      "Advanced SEO & Performance Optimization",
+      "Admin Dashboard & Management Panel",
+      "Database Design & Integration",
+      "Content Management System (CMS)",
+      "API Development & Integration",
+      "Security & Data Protection",
+      "6 Months Technical Support"
     ],
   },
   {
-    title: "Custom Web App",
-    price: "$4,500",
-    features: [
-      "Custom Web Application",
-      "User Authentication",
-      "Admin Dashboard",
-      "Database Integration",
-      "API Development",
-      "6 Months Support Included"
-    ],
-  },
-  {
-    title: "SaaS Platform",
+    title: "Complete SaaS Ecosystem",
     price: "$8,500",
     features: [
-      "Complete SaaS Solution",
-      "Multi-tenant Architecture",
-      "Payment Processing",
-      "User Management & Billing",
-      "Cloud Infrastructure",
-      "12 Months Support Included"
+      "Enterprise-Grade SaaS Platform",
+      "Multi-Tenant Architecture",
+      "Payment Processing & Billing System",
+      "User Management & Role-Based Access",
+      "Cloud Infrastructure & Scalability",
+      "RESTful API Development",
+      "Advanced Security & Compliance",
+      "Analytics & Business Intelligence",
+      "Third-Party Integrations",
+      "12 Months Comprehensive Support"
     ],
   },
 ];

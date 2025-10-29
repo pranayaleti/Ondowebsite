@@ -6,9 +6,7 @@ import TestimonialCarousel from "../components/TestimonialCarousel";
 import NewsletterSignup from "../components/NewsletterSignup";
 import TrustBadges from "../components/TrustBadges";
 import ConsultationWidget from "../components/ConsultationWidget";
-import ProjectCostEstimator from "../components/ProjectCostEstimator";
 import LiveChatWidget from "../components/LiveChatWidget";
-import ResourcesSection from "../components/ResourcesSection";
 import Footer from "../components/Footer";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { 
@@ -260,7 +258,7 @@ const HomePage = () => {
   return (
     <>
       <SEOHead
-        title="Best Software Development Company Near Me | Ondosoft - Hire Freelance Developers for Custom Web Apps & SaaS"
+        title="Ondosoft - Hire Freelance Developers for Custom Web Apps & SaaS | Best Software Development Company Near Me"
         description="Looking for the best software development company near you? Ondosoft is a nationwide leader in custom web app development, SaaS applications, and freelance software development. Hire expert developers for React, Node.js, Python projects. Serving all 50 states with end-to-end solutions from small business websites to enterprise SaaS platforms. Get your free quote today!"
         keywords="best software development company near me, freelance developers for hire, build a SaaS application, custom web app development, hire software developers, software development companies, React developers, Node.js developers, Python developers, mobile app development, web application development, SaaS development, custom software development, software development services, hire developers near me, freelance software development, full stack developers, software development company USA, custom web development, mobile app developers, cloud application development, software development agency, hire developers online, software development consulting, custom software solutions, web development services, mobile development services, software development freelancers, tech consulting, software development near me, hire developers USA"
         canonicalUrl="https://ondosoft.com"
@@ -477,9 +475,6 @@ const HomePage = () => {
         {/* Trust Badges & Success Story */}
         <TrustBadges />
 
-        {/* Project Cost Estimator */}
-        <ProjectCostEstimator />
-
         {/* Newsletter Signup */}
         <NewsletterSignup />
 
@@ -488,9 +483,6 @@ const HomePage = () => {
 
         {/* Live Chat Widget */}
         <LiveChatWidget />
-
-        {/* Resources Section */}
-        <ResourcesSection />
 
         <Footer />
         

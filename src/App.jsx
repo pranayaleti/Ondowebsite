@@ -16,9 +16,7 @@ import { initPerformanceOptimizations } from "./utils/performance";
 // Lazy load page components for better performance
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
-const ProductsPage = lazy(() => import("./pages/ProductsPage"));
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
-const WorkflowPage = lazy(() => import("./pages/WorkflowPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const TestimonialsPage = lazy(() => import("./pages/TestimonialsPage"));
 const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
@@ -55,9 +53,9 @@ const AppRoutes = () => {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products" element={<PortfolioPage />} />
           <Route path="/services" element={<ServicesPage />} />
-          <Route path="/workflow" element={<WorkflowPage />} />
+          <Route path="/workflow" element={<ServicesPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
