@@ -28,7 +28,7 @@ const LiveChatWidget = () => {
   const messagesEndRef = useRef(null);
 
   const quickReplies = [
-    "Get a quote",
+    "Start a free consultation",
     "Schedule consultation", 
     "View our services",
     "Talk to sales"
@@ -37,8 +37,8 @@ const LiveChatWidget = () => {
   const quickActions = [
     {
       icon: DollarSign,
-      title: "Get Free Quote",
-      description: "Instant project cost estimate",
+      title: "Start Free Consultation",
+      description: "Instant project guidance",
       action: "quote",
       color: "bg-green-500"
     },

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react';
+import SelectField from './SelectField';
 
 const ConsultationModal = ({ isOpen, onClose, preset }) => {
   const [formData, setFormData] = useState({
@@ -9,25 +10,14 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
     phone: '',
     company: '',
     selectedPlan: preset?.name || '',
-    projectType: '',
     timeline: '',
     budget: '',
     message: '',
-    preferredTime: '',
-    timezone: 'EST'
+    timezone: 'MST'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-
-  const projectTypes = [
-    'Small Business Website',
-    'Custom Web Application', 
-    'SaaS Platform',
-    'Mobile App',
-    'E-commerce Solution',
-    'Technical Consulting',
-    'Other'
-  ];
+  const [fieldErrors, setFieldErrors] = useState({ email: '', phone: '' });
 
   const timelineOptions = [
     'ASAP (Rush job)',
@@ -46,28 +36,50 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
     'Let\'s discuss'
   ];
 
-  const timeSlots = [
-    '9:00 AM - 10:00 AM',
-    '10:00 AM - 11:00 AM',
-    '11:00 AM - 12:00 PM',
-    '1:00 PM - 2:00 PM',
-    '2:00 PM - 3:00 PM',
-    '3:00 PM - 4:00 PM',
-    '4:00 PM - 5:00 PM'
-  ];
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const nextValue = name === 'phone' ? value.replace(/\D+/g, '') : value;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: nextValue
     }));
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateEmail = (val) => /^(?:[a-zA-Z0-9_'^&\-]+(?:\.[a-zA-Z0-9_'^&\-]+)*)@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(val);
+  const validatePhone = (val) => /^\d{7,15}$/.test(val);
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (name === 'email' && value) {
+      if (!validateEmail(value)) setFieldErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+    }
+    if (name === 'phone') {
+      if (!validatePhone(value)) setFieldErrors(prev => ({ ...prev, phone: 'Please enter a valid phone number.' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
+
+    // Final validation gate
+    const emailOk = validateEmail(formData.email);
+    const phoneOk = validatePhone(formData.phone);
+    if (!emailOk || !phoneOk) {
+      setFieldErrors(prev => ({
+        ...prev,
+        email: emailOk ? '' : (prev.email || 'Please enter a valid email address.'),
+        phone: phoneOk ? '' : (prev.phone || 'Please enter a valid phone number.')
+      }));
+      setIsSubmitting(false);
+      return;
+    }
 
     const payload = {
       ...formData,
@@ -123,12 +135,10 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
         phone: '',
         company: '',
         selectedPlan: preset?.name || '',
-        projectType: '',
         timeline: '',
         budget: '',
         message: '',
-        preferredTime: '',
-        timezone: 'EST'
+        timezone: 'MST'
       });
     } catch (error) {
       setSubmitStatus('error');
@@ -156,8 +166,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */
-        }
+        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center">
             <div className="bg-orange-500 p-3 rounded-lg mr-4">
@@ -203,7 +212,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -216,7 +225,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="Your full name"
               />
             </div>
@@ -231,11 +240,13 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleInputChange}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="your@email.com"
               />
+                {fieldErrors.email && <p className="text-sm text-red-600 mt-2">{fieldErrors.email}</p>}
             </div>
 
             {/* Phone */}
@@ -244,14 +255,19 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 Phone Number
               </label>
               <input
-                type="tel"
+                  type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  required
+                  inputMode="numeric"
+                  pattern="\\d*"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="(555) 123-4567"
               />
+                {fieldErrors.phone && <p className="text-sm text-red-600 mt-2">{fieldErrors.phone}</p>}
             </div>
 
             {/* Company */}
@@ -265,29 +281,9 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 name="company"
                 value={formData.company}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="Your company name"
               />
-            </div>
-
-            {/* Project Type */}
-            <div>
-              <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 mb-2">
-                Project Type *
-              </label>
-              <select
-                id="projectType"
-                name="projectType"
-                value={formData.projectType}
-                onChange={handleInputChange}
-                required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              >
-                <option value="">Select project type</option>
-                {projectTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
             </div>
 
             {/* Timeline */}
@@ -295,18 +291,14 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-2">
                 Project Timeline
               </label>
-              <select
+              <SelectField
                 id="timeline"
                 name="timeline"
                 value={formData.timeline}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              >
-                <option value="">Select timeline</option>
-                {timelineOptions.map(timeline => (
-                  <option key={timeline} value={timeline}>{timeline}</option>
-                ))}
-              </select>
+                placeholder="Select timeline"
+                options={timelineOptions.map(t => ({ value: t, label: t }))}
+              />
             </div>
 
             {/* Budget */}
@@ -314,38 +306,17 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
                 Budget Range
               </label>
-              <select
+              <SelectField
                 id="budget"
                 name="budget"
                 value={formData.budget}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              >
-                <option value="">Select budget range</option>
-                {budgetRanges.map(budget => (
-                  <option key={budget} value={budget}>{budget}</option>
-                ))}
-              </select>
+                placeholder="Select budget range"
+                options={budgetRanges.map(b => ({ value: b, label: b }))}
+              />
             </div>
 
-            {/* Preferred Time */}
-            <div>
-              <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-2">
-                Preferred Time Slot
-              </label>
-              <select
-                id="preferredTime"
-                name="preferredTime"
-                value={formData.preferredTime}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              >
-                <option value="">Select preferred time</option>
-                {timeSlots.map(time => (
-                  <option key={time} value={time}>{time} EST</option>
-                ))}
-              </select>
-            </div>
+            
           </div>
 
           {/* Message */}
@@ -360,14 +331,14 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               onChange={handleInputChange}
               required
               rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
               placeholder="Tell us about your project goals, requirements, and any specific challenges you're facing..."
             />
           </div>
 
           {/* Benefits */}
           <div className="mt-6 p-4 bg-orange-50 rounded-lg">
-            <h3 className="font-semibold text-gray-900 mb-3">What you'll get from this consultation:</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">What you'll get from this free consultation:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-orange-500 mr-2" />
@@ -414,6 +385,16 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
           </p>
         </form>
       </div>
+      <style>{`
+        input:-webkit-autofill,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:active {
+          box-shadow: 0 0 0px 1000px #fff inset !important;
+          -webkit-text-fill-color: #1f2937 !important; /* text-gray-900 */
+          transition: background-color 5000s ease-in-out 0s;
+        }
+      `}</style>
     </div>
   );
 };

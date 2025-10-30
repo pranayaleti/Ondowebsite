@@ -416,19 +416,21 @@ const PortfolioPage = () => {
               Let's discuss your project and see how we can help you achieve similar results.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/contact"
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
                 className="bg-black text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-900 transition-colors flex items-center justify-center"
               >
                 Start Your Project
                 <ArrowRight className="h-5 w-5 ml-2" />
-              </a>
-              <a
-                href="/contact"
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(true)}
                 className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-orange-500 transition-colors flex items-center justify-center"
               >
-                Get Free Quote
-              </a>
+                Start Free Consultation
+              </button>
             </div>
           </div>
         </section>

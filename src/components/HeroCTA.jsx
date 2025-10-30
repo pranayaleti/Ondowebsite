@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, Calculator, MessageCircle, Star, CheckCircle } from 'lucide-react';
 
-const HeroCTA = () => {
+const HeroCTA = ({ onOpenConsultation }) => {
   return (
     <section className="bg-gradient-to-r from-orange-500 to-orange-600 py-16">
       <div className="max-w-7xl mx-auto px-4">
@@ -11,21 +11,34 @@ const HeroCTA = () => {
           </h2>
           <p className="text-xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
             Join 200+ businesses that have scaled with our custom software solutions. 
-            Get your free quote and project estimate in under 24 hours.
+            Start your free consultation and get a project estimate in under 24 hours.
           </p>
         </div>
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <a 
-            href="/contact" 
-            className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-            aria-label="Get free quote for your software development project"
-          >
-            <MessageCircle className="h-5 w-5 mr-2" />
-            Get Free Quote
-            <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-          </a>
+          {onOpenConsultation ? (
+            <button 
+              type="button"
+              onClick={onOpenConsultation}
+              className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+              aria-label="Start free consultation for your software development project"
+            >
+              <MessageCircle className="h-5 w-5 mr-2" />
+              Start Free Consultation
+              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </button>
+          ) : (
+            <a 
+              href="/contact" 
+              className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+              aria-label="Start free consultation for your software development project"
+            >
+              <MessageCircle className="h-5 w-5 mr-2" />
+              Start Free Consultation
+              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+            </a>
+          )}
           
           <a 
             href="/pricing" 

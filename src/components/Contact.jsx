@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { sanitizeInput, validateFormData, validationRules, rateLimiter, generateCSRFToken } from "../utils/security";
 import { companyInfo } from "../constants/companyInfo";
 
-const Contact = () => {
+const Contact = ({ onOpenConsultation }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -125,15 +125,14 @@ const Contact = () => {
   return (
     <div className="mt-20" id="contact">
       <h2 className="text-3xl sm:text-5xl lg:text-6xl text-center my-8 tracking-wide">
-        <span className="text-white">Let's Build</span>
+        <span className="text-white">Let’s Build Your</span>
         <br />
         <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text drop-shadow-lg">
-          Something Great
+          Next Big Thing.
         </span>
       </h2>
       <p className="text-center text-neutral-200 text-lg mb-8 max-w-3xl mx-auto leading-relaxed">
-        Ready to take your business to the next level? Let's discuss your project 
-        and see how we can help you achieve your goals.
+        Book a call or drop a message — let’s turn your idea into a scalable product.
       </p>
       
       {/* Selected Package Indicator */}
@@ -186,108 +185,37 @@ const Contact = () => {
           </div>
         </div>
         
-            {/* Contact Form */}
-            <form onSubmit={handleSubmit} className="flex-1 bg-neutral-900 p-8 rounded-xl shadow-md flex flex-col gap-6 border border-neutral-700">
-              {/* CSRF Token */}
-              <input type="hidden" name="csrfToken" value={csrfToken} />
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Your Name *"
-              value={formData.name}
-              onChange={handleInputChange}
-              className={`w-full rounded-md bg-neutral-800 text-white border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-neutral-400 ${
-                errors.name ? 'border-red-500' : 'border-neutral-700'
-              }`}
-              aria-label="Your full name"
-              required
-            />
-            {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
-          </div>
-          
-          <div>
-            <input
-              type="email"
-              name="email"
-              placeholder="Your Email *"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`w-full rounded-md bg-neutral-800 text-white border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-neutral-400 ${
-                errors.email ? 'border-red-500' : 'border-neutral-700'
-              }`}
-              aria-label="Your email address"
-              required
-            />
-            {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
-          </div>
-          
-          <div>
-            <input
-              type="text"
-              name="company"
-              placeholder="Company/Business Name"
-              value={formData.company}
-              onChange={handleInputChange}
-              className="w-full rounded-md bg-neutral-800 text-white border border-neutral-700 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-neutral-400"
-              aria-label="Your company or business name"
-            />
-          </div>
-          
-          <div>
-            <select 
-              name="projectType"
-              value={formData.projectType}
-              onChange={handleInputChange}
-              className="w-full rounded-md bg-neutral-800 text-white border border-neutral-700 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              aria-label="Project type"
-            >
-              <option value="">Project Type</option>
-              <option value="website">Small Business Website</option>
-              <option value="webapp">Custom Web Application</option>
-              <option value="saas">SaaS Platform</option>
-              <option value="ecommerce">E-commerce Solution</option>
-              <option value="mobile">Mobile App</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          
-          <div>
-            <textarea
-              name="message"
-              placeholder="Tell us about your project and goals... *"
-              rows={4}
-              value={formData.message}
-              onChange={handleInputChange}
-              className={`w-full rounded-md bg-neutral-800 text-white border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder:text-neutral-400 resize-vertical ${
-                errors.message ? 'border-red-500' : 'border-neutral-700'
-              }`}
-              aria-label="Project description and goals"
-              required
-            />
-            {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message}</p>}
-          </div>
-          
+        {/* Consultation CTA replacing form */}
+        <div className="flex-1 bg-neutral-900 p-8 rounded-xl shadow-md flex flex-col gap-6 border border-neutral-700">
+          <h3 className="text-2xl font-semibold text-white">Book Your Free Consultation</h3>
+          <p className="text-neutral-400">30-minute expert session to scope your idea, timeline, and budget. We’ll ask a few quick questions and then send you to booking.</p>
+          <ul className="text-neutral-300 space-y-2 text-sm">
+            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Project type and goals</li>
+            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Timeline and constraints</li>
+            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Budget range</li>
+            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Key requirements</li>
+          </ul>
           <button
-            type="submit"
-            disabled={isSubmitting}
-            className="bg-gradient-to-r from-orange-500 to-orange-800 text-white font-semibold py-3 rounded-md text-lg hover:from-orange-600 hover:to-orange-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            aria-label="Submit contact form"
+            type="button"
+            onClick={onOpenConsultation}
+            className="mt-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 rounded-md text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center"
+            aria-label="Open consultation modal"
           >
-            {isSubmitting ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Sending...
-              </>
-            ) : (
-              <>
-                <Send className="mr-2 h-5 w-5" />
-                Get Free Quote
-              </>
-            )}
+            <Send className="mr-2 h-5 w-5" /> Start Free Consultation
           </button>
-        </form>
+          <p className="text-xs text-neutral-500 text-center">Prefer email? Reach us at <a className="text-orange-400" href={`mailto:${companyInfo.email}`}>{companyInfo.email}</a></p>
+        </div>
       </div>
+      <style>{`
+        input:-webkit-autofill,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:active {
+          box-shadow: 0 0 0px 1000px #1a1a1a inset !important;
+          -webkit-text-fill-color: #fff !important;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+      `}</style>
     </div>
   );
 };

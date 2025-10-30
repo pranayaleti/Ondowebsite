@@ -56,7 +56,8 @@ const Footer = () => {
             <p className="mt-3 text-sm">
               📍 Headquarters: <span className="font-semibold">{`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}</span><br />
               📧 <a href={`mailto:${companyInfo.email}`} className="hover:underline">{companyInfo.email}</a><br />
-              📞 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a>
+              📞 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a><br />
+              ⏰ Time zone: <span className="font-semibold">{companyInfo.timezoneAbbr}</span> <span className="text-gray-400">({companyInfo.timezoneIANA})</span>
             </p>
           </div>
 
