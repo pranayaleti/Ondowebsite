@@ -29,6 +29,16 @@ const EmailCapture = ({ title = "Get More Business Tips" }) => {
 
   return (
     <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-8 text-white">
+      <style>{`
+        input:-webkit-autofill,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:active {
+          box-shadow: 0 0 0px 1000px #fff inset !important;
+          -webkit-text-fill-color: #1f2937 !important;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+      `}</style>
       <div className="text-center">
         <Mail className="h-12 w-12 mx-auto mb-4 text-orange-100" />
         <h3 className="text-2xl font-bold mb-2">{title}</h3>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import SelectField from './SelectField';
 
 const ConsultationWidget = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,26 +10,53 @@ const ConsultationWidget = () => {
     email: '',
     company: '',
     phone: '',
-    projectType: '',
     timeline: '',
     budget: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({ email: '', phone: '' });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const nextValue = name === 'phone' ? value.replace(/\D+/g, '') : value;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: nextValue
     }));
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const validateEmail = (val) => /^(?:[a-zA-Z0-9_'^&\-]+(?:\.[a-zA-Z0-9_'^&\-]+)*)@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(val);
+  const validatePhone = (val) => /^\d{7,15}$/.test(val);
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    if (name === 'email' && value) {
+      if (!validateEmail(value)) setFieldErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+    }
+    if (name === 'phone') {
+      if (!validatePhone(value)) setFieldErrors(prev => ({ ...prev, phone: 'Please enter a valid phone number.' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
+
+    const emailOk = validateEmail(formData.email);
+    const phoneOk = validatePhone(formData.phone);
+    if (!emailOk || !phoneOk) {
+      setFieldErrors(prev => ({
+        ...prev,
+        email: emailOk ? '' : (prev.email || 'Please enter a valid email address.'),
+        phone: phoneOk ? '' : (prev.phone || 'Please enter a valid phone number.')
+      }));
+      setIsSubmitting(false);
+      return;
+    }
 
     const payload = {
       ...formData,
@@ -66,7 +94,7 @@ const ConsultationWidget = () => {
         utm_source: 'website',
         utm_medium: 'floating_widget',
         utm_campaign: 'consultation',
-        utm_content: formData.projectType || 'general',
+        utm_content: formData.budget || 'general',
         a2: formData.email || '',
         a3: formData.company || ''
       });
@@ -78,7 +106,6 @@ const ConsultationWidget = () => {
         email: '',
         company: '',
         phone: '',
-        projectType: '',
         timeline: '',
         budget: '',
         message: ''
@@ -151,6 +178,17 @@ const ConsultationWidget = () => {
                 </div>
               )}
 
+              <style>{`
+                input:-webkit-autofill,
+                input:-webkit-autofill:focus,
+                input:-webkit-autofill:hover,
+                input:-webkit-autofill:active {
+                  box-shadow: 0 0 0px 1000px #fff inset !important;
+                  -webkit-text-fill-color: #1f2937 !important; /* text-gray-900 */
+                  transition: background-color 5000s ease-in-out 0s;
+                }
+              `}</style>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name */}
                 <div>
@@ -164,7 +202,7 @@ const ConsultationWidget = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                     placeholder="Your full name"
                   />
                 </div>
@@ -180,10 +218,12 @@ const ConsultationWidget = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
+                    onBlur={handleBlur}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                     placeholder="your@email.com"
                   />
+                  {fieldErrors.email && <p className="text-sm text-red-600 mt-2">{fieldErrors.email}</p>}
                 </div>
 
                 {/* Company */}
@@ -197,7 +237,7 @@ const ConsultationWidget = () => {
                     name="company"
                     value={formData.company}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                     placeholder="Your company name"
                   />
                 </div>
@@ -205,7 +245,7 @@ const ConsultationWidget = () => {
                 {/* Phone */}
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
+                    Phone Number *
                   </label>
                   <input
                     type="tel"
@@ -213,76 +253,58 @@ const ConsultationWidget = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    onBlur={handleBlur}
+                    required
+                    inputMode="numeric"
+                    pattern="\\d*"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                     placeholder="(555) 123-4567"
                   />
+                  {fieldErrors.phone && <p className="text-sm text-red-600 mt-2">{fieldErrors.phone}</p>}
                 </div>
 
-                {/* Project Type */}
-                <div>
-                  <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 mb-2">
-                    Project Type *
-                  </label>
-                  <select
-                    id="projectType"
-                    name="projectType"
-                    value={formData.projectType}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  >
-                    <option value="">Select project type</option>
-                    <option value="website">Small Business Website</option>
-                    <option value="webapp">Custom Web Application</option>
-                    <option value="saas">SaaS Platform</option>
-                    <option value="ecommerce">E-commerce Solution</option>
-                    <option value="mobile">Mobile App</option>
-                    <option value="consulting">Technical Consulting</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
 
                 {/* Timeline */}
                 <div>
                   <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-2">
                     Project Timeline
                   </label>
-                  <select
+                  <SelectField
                     id="timeline"
                     name="timeline"
                     value={formData.timeline}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  >
-                    <option value="">Select timeline</option>
-                    <option value="asap">ASAP (Rush job)</option>
-                    <option value="1month">Within 1 month</option>
-                    <option value="3months">Within 3 months</option>
-                    <option value="6months">Within 6 months</option>
-                    <option value="flexible">Flexible</option>
-                  </select>
+                    placeholder="Select timeline"
+                    options={[
+                      { value: 'asap', label: 'ASAP (Rush job)' },
+                      { value: '1month', label: 'Within 1 month' },
+                      { value: '3months', label: 'Within 3 months' },
+                      { value: '6months', label: 'Within 6 months' },
+                      { value: 'flexible', label: 'Flexible' }
+                    ]}
+                  />
                 </div>
 
                 {/* Budget */}
-                <div className="md:col-span-2">
+                <div>
                   <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
                     Budget Range
                   </label>
-                  <select
+                  <SelectField
                     id="budget"
                     name="budget"
                     value={formData.budget}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  >
-                    <option value="">Select budget range</option>
-                    <option value="under-2k">Under $2,000</option>
-                    <option value="2k-5k">$2,000 - $5,000</option>
-                    <option value="5k-10k">$5,000 - $10,000</option>
-                    <option value="10k-25k">$10,000 - $25,000</option>
-                    <option value="25k-plus">$25,000+</option>
-                    <option value="discuss">Let's discuss</option>
-                  </select>
+                    placeholder="Select budget range"
+                    options={[
+                      { value: 'under-2k', label: 'Under $2,000' },
+                      { value: '2k-5k', label: '$2,000 - $5,000' },
+                      { value: '5k-10k', label: '$5,000 - $10,000' },
+                      { value: '10k-25k', label: '$10,000 - $25,000' },
+                      { value: '25k-plus', label: '$25,000+' },
+                      { value: 'discuss', label: "Let's discuss" }
+                    ]}
+                  />
                 </div>
 
                 {/* Message */}
@@ -297,7 +319,7 @@ const ConsultationWidget = () => {
                     onChange={handleInputChange}
                     required
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                     placeholder="Tell us about your project goals, requirements, and any specific challenges you're facing..."
                   />
                 </div>
@@ -305,7 +327,7 @@ const ConsultationWidget = () => {
 
               {/* Benefits */}
               <div className="mt-6 p-4 bg-orange-50 rounded-lg">
-                <h3 className="font-semibold text-gray-900 mb-3">What you'll get:</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">What you'll get from this free consultation:</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-orange-500 mr-2" />

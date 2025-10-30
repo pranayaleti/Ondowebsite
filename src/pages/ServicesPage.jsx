@@ -72,7 +72,7 @@ const ServicesPage = () => {
     <>
       <SEOHead
         title="Software Development Services | Full Stack, SaaS & Freelancing | Ondosoft"
-        description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies. Get your free quote today!"
+        description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies. Start your free consultation today!"
         keywords="software development services, full stack development, SaaS development, freelancing services, web app development, mobile app development, React, Node.js, Python, Java, cloud deployment, hire developers"
         canonicalUrl="https://ondosoft.com/services"
         structuredData={servicesStructuredData}
@@ -91,7 +91,7 @@ const ServicesPage = () => {
         </div>
         
         {/* Hero CTA Section */}
-        <HeroCTA />
+        <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
         
         <Footer />
         <ConsultationWidget />

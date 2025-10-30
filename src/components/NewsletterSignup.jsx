@@ -150,6 +150,16 @@ const NewsletterSignup = () => {
           </div>
         </div>
       </div>
+      <style>{`
+        input:-webkit-autofill,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:active {
+          box-shadow: 0 0 0px 1000px #fff inset !important;
+          -webkit-text-fill-color: #1f2937 !important;
+          transition: background-color 5000s ease-in-out 0s;
+        }
+      `}</style>
     </section>
   );
 };

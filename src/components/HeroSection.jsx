@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ArrowRight, CheckCircle, Star, Zap } from "lucide-react";
 
-const HeroSection = () => {
+const HeroSection = ({ onOpenConsultation }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const HeroSection = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto lg:mx-0">
             <div className="flex items-center text-neutral-300">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
-              <span>Free Consultation & Quote</span>
+              <span>Free Consultation & Strategy Session</span>
             </div>
             <div className="flex items-center text-neutral-300">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
@@ -57,14 +57,26 @@ const HeroSection = () => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            <Link
-              to="/contact"
-              className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-              aria-label="Get free quote for your software development project"
-            >
-              Get Free Quote Today
-              <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            {onOpenConsultation ? (
+              <button
+                type="button"
+                onClick={onOpenConsultation}
+                className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+                aria-label="Start free consultation for your software development project"
+              >
+                Start Free Consultation
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </button>
+            ) : (
+              <Link
+                to="/contact"
+                className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+                aria-label="Start free consultation for your software development project"
+              >
+                Start Free Consultation
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            )}
             <Link
               to="/services"
               className="border-2 border-orange-500 text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300 flex items-center justify-center"

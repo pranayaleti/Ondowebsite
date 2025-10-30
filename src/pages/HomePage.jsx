@@ -251,7 +251,7 @@ const HomePage = () => {
     <>
       <SEOHead
         title="Ondosoft - Hire Freelance Developers for Custom Web Apps & SaaS | Best Software Development Company Near Me"
-        description="Looking for the best software development company near you? Ondosoft is a nationwide leader in custom web app development, SaaS applications, and freelance software development. Hire expert developers for React, Node.js, Python projects. Serving all 50 states with end-to-end solutions from small business websites to enterprise SaaS platforms. Get your free quote today!"
+        description="Looking for the best software development company near you? Ondosoft is a nationwide leader in custom web app development, SaaS applications, and freelance software development. Hire expert developers for React, Node.js, Python projects. Serving all 50 states with end-to-end solutions from small business websites to enterprise SaaS platforms. Start your free consultation today!"
         keywords="best software development company near me, freelance developers for hire, build a SaaS application, custom web app development, hire software developers, software development companies, React developers, Node.js developers, Python developers, mobile app development, web application development, SaaS development, custom software development, software development services, hire developers near me, freelance software development, full stack developers, software development company USA, custom web development, mobile app developers, cloud application development, software development agency, hire developers online, software development consulting, custom software solutions, web development services, mobile development services, software development freelancers, tech consulting, software development near me, hire developers USA"
         canonicalUrl="https://ondosoft.com"
         structuredData={homeStructuredData}
@@ -259,7 +259,7 @@ const HomePage = () => {
       <div className="min-h-screen bg-black">
         {/* Hero Section */}
         <div id="top" className="mx-auto pt-20">
-          <HeroSection />
+          <HeroSection onOpenConsultation={() => setIsModalOpen(true)} />
         </div>
 
         {/* Value Proposition Section */}
@@ -357,9 +357,9 @@ const HomePage = () => {
                     Database Design & Integration
                   </li>
                 </ul>
-                <a href="/contact" className="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform">
-                  Get Free Quote <ArrowRight className="h-4 w-4 ml-2" />
-                </a>
+                <button type="button" onClick={() => setIsModalOpen(true)} className="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform">
+                  Start Free Consultation <ArrowRight className="h-4 w-4 ml-2" />
+                </button>
               </div>
               
               <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/10 p-8 rounded-xl border border-orange-500/20 hover:border-orange-500/40 transition-all duration-300 group">
@@ -459,7 +459,7 @@ const HomePage = () => {
         </section>
 
         {/* Hero CTA Section */}
-        <HeroCTA />
+        <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
 
         {/* Testimonial Carousel */}
         <TestimonialCarousel />
@@ -568,8 +568,8 @@ const HomePage = () => {
           </ul>
         </div>
       </div>
-      <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <ConsultationWidget />
+        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };

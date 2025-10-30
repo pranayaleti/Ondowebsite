@@ -33,15 +33,6 @@ const Services = () => {
                 <p className="text-md p-2 mb-6 text-neutral-300 leading-relaxed">
                   {feature.description}
                 </p>
-                <div className="mb-20">
-                  <a href="/portfolio" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
-                    View Our Portfolio →
-                  </a>
-                  <span className="text-neutral-500 mx-2">|</span>
-                  <a href="/pricing" className="text-orange-400 hover:text-orange-300 text-sm font-medium">
-                    Get Pricing →
-                  </a>
-                </div>
               </div>
             </div>
           </div>
