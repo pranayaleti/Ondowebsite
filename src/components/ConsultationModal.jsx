@@ -148,7 +148,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
   };
 
   const openCalendly = () => {
-    window.open('https://calendly.com/pranay_ondo', '_blank');
+    window.open('https://calendly.com/scheduleondo', '_blank');
   };
 
   useEffect(() => {

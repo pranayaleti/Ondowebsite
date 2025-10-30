@@ -1,7 +1,7 @@
 export const companyInfo = {
   name: "Ondosoft",
   email: "contact@ondosoft.com",
-  calendlyUrl: "https://calendly.com/pranay_ondo",
+  calendlyUrl: "https://calendly.com/scheduleondo",
   timezoneAbbr: "MST",
   timezoneIANA: "America/Denver",
   // Optional: if set, submissions will be POSTed here in addition to localStorage capture
