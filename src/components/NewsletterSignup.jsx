@@ -38,41 +38,41 @@ const NewsletterSignup = () => {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-2xl">
+        <div className="bg-gray-900 rounded-2xl p-8 shadow-2xl border border-gray-700">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Benefits */}
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">What You'll Get:</h3>
+              <h3 className="text-2xl font-bold text-white mb-6">What You'll Get:</h3>
               <div className="space-y-4">
                 <div className="flex items-start">
                   <CheckCircle className="h-6 w-6 text-orange-500 mr-3 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Weekly Tech Tips</h4>
-                    <p className="text-gray-600 text-sm">Actionable advice for small businesses</p>
+                    <h4 className="font-semibold text-white">Weekly Tech Tips</h4>
+                    <p className="text-gray-300 text-sm">Actionable advice for small businesses</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start">
                   <CheckCircle className="h-6 w-6 text-orange-500 mr-3 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Industry Insights</h4>
-                    <p className="text-gray-600 text-sm">Latest trends in software development</p>
+                    <h4 className="font-semibold text-white">Industry Insights</h4>
+                    <p className="text-gray-300 text-sm">Latest trends in software development</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start">
                   <CheckCircle className="h-6 w-6 text-orange-500 mr-3 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Portfolio</h4>
-                    <p className="text-gray-600 text-sm">Real success stories from our clients</p>
+                    <h4 className="font-semibold text-white">Portfolio</h4>
+                    <p className="text-gray-300 text-sm">Real success stories from our clients</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start">
                   <CheckCircle className="h-6 w-6 text-orange-500 mr-3 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-gray-900">Exclusive Offers</h4>
-                    <p className="text-gray-600 text-sm">Special discounts on our services</p>
+                    <h4 className="font-semibold text-white">Exclusive Offers</h4>
+                    <p className="text-gray-300 text-sm">Special discounts on our services</p>
                   </div>
                 </div>
               </div>
@@ -83,21 +83,21 @@ const NewsletterSignup = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Success/Error Messages */}
                 {submitStatus === 'success' && (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
-                    <CheckCircle className="text-green-500 mr-3" />
-                    <p className="text-green-700">Welcome! Check your email for confirmation.</p>
+                  <div className="p-4 bg-green-900/30 border border-green-500 rounded-lg flex items-center">
+                    <CheckCircle className="text-green-400 mr-3" />
+                    <p className="text-green-300">Welcome! Check your email for confirmation.</p>
                   </div>
                 )}
                 
                 {submitStatus === 'error' && (
-                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                    <AlertCircle className="text-red-500 mr-3" />
-                    <p className="text-red-700">Something went wrong. Please try again.</p>
+                  <div className="p-4 bg-red-900/30 border border-red-500 rounded-lg flex items-center">
+                    <AlertCircle className="text-red-400 mr-3" />
+                    <p className="text-red-300">Something went wrong. Please try again.</p>
                   </div>
                 )}
 
                 <div>
-                  <label htmlFor="newsletter-email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="newsletter-email" className="block text-sm font-medium text-gray-300 mb-2">
                     Email Address
                   </label>
                   <input
@@ -106,7 +106,7 @@ const NewsletterSignup = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -129,7 +129,7 @@ const NewsletterSignup = () => {
                   )}
                 </button>
 
-                <p className="text-xs text-gray-500 text-center">
+                <p className="text-xs text-gray-400 text-center">
                   We respect your privacy. Unsubscribe at any time.
                 </p>
               </form>
@@ -137,14 +137,14 @@ const NewsletterSignup = () => {
           </div>
 
           {/* Social Proof */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
+          <div className="mt-8 pt-8 border-t border-gray-700">
             <div className="text-center">
-              <p className="text-gray-600 mb-4">Join these businesses already growing with us:</p>
+              <p className="text-gray-300 mb-4">Join these businesses already growing with us:</p>
               <div className="flex flex-wrap justify-center items-center gap-6 opacity-60">
-                <div className="bg-gray-100 px-4 py-2 rounded-lg font-semibold text-gray-700">TechStart</div>
-                <div className="bg-gray-100 px-4 py-2 rounded-lg font-semibold text-gray-700">DataFlow</div>
-                <div className="bg-gray-100 px-4 py-2 rounded-lg font-semibold text-gray-700">GrowthCo</div>
-                <div className="bg-gray-100 px-4 py-2 rounded-lg font-semibold text-gray-700">RetailMax</div>
+                <div className="bg-gray-800 px-4 py-2 rounded-lg font-semibold text-white border border-gray-700">TechStart</div>
+                <div className="bg-gray-800 px-4 py-2 rounded-lg font-semibold text-white border border-gray-700">DataFlow</div>
+                <div className="bg-gray-800 px-4 py-2 rounded-lg font-semibold text-white border border-gray-700">GrowthCo</div>
+                <div className="bg-gray-800 px-4 py-2 rounded-lg font-semibold text-white border border-gray-700">RetailMax</div>
               </div>
             </div>
           </div>
@@ -155,8 +155,8 @@ const NewsletterSignup = () => {
         input:-webkit-autofill:focus,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:active {
-          box-shadow: 0 0 0px 1000px #fff inset !important;
-          -webkit-text-fill-color: #1f2937 !important;
+          box-shadow: 0 0 0px 1000px #1f2937 inset !important;
+          -webkit-text-fill-color: #ffffff !important;
           transition: background-color 5000s ease-in-out 0s;
         }
       `}</style>

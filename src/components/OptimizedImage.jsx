@@ -17,8 +17,12 @@ const OptimizedImage = ({
   const [hasError, setHasError] = useState(false);
   const imgRef = useRef(null);
 
-  // Convert image path to WebP
+  // Check if this is a static file from public/ folder
+  const isStaticFile = src.startsWith('/') && !src.startsWith('/assets/');
+  
+  // Convert image path to WebP (only for non-static files)
   const getWebPSrc = (originalSrc) => {
+    if (isStaticFile) return originalSrc; // Don't convert static files
     if (originalSrc.includes('.webp')) return originalSrc;
     if (originalSrc.includes('.jpg') || originalSrc.includes('.jpeg')) {
       return originalSrc.replace(/\.(jpg|jpeg)$/i, '.webp');
@@ -64,8 +68,9 @@ const OptimizedImage = ({
     setHasError(true);
   };
 
-  // Generate responsive srcSet for WebP
+  // Generate responsive srcSet for WebP (skip for static files)
   const generateSrcSet = (baseSrc, widths = [320, 640, 768, 1024, 1280, 1536]) => {
+    if (isStaticFile) return undefined; // No srcSet for static files
     return widths
       .map(w => `${baseSrc}?w=${w}&q=${quality} ${w}w`)
       .join(', ');
@@ -91,28 +96,44 @@ const OptimizedImage = ({
 
       {/* WebP Image */}
       {isInView && !hasError && (
-        <picture>
-          <source
-            srcSet={webpSrcSet}
-            sizes={sizes}
-            type="image/webp"
-          />
+        isStaticFile ? (
           <img
             src={fallbackSrc}
-            srcSet={fallbackSrcSet}
-            sizes={sizes}
             alt={alt}
             width={width}
             height={height}
             className={`transition-opacity duration-300 ${
               isLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            } ${className}`}
             onLoad={handleLoad}
             onError={handleError}
             loading={priority ? 'eager' : 'lazy'}
             decoding="async"
           />
-        </picture>
+        ) : (
+          <picture>
+            <source
+              srcSet={webpSrcSet}
+              sizes={sizes}
+              type="image/webp"
+            />
+            <img
+              src={fallbackSrc}
+              srcSet={fallbackSrcSet}
+              sizes={sizes}
+              alt={alt}
+              width={width}
+              height={height}
+              className={`transition-opacity duration-300 ${
+                isLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={handleLoad}
+              onError={handleError}
+              loading={priority ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </picture>
+        )
       )}
 
       {/* Error Fallback */}

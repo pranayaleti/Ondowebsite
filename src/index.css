@@ -89,6 +89,11 @@ img {
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
+  html, body, #root {
+    background-color: #000000 !important;
+    background: #000000 !important;
+  }
+  
   .container {
     padding-left: 1rem;
     padding-right: 1rem;

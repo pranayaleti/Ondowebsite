@@ -28,7 +28,7 @@ const Pricing = ({ onConsult }) => {
               key={option.title}
               className={`relative rounded-2xl p-8 md:p-10 border backdrop-blur-md transition-all duration-300 cursor-pointer ${
                 isSelected
-                  ? "border-orange-400/60 bg-[radial-gradient(ellipse_at_top_left,rgba(255,122,0,0.15),rgba(0,0,0,0.6))] shadow-[0_0_0_1px_rgba(251,146,60,0.2),0_20px_60px_-20px_rgba(251,146,60,0.5)]"
+                  ? "border-orange-400/60 bg-[radial-gradient(ellipse_at_center_top,rgba(255,122,0,0.15),rgba(0,0,0,0.6))] shadow-[0_0_0_1px_rgba(251,146,60,0.2),0_20px_60px_-20px_rgba(251,146,60,0.5)]"
                   : "border-neutral-700 bg-neutral-900/40 hover:border-neutral-500"
               }`}
               onClick={() => setSelectedIndex(index)}

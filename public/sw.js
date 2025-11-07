@@ -6,7 +6,7 @@ const DYNAMIC_CACHE = 'ondosoft-dynamic-v1.0.0';
 // Assets to cache immediately
 const STATIC_ASSETS = [
   '/',
-  '/assets/logo2.png',
+  '/logo.png',
   '/assets/code.jpg',
   '/assets/user1.jpg',
   '/assets/user2.jpg',
@@ -133,8 +133,8 @@ self.addEventListener('push', (event) => {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: '/assets/logo2.png',
-      badge: '/assets/logo2.png',
+      icon: '/logo.png',
+      badge: '/logo.png',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -144,12 +144,12 @@ self.addEventListener('push', (event) => {
         {
           action: 'explore',
           title: 'View Details',
-          icon: '/assets/logo2.png'
+          icon: '/logo.png'
         },
         {
           action: 'close',
           title: 'Close',
-          icon: '/assets/logo2.png'
+          icon: '/logo.png'
         }
       ]
     };

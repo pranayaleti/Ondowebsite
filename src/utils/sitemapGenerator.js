@@ -21,7 +21,15 @@ export const generateSitemap = () => {
     { url: '/about', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/workflow', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/testimonials', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
-    { url: '/faq', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] }
+    { url: '/faq', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/legal', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/privacy-policy', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/terms-of-use', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/nda', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/licensing', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/accessibility', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/capabilities-deck', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
+    { url: '/sitemap', priority: '0.4', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] }
   ];
 
   mainPages.forEach(page => {
@@ -32,7 +40,7 @@ export const generateSitemap = () => {
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
     <image:image>
-      <image:loc>${baseUrl}/logo2.png</image:loc>
+      <image:loc>${baseUrl}/logo.png</image:loc>
       <image:title>Ondosoft - Full Stack Software Development</image:title>
       <image:caption>Ondosoft logo for software development services</image:caption>
     </image:image>
@@ -92,6 +100,13 @@ Allow: /about/
 Allow: /workflow/
 Allow: /testimonials/
 Allow: /faq/
+Allow: /legal/
+Allow: /privacy-policy/
+Allow: /terms-of-use/
+Allow: /nda/
+Allow: /licensing/
+Allow: /accessibility/
+Allow: /sitemap/
 
 # Crawl delay for better server performance
 Crawl-delay: 1

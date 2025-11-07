@@ -69,14 +69,14 @@ const Navbar = () => {
               onClick={handleLogoClick}
               className="flex items-center"
             >
-              <div className="h-10 w-10 mr-3 bg-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                <OptimizedImage 
-                  src="/assets/logo2.png"
+              <div className="h-10 w-10 mr-3 rounded-full overflow-hidden shadow-lg">
+                <img 
+                  src="/logo.png"
                   alt="Ondosoft logo - Full stack software development company specializing in React, Node.js, Python, and SaaS solutions"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 rounded-full"
-                  priority={true}
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 rounded-full object-cover"
+                  loading="eager"
                 />
               </div>
               <span className="text-xl font-bold text-gray-800">
@@ -130,14 +130,14 @@ const Navbar = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center">
-                    <div className="h-8 w-8 mr-2 bg-orange-500 rounded-full flex items-center justify-center">
-                      <OptimizedImage 
-                        src="/assets/logo2.png"
+                    <div className="h-8 w-8 mr-2 rounded-full overflow-hidden">
+                      <img 
+                        src="/logo.png"
                         alt="Ondosoft logo"
-                        width={24}
-                        height={24}
-                        className="h-6 w-6 rounded-full"
-                        priority={true}
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 rounded-full object-cover"
+                        loading="eager"
                       />
                     </div>
                     <span className="text-lg font-bold text-gray-800">OndoSoft</span>

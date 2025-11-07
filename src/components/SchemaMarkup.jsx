@@ -11,8 +11,8 @@ const SchemaMarkup = () => {
     "alternateName": "Ondosoft Software Development",
     "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states with comprehensive software development services.",
     "url": "https://ondosoft.com",
-    "logo": "https://ondosoft.com/logo2.png",
-    "image": "https://ondosoft.com/logo2.png",
+    "logo": "https://ondosoft.com/logo.png",
+    "image": "https://ondosoft.com/logo.png",
     "foundingDate": "2020",
     "founder": {
       "@type": "Person",

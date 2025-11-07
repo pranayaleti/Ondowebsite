@@ -6,7 +6,7 @@ const SEOHead = ({
   description = "Ondosoft is your all-in-one partner for building websites, mobile apps, and full-scale SaaS platforms. We offer freelancing services, end-to-end software development, and cloud-native application expertise for businesses across the USA.",
   keywords = SERVICE_AREAS.getKeywordsString(),
   canonicalUrl = "https://ondosoft.com",
-  ogImage = "https://ondosoft.com/logo2.png",
+  ogImage = "https://ondosoft.com/logo.png",
   structuredData = null,
   noIndex = false
 }) => {
@@ -20,7 +20,7 @@ const SEOHead = ({
         "url": "https://ondosoft.com",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://ondosoft.com/logo2.png",
+          "url": "https://ondosoft.com/logo.png",
           "width": 200,
           "height": 60
         },
@@ -194,9 +194,20 @@ const SEOHead = ({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="theme-color" content="#2563eb" />
       
-      {/* Favicon */}
-      <link rel="icon" type="image/png" href="/logo2.png" />
-      <link rel="apple-touch-icon" href="/logo2.png" />
+      {/* Favicon - Multiple sizes for better browser support */}
+      <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/logo.png" />
+      <link rel="shortcut icon" type="image/png" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="152x152" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="144x144" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="120x120" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="114x114" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="76x76" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="72x72" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="60x60" href="/logo.png" />
+      <link rel="apple-touch-icon" sizes="57x57" href="/logo.png" />
+      <link rel="apple-touch-icon" href="/logo.png" />
       
       {/* Google Search Console Verification */}
       <meta name="google-site-verification" content="YOUR_GOOGLE_VERIFICATION_CODE" />

@@ -59,7 +59,7 @@ const FAQAccordion = ({ faqs }) => {
                 : 'max-h-0 opacity-0'
             } overflow-hidden`}
           >
-            <div className="px-6 pb-4">
+            <div className="px-6 pt-4 pb-4">
               <p className="text-gray-300 leading-relaxed">
                 {faq.answer}
               </p>

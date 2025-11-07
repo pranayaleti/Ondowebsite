@@ -15,27 +15,42 @@ const BlogCard = ({ post, featured = false }) => {
     <article className={`group ${featured ? 'lg:col-span-2' : ''}`}>
       <Link 
         to={`/blog/${post.slug}`}
-        className="block h-full bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+        className="block h-full bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 overflow-hidden border border-gray-700 hover:border-orange-500/30"
       >
         {/* Image */}
-        <div className={`relative overflow-hidden ${featured ? 'h-64' : 'h-48'}`}>
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+        <div className={`relative overflow-hidden ${featured ? 'h-64' : 'h-48'} bg-gray-700`}>
+          {post.image ? (
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div 
+            className={`absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center ${post.image ? 'hidden' : 'flex'}`}
+          >
+            <div className="text-gray-500 text-4xl font-bold">
+              {post.title.charAt(0)}
+            </div>
+          </div>
           {post.featured && (
-            <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-10">
               Featured
             </div>
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
         {/* Content */}
         <div className="p-6">
           {/* Category */}
           <div className="flex items-center mb-3">
-            <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
+            <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full text-sm font-medium border border-orange-500/30">
               {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </span>
           </div>
