@@ -11,7 +11,7 @@ const ServiceSchema = ({ serviceName, serviceDescription, serviceType, pageUrl }
       "@type": "Organization",
       "name": "Ondosoft",
       "url": "https://ondosoft.com",
-      "logo": "https://ondosoft.com/logo2.png",
+      "logo": "https://ondosoft.com/logo.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+1-555-123-4567",

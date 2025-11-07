@@ -18,7 +18,7 @@ const Footer = () => {
             "name": companyInfo.name,
             "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
             "url": companyInfo.urls.website,
-            "logo": "https://ondosoft.com/logo2.png",
+            "logo": "https://ondosoft.com/logo.png",
             "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
             "address": getPostalAddressSchema(),
             "areaServed": {
@@ -33,31 +33,17 @@ const Footer = () => {
               "Mobile App Development",
               "Cloud Deployment",
               "E-commerce Solutions"
-            ],
-            "sameAs": [
-              "https://facebook.com/ondosoft",
-              "https://twitter.com/ondosoft",
-              "https://instagram.com/ondosoft",
-              "https://linkedin.com/company/ondosoft"
             ]
           })
         }}
       />
-      <footer className="bg-gray-900 text-gray-200 py-12 mt-12" role="contentinfo">
+      <footer className="bg-gray-900 text-gray-200 py-12" role="contentinfo">
         <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
-          {/* Company Info */}
-          <div>
+          {/* Company Description */}
+          <div className="pr-8">
             <h3 className="text-xl font-bold mb-3">Ondosoft</h3>
             <p className="text-sm leading-relaxed">
-              Ondosoft is a nationwide software development company offering
-              freelancing, full stack development, SaaS solutions, and enterprise
-              applications. We serve clients across all 50 states.
-            </p>
-            <p className="mt-3 text-sm">
-              📍 Headquarters: <span className="font-semibold">{`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}</span><br />
-              📧 <a href={`mailto:${companyInfo.email}`} className="hover:underline">{companyInfo.email}</a><br />
-              📞 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a><br />
-              ⏰ Time zone: <span className="font-semibold">{companyInfo.timezoneAbbr}</span> <span className="text-gray-400">({companyInfo.timezoneIANA})</span>
+              Ondosoft is a nationwide software development company specializing in freelancing, full stack development, and SaaS solutions for businesses nationwide. We serve clients across all 50 states.
             </p>
           </div>
 
@@ -85,22 +71,59 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company Info */}
+          {/* Contact Information */}
           <div>
-            <h4 className="text-lg font-semibold mb-3">About Ondosoft</h4>
-            <p className="text-sm text-gray-300 mb-3">
-              Leading software development company specializing in freelancing, full stack development, and SaaS solutions for businesses nationwide.
-            </p>
-            <div className="text-sm text-gray-300">
-              <p>📍 Serving all 50 states</p>
-              <p>🚀 Modern technologies</p>
-              <p>💼 Enterprise solutions</p>
-            </div>
+            <h4 className="text-lg font-semibold mb-3">Contact Us</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                📍 <a 
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}
+                </a>
+              </li>
+              <li>
+                📧 <a href={`mailto:${companyInfo.email}`} className="hover:underline">{companyInfo.email}</a>
+              </li>
+              <li>
+                📞 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div className="mt-8 border-t border-gray-700 pt-6 text-center text-xs text-gray-400">
-          © {new Date().getFullYear()} Ondosoft. All rights reserved. Freelancing | Full Stack Development | SaaS Applications
+        <div className="mt-8 border-t border-gray-700 pt-4 pb-4">
+          {/* Mobile Layout - Two lines */}
+          <div className="flex flex-col items-center gap-2 text-xs text-gray-400 px-4 md:hidden">
+            <div className="text-center">© {new Date().getFullYear()} Ondosoft. All rights reserved. Freelancing | Full Stack Development | SaaS Applications</div>
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+              <Link to="/legal" className="hover:text-orange-500 hover:underline whitespace-nowrap">Legal</Link>
+              <Link to="/nda" className="hover:text-orange-500 hover:underline whitespace-nowrap">NDA</Link>
+              <Link to="/privacy-policy" className="hover:text-orange-500 hover:underline whitespace-nowrap">Privacy Policy</Link>
+              <Link to="/licensing" className="hover:text-orange-500 hover:underline whitespace-nowrap">Licensing</Link>
+            </div>
+            <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
+              <Link to="/terms-of-use" className="hover:text-orange-500 hover:underline whitespace-nowrap">Terms of Use</Link>
+              <Link to="/accessibility" className="hover:text-orange-500 hover:underline whitespace-nowrap">Accessibility</Link>
+              <Link to="/sitemap" className="hover:text-orange-500 hover:underline whitespace-nowrap">Site Map</Link>
+            </div>
+          </div>
+          
+          {/* Desktop Layout - Single line with gap, centered */}
+          <div className="hidden md:flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 px-4">
+            <span className="whitespace-nowrap">© {new Date().getFullYear()} Ondosoft. All rights reserved. Freelancing | Full Stack Development | SaaS Applications</span>
+            <span>|</span>
+            <Link to="/legal" className="hover:text-orange-500 hover:underline whitespace-nowrap">Legal</Link>
+            <Link to="/nda" className="hover:text-orange-500 hover:underline whitespace-nowrap">NDA</Link>
+            <Link to="/privacy-policy" className="hover:text-orange-500 hover:underline whitespace-nowrap">Privacy Policy</Link>
+            <Link to="/licensing" className="hover:text-orange-500 hover:underline whitespace-nowrap">Licensing</Link>
+            <Link to="/terms-of-use" className="hover:text-orange-500 hover:underline whitespace-nowrap">Terms of Use</Link>
+            <Link to="/accessibility" className="hover:text-orange-500 hover:underline whitespace-nowrap">Accessibility</Link>
+            <Link to="/sitemap" className="hover:text-orange-500 hover:underline whitespace-nowrap">Site Map</Link>
+          </div>
         </div>
 
         {/* Hidden SEO Section - Service Areas for Search Engines */}

@@ -181,13 +181,13 @@ const PortfolioPage = () => {
       
       <div className="min-h-screen bg-black">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-orange-500 to-orange-600 py-20">
+        <section className="bg-gradient-to-r from-gray-800 to-gray-900 py-20 border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                Our <span className="text-orange-100">Portfolio</span>
+                Our <span className="text-orange-500">Portfolio</span>
               </h1>
-              <p className="text-xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                 Real projects, real results. See how we've helped businesses transform their operations 
                 with custom software solutions.
               </p>
@@ -343,13 +343,13 @@ const PortfolioPage = () => {
               {/* Right Column - Results & Testimonial */}
               <div>
                 {/* Results */}
-                <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-8 text-white mb-8">
+                <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 text-white mb-8 border border-gray-700">
                   <h3 className="text-2xl font-bold mb-6">Results</h3>
                   <div className="grid grid-cols-2 gap-6">
                     {Object.entries(currentProject.results).map(([key, value]) => (
                       <div key={key} className="text-center">
                         <div className="text-3xl font-bold mb-2">{value}</div>
-                        <div className="text-orange-100 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                        <div className="text-gray-300 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
                       </div>
                     ))}
                   </div>
@@ -407,19 +407,19 @@ const PortfolioPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-orange-500 to-orange-600">
+        <section className="py-20 bg-gradient-to-r from-gray-800 to-gray-900 border-t border-gray-700">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Create Your Success Story?
+              Ready to Create Your <span className="text-orange-500">Success Story?</span>
             </h2>
-            <p className="text-xl text-orange-100 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Let's discuss your project and see how we can help you achieve similar results.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="bg-black text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-900 transition-colors flex items-center justify-center"
+                className="bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center border border-gray-600"
               >
                 Start Your Project
                 <ArrowRight className="h-5 w-5 ml-2" />
@@ -427,7 +427,7 @@ const PortfolioPage = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-orange-500 transition-colors flex items-center justify-center"
+                className="border-2 border-gray-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 hover:border-gray-500 transition-colors flex items-center justify-center"
               >
                 Start Free Consultation
               </button>

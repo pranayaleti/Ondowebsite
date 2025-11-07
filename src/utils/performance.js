@@ -4,7 +4,7 @@
 export const preloadCriticalResources = () => {
   // Preload hero image
   const heroImage = new Image();
-  heroImage.src = '/assets/logo2.png';
+  heroImage.src = '/logo.png';
   
   // Preload critical fonts
   const fontLink = document.createElement('link');

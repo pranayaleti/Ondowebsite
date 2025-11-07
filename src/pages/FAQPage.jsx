@@ -22,13 +22,13 @@ const FAQPage = () => {
       
       <div className="min-h-screen bg-black">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-orange-500 to-orange-700 text-white py-20">
+        <section className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-20 border-b border-gray-700">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
-                Frequently Asked Questions
+                Frequently Asked <span className="text-orange-500">Questions</span>
               </h1>
-              <p className="text-xl md:text-2xl mb-8 text-orange-100 drop-shadow-md">
+              <p className="text-xl md:text-2xl mb-8 text-gray-300 drop-shadow-md">
                 Everything you need to know about Ondosoft's software development services
               </p>
             </div>
@@ -53,25 +53,25 @@ const FAQPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-orange-600 text-white">
+        <section className="py-16 bg-gradient-to-r from-gray-800 to-gray-900 text-white border-t border-gray-700">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white drop-shadow-lg">
-                Still Have Questions?
+                Still Have <span className="text-orange-500">Questions?</span>
               </h2>
-              <p className="text-xl mb-8 text-orange-100 drop-shadow-md">
+              <p className="text-xl mb-8 text-gray-300 drop-shadow-md">
                 Contact our team for personalized answers about your specific project needs
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/contact"
-                  className="bg-black text-orange-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg"
+                  className="bg-gray-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-600 transition-all duration-200 shadow-lg border border-gray-600"
                 >
                   Contact Us Today
                 </a>
                 <a
                   href={`tel:${companyInfo.phoneE164}`}
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-black hover:text-orange-600 transition-all duration-200"
+                  className="border-2 border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-200"
                 >
                   Call {companyInfo.phoneDisplay}
                 </a>

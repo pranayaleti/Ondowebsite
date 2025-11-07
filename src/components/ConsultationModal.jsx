@@ -165,21 +165,21 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center">
             <div className="bg-orange-500 p-3 rounded-lg mr-4">
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Book Your Free Consultation</h2>
-              <p className="text-gray-600">30-minute expert consultation</p>
+              <h2 className="text-2xl font-bold text-white">Book Your Free Consultation</h2>
+              <p className="text-gray-300">30-minute expert consultation</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-200 transition-colors"
           >
             <X className="h-6 w-6" />
           </button>
@@ -188,34 +188,34 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
           {preset?.name && (
-            <div className="mb-6 p-4 rounded-lg border border-orange-200 bg-orange-50 text-sm text-gray-800">
+            <div className="mb-6 p-4 rounded-lg border border-orange-500 bg-orange-900/20 text-sm text-orange-100">
               <div className="font-semibold">Selected Plan: {preset.name}</div>
-              <div className="mt-1 text-gray-700">{preset.price} {preset.cadence}</div>
-              <div className="mt-3 text-gray-700">We'll tailor questions to your needs. Please share specifics below.</div>
+              <div className="mt-1 text-orange-200">{preset.price} {preset.cadence}</div>
+              <div className="mt-3 text-orange-200">We'll tailor questions to your needs. Please share specifics below.</div>
             </div>
           )}
           {/* Success/Error Messages */}
           {submitStatus === 'success' && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
-              <CheckCircle className="text-green-500 mr-3" />
+            <div className="mb-6 p-4 bg-green-900/30 border border-green-500 rounded-lg flex items-center">
+              <CheckCircle className="text-green-400 mr-3" />
               <div>
-                <p className="text-green-700 font-semibold">Consultation Booked Successfully!</p>
-                <p className="text-green-600 text-sm">We'll send you a calendar invite and confirmation email shortly.</p>
+                <p className="text-green-300 font-semibold">Consultation Booked Successfully!</p>
+                <p className="text-green-400 text-sm">We'll send you a calendar invite and confirmation email shortly.</p>
               </div>
             </div>
           )}
           
           {submitStatus === 'error' && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
-              <AlertCircle className="text-red-500 mr-3" />
-              <p className="text-red-700">Something went wrong. Please try again or contact us directly.</p>
+            <div className="mb-6 p-4 bg-red-900/30 border border-red-500 rounded-lg flex items-center">
+              <AlertCircle className="text-red-400 mr-3" />
+              <p className="text-red-300">Something went wrong. Please try again or contact us directly.</p>
             </div>
           )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
                 Full Name *
               </label>
               <input
@@ -225,14 +225,14 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
                 placeholder="Your full name"
               />
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address *
               </label>
               <input
@@ -243,15 +243,15 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                   onChange={handleInputChange}
                   onBlur={handleBlur}
                 required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
                 placeholder="your@email.com"
               />
-                {fieldErrors.email && <p className="text-sm text-red-600 mt-2">{fieldErrors.email}</p>}
+                {fieldErrors.email && <p className="text-sm text-red-400 mt-2">{fieldErrors.email}</p>}
             </div>
 
             {/* Phone */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
                 Phone Number
               </label>
               <input
@@ -264,15 +264,15 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                   required
                   inputMode="numeric"
                   pattern="\\d*"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
                 placeholder="(555) 123-4567"
               />
-                {fieldErrors.phone && <p className="text-sm text-red-600 mt-2">{fieldErrors.phone}</p>}
+                {fieldErrors.phone && <p className="text-sm text-red-400 mt-2">{fieldErrors.phone}</p>}
             </div>
 
             {/* Company */}
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="company" className="block text-sm font-medium text-gray-300 mb-2">
                 Company/Business
               </label>
               <input
@@ -281,14 +281,14 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 name="company"
                 value={formData.company}
                 onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
                 placeholder="Your company name"
               />
             </div>
 
             {/* Timeline */}
             <div>
-              <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="timeline" className="block text-sm font-medium text-gray-300 mb-2">
                 Project Timeline
               </label>
               <SelectField
@@ -303,7 +303,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
 
             {/* Budget */}
             <div>
-              <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="budget" className="block text-sm font-medium text-gray-300 mb-2">
                 Budget Range
               </label>
               <SelectField
@@ -321,7 +321,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
 
           {/* Message */}
           <div className="mt-6">
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
               Project Details *
             </label>
             <textarea
@@ -331,15 +331,15 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               onChange={handleInputChange}
               required
               rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
+              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
               placeholder="Tell us about your project goals, requirements, and any specific challenges you're facing..."
             />
           </div>
 
           {/* Benefits */}
-          <div className="mt-6 p-4 bg-orange-50 rounded-lg">
-            <h3 className="font-semibold text-gray-900 mb-3">What you'll get from this free consultation:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+          <div className="mt-6 p-4 bg-orange-900/20 rounded-lg border border-orange-500/30">
+            <h3 className="font-semibold text-white mb-3">What you'll get from this free consultation:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-300">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-orange-500 mr-2" />
                 <span>30-minute expert consultation</span>
@@ -373,15 +373,15 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-4 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+              className="px-6 py-4 border border-gray-600 text-gray-300 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
           </div>
 
           {/* Urgent requests note */}
-          <p className="text-xs text-gray-500 mt-4 text-center">
-            For urgent requests or mobile services, please call us at <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-600 font-semibold">{companyInfo.urgentPhoneDisplay}</a>
+          <p className="text-xs text-gray-400 mt-4 text-center">
+            For urgent requests or mobile services, please call us at <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-400 font-semibold">{companyInfo.urgentPhoneDisplay}</a>
           </p>
         </form>
       </div>
@@ -390,8 +390,8 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
         input:-webkit-autofill:focus,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:active {
-          box-shadow: 0 0 0px 1000px #fff inset !important;
-          -webkit-text-fill-color: #1f2937 !important; /* text-gray-900 */
+          box-shadow: 0 0 0px 1000px #1f2937 inset !important;
+          -webkit-text-fill-color: #ffffff !important;
           transition: background-color 5000s ease-in-out 0s;
         }
       `}</style>

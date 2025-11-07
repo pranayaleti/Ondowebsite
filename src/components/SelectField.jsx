@@ -49,12 +49,12 @@ const SelectField = ({ id, name, value, onChange, options, placeholder = 'Select
         type="button"
         ref={triggerRef}
         onClick={() => setIsOpen(o => !o)}
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base bg-white text-gray-900 flex items-center justify-between"
+        className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base bg-gray-800 text-white flex items-center justify-between"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <span className={value ? 'text-gray-900' : 'text-gray-500'}>{label}</span>
-        <svg className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <span className={value ? 'text-white' : 'text-gray-400'}>{label}</span>
+        <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
         </svg>
       </button>
@@ -63,12 +63,12 @@ const SelectField = ({ id, name, value, onChange, options, placeholder = 'Select
         <ul
           ref={listRef}
           role="listbox"
-          className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg focus:outline-none text-base"
+          className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-lg border border-gray-600 bg-gray-800 shadow-lg focus:outline-none text-base"
         >
           <li
             role="option"
             aria-selected={!value}
-            className={`px-4 py-2 cursor-pointer hover:bg-orange-50 ${!value ? 'text-gray-700' : 'text-gray-500'}`}
+            className={`px-4 py-2 cursor-pointer hover:bg-gray-700 ${!value ? 'text-gray-200' : 'text-gray-400'}`}
             onClick={() => handleSelect('')}
           >
             {placeholder}
@@ -82,7 +82,7 @@ const SelectField = ({ id, name, value, onChange, options, placeholder = 'Select
                 key={val}
                 role="option"
                 aria-selected={isActive}
-                className={`px-4 py-2 cursor-pointer hover:bg-orange-50 ${isActive ? 'bg-orange-100 text-orange-700' : 'text-gray-900'}`}
+                className={`px-4 py-2 cursor-pointer hover:bg-gray-700 ${isActive ? 'bg-orange-900/30 text-orange-400' : 'text-white'}`}
                 onClick={() => handleSelect(val)}
               >
                 {lab}

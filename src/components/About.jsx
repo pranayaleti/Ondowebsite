@@ -62,15 +62,29 @@ const About = () => {
                 <User className="text-orange-400 h-7 w-7 mr-4" />
                 <h2 className="text-3xl font-bold text-white">Who We Are</h2>
               </div>
-              <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                <strong className="text-orange-400">OndoSoft</strong> is a software freelancing company founded by 
-                <strong className="text-orange-400"> Pranay Reddy Aleti</strong>, a software engineer with a Master's degree in Computer Science.
-              </p>
-              <p className="text-gray-300 text-lg leading-relaxed">
-                We specialize in building <strong className="text-orange-400">custom technology solutions</strong> for businesses of all sizes. 
-                From simple websites for local businesses to complex SaaS platforms for startups, 
-                we deliver <strong className="text-orange-400">reliable, scalable, and user-friendly</strong> software that drives growth.
-              </p>
+              <div className="flex flex-col md:flex-row gap-6 mb-6">
+                <div className="flex-shrink-0">
+                  <img
+                    src="/assets/founder.jpg"
+                    alt="Pranay Reddy Aleti - Founder & Owner of Ondosoft"
+                    className="w-48 h-48 rounded-lg object-cover border-2 border-orange-500/30 shadow-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <p className="text-gray-300 text-lg leading-relaxed mb-4">
+                    <strong className="text-orange-400">OndoSoft</strong> is a software freelancing company founded by 
+                    <strong className="text-orange-400"> Pranay Reddy Aleti</strong>, a software engineer with a Master's degree in Computer Science.
+                  </p>
+                  <p className="text-gray-300 text-lg leading-relaxed">
+                    We specialize in building <strong className="text-orange-400">custom technology solutions</strong> for businesses of all sizes. 
+                    From simple websites for local businesses to complex SaaS platforms for startups, 
+                    we deliver <strong className="text-orange-400">reliable, scalable, and user-friendly</strong> software that drives growth.
+                  </p>
+                </div>
+              </div>
               <p className="text-gray-300 text-lg leading-relaxed">
                 Our mission is to make professional software development accessible to every business, 
                 regardless of size or technical expertise.
@@ -264,19 +278,19 @@ const About = () => {
       </div>
 
       {/* Call to Action Section */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 py-20">
+      <div className="bg-gradient-to-r from-gray-800 to-gray-900 py-20 border-t border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Ship Faster?
+            Ready to Ship <span className="text-orange-500">Faster?</span>
           </h2>
-          <p className="text-xl text-white mb-8 opacity-90">
+          <p className="text-xl text-gray-300 mb-8">
             From MVPs to scale-ready platforms—let's build something users love.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="bg-black hover:bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors">
+            <a href="/contact" className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
               Start Your Journey
             </a>
-            <a href="#" className="bg-white hover:bg-gray-100 text-orange-600 px-8 py-4 rounded-lg text-lg font-bold transition-colors">
+            <a href="/capabilities-deck" className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
               Download Capabilities Deck
             </a>
           </div>

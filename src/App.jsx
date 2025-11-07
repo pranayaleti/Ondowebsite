@@ -27,6 +27,13 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const SitemapPage = lazy(() => import("./pages/SitemapPage"));
 const RobotsPage = lazy(() => import("./pages/RobotsPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsOfUsePage = lazy(() => import("./pages/TermsOfUsePage"));
+const LegalPage = lazy(() => import("./pages/LegalPage"));
+const NDAPage = lazy(() => import("./pages/NDAPage"));
+const LicensingPage = lazy(() => import("./pages/LicensingPage"));
+const AccessibilityPage = lazy(() => import("./pages/AccessibilityPage"));
+const CapabilitiesDeckPage = lazy(() => import("./pages/CapabilitiesDeckPage"));
 
 // Loading component
 const PageLoader = () => (
@@ -64,6 +71,14 @@ const AppRoutes = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/faq" element={<FAQPage />} />
+          <Route path="/legal" element={<LegalPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms-of-use" element={<TermsOfUsePage />} />
+          <Route path="/nda" element={<NDAPage />} />
+          <Route path="/licensing" element={<LicensingPage />} />
+          <Route path="/accessibility" element={<AccessibilityPage />} />
+          <Route path="/capabilities-deck" element={<CapabilitiesDeckPage />} />
+          <Route path="/sitemap" element={<SitemapPage />} />
           <Route path="/sitemap.xml" element={<SitemapPage />} />
           <Route path="/robots.txt" element={<RobotsPage />} />
           <Route path="*" element={<NotFoundPage />} />

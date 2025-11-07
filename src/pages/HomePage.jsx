@@ -7,7 +7,7 @@ import NewsletterSignup from "../components/NewsletterSignup";
 import TrustBadges from "../components/TrustBadges";
 import ConsultationWidget from "../components/ConsultationWidget";
 import ConsultationModal from "../components/ConsultationModal";
-import LiveChatWidget from "../components/LiveChatWidget";
+// import LiveChatWidget from "../components/LiveChatWidget";
 import Footer from "../components/Footer";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
@@ -40,7 +40,7 @@ const HomePage = () => {
         "url": companyInfo.urls.website,
         "logo": {
           "@type": "ImageObject",
-          "url": `${companyInfo.urls.website}/logo2.png`,
+          "url": `${companyInfo.urls.website}/logo.png`,
           "width": 200,
           "height": 60
         },
@@ -426,13 +426,13 @@ const HomePage = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="py-20 bg-gradient-to-r from-orange-500 to-orange-600">
+        <section className="py-20 bg-gradient-to-r from-gray-800 to-gray-900 border-t border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Trusted by Businesses Nationwide
+                Trusted by Businesses <span className="text-orange-500">Nationwide</span>
               </h2>
-              <p className="text-xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                 Our track record speaks for itself. Join hundreds of satisfied clients who've transformed their businesses with our software solutions.
               </p>
             </div>
@@ -440,19 +440,19 @@ const HomePage = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="text-5xl md:text-6xl font-bold text-white mb-2">500+</div>
-                <div className="text-orange-100 text-lg">Projects Delivered</div>
+                <div className="text-gray-300 text-lg">Projects Delivered</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl md:text-6xl font-bold text-white mb-2">200+</div>
-                <div className="text-orange-100 text-lg">Happy Clients</div>
+                <div className="text-gray-300 text-lg">Happy Clients</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl md:text-6xl font-bold text-white mb-2">10+</div>
-                <div className="text-orange-100 text-lg">Years Experience</div>
+                <div className="text-gray-300 text-lg">Years Experience</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl md:text-6xl font-bold text-white mb-2">99%</div>
-                <div className="text-orange-100 text-lg">Client Satisfaction</div>
+                <div className="text-gray-300 text-lg">Client Satisfaction</div>
               </div>
             </div>
           </div>
@@ -474,7 +474,7 @@ const HomePage = () => {
         <ConsultationWidget />
 
         {/* Live Chat Widget */}
-        <LiveChatWidget />
+        {/* <LiveChatWidget /> */}
 
         <Footer />
         
