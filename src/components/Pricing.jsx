@@ -7,7 +7,7 @@ const Pricing = ({ onConsult }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(1); // preselect right card ("Most Popular")
 
   return (
-    <div className="mt-20">
+    <div className="mt-20 mb-20 md:mb-24 lg:mb-32">
       <h2 className="text-3xl sm:text-5xl lg:text-6xl text-center my-8 tracking-wide">
         <span className="text-white">Service</span>
         <br />
@@ -26,7 +26,7 @@ const Pricing = ({ onConsult }) => {
           return (
             <div
               key={option.title}
-              className={`relative rounded-2xl p-8 md:p-10 border backdrop-blur-md transition-all duration-300 cursor-pointer ${
+              className={`relative rounded-2xl p-8 md:p-10 border backdrop-blur-md transition-all duration-300 cursor-pointer flex flex-col h-full ${
                 isSelected
                   ? "border-orange-400/60 bg-[radial-gradient(ellipse_at_center_top,rgba(255,122,0,0.15),rgba(0,0,0,0.6))] shadow-[0_0_0_1px_rgba(251,146,60,0.2),0_20px_60px_-20px_rgba(251,146,60,0.5)]"
                   : "border-neutral-700 bg-neutral-900/40 hover:border-neutral-500"
@@ -41,7 +41,13 @@ const Pricing = ({ onConsult }) => {
 
               <div className="flex items-baseline justify-between">
                 <p className="text-3xl md:text-4xl mb-6 text-white font-semibold">
-                  {option.title}
+                  {option.title === "UI/UX Master Suite" ? (
+                    <>
+                      UI/UX<br />Master Suite
+                    </>
+                  ) : (
+                    option.title
+                  )}
                 </p>
                 <div
                   className={`h-3 w-3 rounded-full ${
@@ -56,10 +62,10 @@ const Pricing = ({ onConsult }) => {
                 <span className="text-neutral-300 tracking-tight">Starting Price</span>
               </p>
 
-              <ul>
+              <ul className="flex-grow">
                 {option.features.map((feature) => (
-                  <li key={feature} className="mt-5 flex items-center">
-                    <CheckCircle2 className="text-green-400 flex-shrink-0" />
+                  <li key={feature} className="mt-5 flex items-start">
+                    <CheckCircle2 className="text-green-400 flex-shrink-0 mt-0.5" />
                     <span className="ml-2 text-neutral-200">{feature}</span>
                   </li>
                 ))}
@@ -71,7 +77,7 @@ const Pricing = ({ onConsult }) => {
                   e.stopPropagation();
                   onConsult?.({ name: option.title, price: option.price, cadence: "Starting Price" });
                 }}
-                className={`inline-flex justify-center items-center text-center w-full h-12 px-5 mt-12 tracking-tight text-lg rounded-md transition duration-200 ${
+                className={`inline-flex justify-center items-center text-center w-full h-12 px-5 mt-12 mb-4 tracking-tight text-lg rounded-md transition duration-200 ${
                   isSelected
                     ? "bg-orange-600 text-white hover:bg-orange-700"
                     : "bg-neutral-800 text-white hover:bg-neutral-700"

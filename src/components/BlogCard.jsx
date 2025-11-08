@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 
-const BlogCard = ({ post, featured = false }) => {
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+const BlogCard = React.memo(({ post, featured = false }) => {
+  const formattedDate = useMemo(() => {
+    return new Date(post.publishDate).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
-  };
+  }, [post.publishDate]);
 
   return (
     <article className={`group ${featured ? 'lg:col-span-2' : ''}`}>
@@ -72,7 +72,7 @@ const BlogCard = ({ post, featured = false }) => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1" />
-                {formatDate(post.publishDate)}
+                {formattedDate}
               </div>
               <div className="flex items-center">
                 <Clock className="h-4 w-4 mr-1" />
@@ -88,6 +88,8 @@ const BlogCard = ({ post, featured = false }) => {
       </Link>
     </article>
   );
-};
+});
+
+BlogCard.displayName = 'BlogCard';
 
 export default BlogCard;

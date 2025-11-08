@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
@@ -6,14 +6,39 @@ import ShareButtons from '../components/ShareButtons';
 import ConsultationWidget from '../components/ConsultationWidget';
 import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
-import { getPostBySlug, getRelatedPosts, blogCategories } from '../data/blogData';
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react';
 
 const BlogPostPage = () => {
   const { slug } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const post = getPostBySlug(slug);
-  const relatedPosts = post ? getRelatedPosts(post, 3) : [];
+  const [blogData, setBlogData] = useState(null);
+  const [post, setPost] = useState(null);
+  const [relatedPosts, setRelatedPosts] = useState([]);
+
+  // Lazy load blogData
+  useEffect(() => {
+    import('../data/blogData').then(module => {
+      setBlogData({
+        getPostBySlug: module.getPostBySlug,
+        getRelatedPosts: module.getRelatedPosts,
+        blogCategories: module.blogCategories
+      });
+      const foundPost = module.getPostBySlug(slug);
+      setPost(foundPost);
+      if (foundPost) {
+        setRelatedPosts(module.getRelatedPosts(foundPost, 3));
+      }
+    });
+  }, [slug]);
+
+  // Show loading state while blogData is loading
+  if (!blogData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -107,7 +132,7 @@ const BlogPostPage = () => {
           {/* Category */}
           <div className="mb-4">
             <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
-              {blogCategories.find(cat => cat.id === post.category)?.name}
+              {blogData.blogCategories.find(cat => cat.id === post.category)?.name}
             </span>
           </div>
 
