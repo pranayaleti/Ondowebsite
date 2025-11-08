@@ -1,6 +1,7 @@
 import { features, workflowItems } from "../constants/data";
 import { CheckCircle2 } from "lucide-react";
 import OptimizedImage from "./OptimizedImage";
+import codeImage from "../assets/code.jpg";
 
 const Services = () => {
   return (
@@ -56,7 +57,7 @@ const Services = () => {
         <div className="flex flex-wrap justify-center mt-12">
           <div className="p-2 w-full lg:w-1/2">
             <OptimizedImage 
-              src="/assets/code.jpg"
+              src={codeImage}
               alt="Software development workflow showing code on screen with modern development tools and technologies"
               width={600}
               height={400}

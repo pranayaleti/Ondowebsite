@@ -3,12 +3,25 @@ import { Menu, X } from "lucide-react";
 import OptimizedImage from "./OptimizedImage";
 import { navItems } from "../constants/data";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated, user, signout } = useAuth();
+
+  // Hide navbar on auth pages, portal, and admin pages
+  const hideNavbar = location.pathname.startsWith('/auth') || 
+                     location.pathname.startsWith('/portal') || 
+                     location.pathname.startsWith('/admin');
+
+  const handleSignOut = async () => {
+    await signout();
+    navigate('/');
+    setMobileDrawerOpen(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +34,18 @@ const Navbar = () => {
   const toggleNavbar = () => {
     setMobileDrawerOpen(!mobileDrawerOpen);
   };
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileDrawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileDrawerOpen]);
 
   const handleLogoClick = (e) => {
     e.preventDefault();
@@ -40,17 +65,16 @@ const Navbar = () => {
     setMobileDrawerOpen(false);
   };
 
-  const handleContactClick = (e) => {
-    e.preventDefault();
-    navigate("/contact");
-    setMobileDrawerOpen(false);
-  };
 
   // Helper to determine if nav item is active
   const isActive = (href) => {
     if (href === "/" && location.pathname === "/") return true;
     return location.pathname === href;
   };
+
+  if (hideNavbar) {
+    return null;
+  }
 
   return (
     <nav
@@ -69,17 +93,17 @@ const Navbar = () => {
               onClick={handleLogoClick}
               className="flex items-center"
             >
-              <div className="h-10 w-10 mr-3 rounded-full overflow-hidden shadow-lg">
+              <div className="h-14 w-14 mr-3 rounded-full overflow-hidden shadow-lg">
                 <img 
                   src="/logo.png"
                   alt="Ondosoft logo - Full stack software development company specializing in React, Node.js, Python, and SaaS solutions"
-                  width={40}
-                  height={40}
-                  className="h-10 w-10 rounded-full object-cover"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-full object-cover"
                   loading="eager"
                 />
               </div>
-              <span className="text-xl font-bold text-gray-800">
+              <span className="text-2xl font-bold text-gray-800">
                 OndoSoft
               </span>
             </Link>
@@ -104,12 +128,31 @@ const Navbar = () => {
                 </li>
               ))}
             </ul>
-            <Link
-              to="/contact"
-              className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 px-4 rounded-md font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
-            >
-              Contact
-            </Link>
+            <div className="flex items-center gap-4">
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to={user?.role === 'ADMIN' ? '/admin' : '/portal'}
+                    className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 px-4 rounded-md font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                  >
+                    {user?.role === 'ADMIN' ? 'Admin' : 'Portal'}
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="text-gray-700 hover:text-orange-500 font-medium"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/auth/signin"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 px-4 rounded-md font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                >
+                  Client Portal
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -125,26 +168,33 @@ const Navbar = () => {
         {/* Mobile Navigation Drawer */}
         {mobileDrawerOpen && (
           <div className="lg:hidden">
-            <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={toggleNavbar}></div>
-            <div className="fixed top-0 right-0 z-50 bg-white w-80 h-full shadow-xl transform transition-transform duration-300 ease-in-out">
+            <div 
+              className="fixed inset-0 z-50 bg-black bg-opacity-50" 
+              onClick={toggleNavbar}
+              style={{ touchAction: 'none' }}
+            ></div>
+            <div 
+              className="fixed top-0 right-0 z-50 bg-gradient-to-b from-black to-gray-900 w-80 h-full shadow-xl transform transition-transform duration-300 ease-in-out overflow-y-auto"
+              style={{ touchAction: 'pan-y' }}
+            >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center">
-                    <div className="h-8 w-8 mr-2 rounded-full overflow-hidden">
+                    <div className="h-12 w-12 mr-3 rounded-full overflow-hidden">
                       <img 
                         src="/logo.png"
                         alt="Ondosoft logo"
-                        width={32}
-                        height={32}
-                        className="h-8 w-8 rounded-full object-cover"
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 rounded-full object-cover"
                         loading="eager"
                       />
                     </div>
-                    <span className="text-lg font-bold text-gray-800">OndoSoft</span>
+                    <span className="text-xl font-bold text-white">OndoSoft</span>
                   </div>
                   <button 
                     onClick={toggleNavbar}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-400 hover:text-white transition-colors"
                   >
                     <X className="h-6 w-6" />
                   </button>
@@ -159,7 +209,7 @@ const Navbar = () => {
                         className={
                           isActive(item.href)
                             ? "block py-3 px-4 rounded-md bg-orange-500 text-white font-semibold"
-                            : "block py-3 px-4 rounded-md text-gray-700 hover:text-orange-500 hover:bg-orange-50 transition-all duration-200 font-medium"
+                            : "block py-3 px-4 rounded-md text-gray-300 hover:text-orange-400 hover:bg-gray-800/50 transition-all duration-200 font-medium"
                         }
                       >
                         {item.label}
@@ -168,14 +218,32 @@ const Navbar = () => {
                   ))}
                 </ul>
                 
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <Link
-                    to="/contact"
-                    onClick={handleContactClick}
-                    className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
-                  >
-                    Contact
-                  </Link>
+                <div className="mt-8 pt-6 border-t border-gray-700 space-y-2">
+                  {isAuthenticated ? (
+                    <>
+                      <Link
+                        to={user?.role === 'ADMIN' ? '/admin' : '/portal'}
+                        onClick={() => setMobileDrawerOpen(false)}
+                        className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                      >
+                        {user?.role === 'ADMIN' ? 'Admin' : 'Portal'}
+                      </Link>
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full py-3 px-4 rounded-md bg-gray-800 text-gray-200 font-semibold text-center hover:bg-gray-700 transition-all duration-200"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      to="/auth/signin"
+                      onClick={() => setMobileDrawerOpen(false)}
+                      className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                    >
+                      Client Portal
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
