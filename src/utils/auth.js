@@ -1,4 +1,20 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+// Determine API URL based on environment
+const getAPIUrl = () => {
+  // If VITE_API_URL is explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In production, use the same origin (relative URL)
+  if (import.meta.env.PROD) {
+    return '/api';
+  }
+  
+  // In development, default to localhost
+  return 'http://localhost:5001/api';
+};
+
+const API_URL = getAPIUrl();
 
 // Auth API functions
 export const authAPI = {

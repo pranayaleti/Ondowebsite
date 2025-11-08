@@ -192,6 +192,7 @@ const SEOHead = ({
       
       {/* Mobile Optimization */}
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), local-network=()" />
       <meta name="theme-color" content="#2563eb" />
       
       {/* Favicon - Multiple sizes for better browser support */}
