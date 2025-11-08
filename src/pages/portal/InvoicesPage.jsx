@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { portalAPI } from '../../utils/auth';
 import { FileText, Download, Eye, Loader, AlertCircle, DollarSign, Calendar, CheckCircle, XCircle, Clock, Plus, Trash2, X } from 'lucide-react';
@@ -9,6 +9,7 @@ const InvoicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     amount: '',
@@ -87,17 +88,31 @@ const InvoicesPage = () => {
   const handleCreateInvoice = async () => {
     try {
       setError(null);
+      setCreating(true);
+      
+      // Validate that at least amount or items are provided
       const items = formData.items.length > 0 ? formData.items : [];
       const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.quantity || 1) * parseFloat(item.price || 0)), 0) || parseFloat(formData.amount || 0);
+      
+      if (subtotal <= 0) {
+        throw new Error('Please provide an amount or add items with prices');
+      }
+      
       const tax = parseFloat(formData.tax || 0);
       const total = subtotal + tax;
 
-      await portalAPI.createInvoice({
-        ...formData,
+      const invoiceData = {
         amount: subtotal,
+        tax: tax,
         total_amount: total,
-        items: items.length > 0 ? items : null
-      });
+        status: formData.status || 'pending',
+        due_date: formData.due_date || null,
+        description: formData.description || null,
+        items: items.length > 0 ? items : null,
+        notes: formData.notes || null
+      };
+
+      await portalAPI.createInvoice(invoiceData);
       
       setShowCreateModal(false);
       setFormData({
@@ -110,9 +125,13 @@ const InvoicesPage = () => {
         items: [],
         notes: ''
       });
+      setItemForm({ description: '', quantity: '1', price: '' });
       await fetchInvoices();
     } catch (err) {
-      setError(err.message);
+      console.error('Create invoice error:', err);
+      setError(err.message || 'Failed to create invoice. Please check your connection and try again.');
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -320,6 +339,13 @@ const InvoicesPage = () => {
                 </button>
               </div>
 
+              {error && (
+                <div className="mb-4 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400">
+                  <AlertCircle className="w-5 h-5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -462,9 +488,17 @@ const InvoicesPage = () => {
                   </button>
                   <button
                     onClick={handleCreateInvoice}
-                    className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-colors"
+                    disabled={creating}
+                    className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
-                    Create Invoice
+                    {creating ? (
+                      <>
+                        <Loader className="w-4 h-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Invoice'
+                    )}
                   </button>
                 </div>
               </div>

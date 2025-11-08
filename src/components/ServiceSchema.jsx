@@ -1,4 +1,3 @@
-import React from 'react';
 
 // Service-specific schema markup for individual service pages
 const ServiceSchema = ({ serviceName, serviceDescription, serviceType, pageUrl }) => {

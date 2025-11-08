@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import SEOHead from '../components/SEOHead';
 import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
@@ -7,7 +7,7 @@ import { companyInfo } from '../constants/companyInfo';
 import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award, Clock, Target, TrendingUp } from 'lucide-react';
 
 const CapabilitiesDeckPage = () => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDownload = () => {
     window.print();

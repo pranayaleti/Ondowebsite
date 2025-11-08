@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const SelectField = ({ id, name, value, onChange, options, placeholder = 'Select', required = false }) => {
   const [isOpen, setIsOpen] = useState(false);

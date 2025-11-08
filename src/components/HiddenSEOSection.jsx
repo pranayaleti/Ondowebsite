@@ -1,4 +1,3 @@
-import React from 'react';
 import { SERVICE_AREAS } from '../utils/unifiedData';
 
 const HiddenSEOSection = () => {

@@ -4,6 +4,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pkg from 'pg';
 import cookieParser from 'cookie-parser';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const { Pool } = pkg;
 
@@ -1079,6 +1085,430 @@ const generateInvoiceNumber = () => {
   return `INV-${timestamp}-${random}`;
 };
 
+// Get logo as base64
+const getLogoBase64 = () => {
+  try {
+    const logoPath = path.join(__dirname, '..', 'public', 'logo.png');
+    if (fs.existsSync(logoPath)) {
+      const logoBuffer = fs.readFileSync(logoPath);
+      return `data:image/png;base64,${logoBuffer.toString('base64')}`;
+    }
+  } catch (error) {
+    console.error('Error reading logo:', error);
+  }
+  return null;
+};
+
+// Generate invoice PDF HTML
+const generateInvoicePDF = (invoice) => {
+  // Parse items if it's a string
+  const items = invoice.items ? (typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items) : [];
+  const subtotal = parseFloat(invoice.amount || 0);
+  const tax = parseFloat(invoice.tax || 0);
+  const total = parseFloat(invoice.total_amount || subtotal + tax);
+  const dueDate = invoice.due_date ? new Date(invoice.due_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
+  const invoiceDate = invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  
+  // Format address
+  const addressParts = [
+    invoice.address,
+    invoice.city,
+    invoice.state,
+    invoice.zip_code,
+    invoice.country
+  ].filter(Boolean);
+  const fullAddress = addressParts.length > 0 ? addressParts.join(', ') : 'N/A';
+  
+  // Get logo
+  const logoBase64 = getLogoBase64();
+
+  const invoiceNumber = invoice.invoice_number || `INV-${invoice.id}`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice ${invoiceNumber}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #fff;
+      padding: 40px;
+    }
+    .invoice-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 40px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .company-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .logo-container {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    .company-details h1 {
+      font-size: 28px;
+      color: #f97316;
+      margin-bottom: 10px;
+    }
+    .company-details p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .invoice-info {
+      text-align: right;
+    }
+    .invoice-info h2 {
+      font-size: 24px;
+      color: #111827;
+      margin-bottom: 10px;
+    }
+    .invoice-info p {
+      color: #6b7280;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+    .billing-section {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .billing-box {
+      flex: 1;
+      margin-right: 20px;
+    }
+    .billing-box:last-child {
+      margin-right: 0;
+    }
+    .billing-box h3 {
+      font-size: 14px;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    .billing-box p {
+      color: #111827;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    .items-table thead {
+      background: #f9fafb;
+    }
+    .items-table th {
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      color: #6b7280;
+      text-transform: uppercase;
+      font-weight: 600;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    .items-table td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+      color: #111827;
+      font-size: 14px;
+    }
+    .items-table tbody tr:hover {
+      background: #f9fafb;
+    }
+    .text-right {
+      text-align: right;
+    }
+    .totals-section {
+      margin-top: 20px;
+      margin-left: auto;
+      width: 300px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+    .total-row.total {
+      border-top: 2px solid #e5e7eb;
+      margin-top: 10px;
+      padding-top: 15px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .total-label {
+      color: #6b7280;
+    }
+    .total-value {
+      color: #111827;
+      font-weight: 600;
+    }
+    .notes-section {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .notes-section h3 {
+      font-size: 14px;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    .notes-section p {
+      color: #111827;
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-paid {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-overdue {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+    }
+    .download-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #f97316;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .action-btn:hover {
+      background: #ea580c;
+    }
+    .action-btn.print-btn {
+      background: #6b7280;
+    }
+    .action-btn.print-btn:hover {
+      background: #4b5563;
+    }
+    .action-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+    .invoice-number-print {
+      /* This will be hidden when printing */
+    }
+    @media print {
+      body {
+        padding: 0;
+      }
+      .invoice-container {
+        box-shadow: none;
+        padding: 20px;
+      }
+      .download-section {
+        display: none;
+      }
+      .invoice-number-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice-container">
+    <div class="header">
+      <div class="company-info">
+        ${logoBase64 ? `
+        <div class="logo-container">
+          <img src="${logoBase64}" alt="OndoSoft Logo" />
+        </div>
+        ` : ''}
+        <div class="company-details">
+          <h1>OndoSoft</h1>
+          <p>${invoice.company_name || 'Professional Services'}</p>
+          ${invoice.phone ? `<p>${invoice.phone}</p>` : ''}
+        </div>
+      </div>
+      <div class="invoice-info">
+        <h2>INVOICE</h2>
+        <p class="invoice-number-print"><strong>Invoice #:</strong> ${invoice.invoice_number || `INV-${invoice.id}`}</p>
+        <p><strong>Date:</strong> ${invoiceDate}</p>
+        <p><strong>Due Date:</strong> ${dueDate}</p>
+        <span class="status-badge status-${invoice.status || 'pending'}">${(invoice.status || 'pending').toUpperCase()}</span>
+      </div>
+    </div>
+
+    <div class="billing-section">
+      <div class="billing-box">
+        <h3>Bill To</h3>
+        <p><strong>${invoice.user_name || 'Client'}</strong></p>
+        <p>${invoice.user_email || ''}</p>
+        ${fullAddress !== 'N/A' ? `<p>${fullAddress}</p>` : ''}
+      </div>
+      <div class="billing-box">
+        <h3>From</h3>
+        <p><strong>OndoSoft</strong></p>
+        <p>Professional Services</p>
+      </div>
+    </div>
+
+    ${invoice.description ? `
+    <div style="margin-bottom: 30px;">
+      <h3 style="font-size: 14px; color: #6b7280; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Description</h3>
+      <p style="color: #111827; font-size: 14px; line-height: 1.8;">${invoice.description}</p>
+    </div>
+    ` : ''}
+
+    ${items.length > 0 ? `
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th class="text-right">Quantity</th>
+          <th class="text-right">Price</th>
+          <th class="text-right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(item => `
+          <tr>
+            <td>${item.description || 'Item'}</td>
+            <td class="text-right">${item.quantity || 1}</td>
+            <td class="text-right">$${(parseFloat(item.price || 0)).toFixed(2)}</td>
+            <td class="text-right">$${((parseFloat(item.quantity || 1)) * (parseFloat(item.price || 0))).toFixed(2)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    ` : ''}
+
+    <div class="totals-section">
+      <div class="total-row">
+        <span class="total-label">Subtotal:</span>
+        <span class="total-value">$${subtotal.toFixed(2)}</span>
+      </div>
+      ${tax > 0 ? `
+      <div class="total-row">
+        <span class="total-label">Tax:</span>
+        <span class="total-value">$${tax.toFixed(2)}</span>
+      </div>
+      ` : ''}
+      <div class="total-row total">
+        <span>Total:</span>
+        <span>$${total.toFixed(2)}</span>
+      </div>
+    </div>
+
+    ${invoice.notes ? `
+    <div class="notes-section">
+      <h3>Notes</h3>
+      <p>${invoice.notes}</p>
+    </div>
+    ` : ''}
+
+    <div class="download-section">
+      <button class="action-btn" onclick="downloadInvoice()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        Download Invoice
+      </button>
+      <button class="action-btn print-btn" onclick="window.print()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+        Print Invoice
+      </button>
+    </div>
+    <script>
+      function downloadInvoice() {
+        const invoiceNumber = '${(invoice.invoice_number ? invoice.invoice_number.replace(/'/g, "\\'") : "INV-" + invoice.id)}';
+        const htmlContent = document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'invoice-' + invoiceNumber + '.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+    </script>
+
+    <div class="footer">
+      <p>Thank you for your business!</p>
+      <p style="margin-top: 10px;">This is an automated invoice generated by OndoSoft</p>
+    </div>
+  </div>
+</body>
+</html>`;
+};
+
 // Create invoice (portal - clients create invoices for themselves)
 app.post('/api/portal/invoices', authenticateToken, async (req, res) => {
   try {
@@ -1138,7 +1568,9 @@ app.get('/api/portal/invoices/:id/pdf', authenticateToken, async (req, res) => {
     // Generate PDF HTML
     const pdfHtml = generateInvoicePDF(invoice);
     
+    const invoiceNumber = invoice.invoice_number || `INV-${invoice.id}`;
     res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Disposition', `inline; filename="invoice-${invoiceNumber}.html"`);
     res.send(pdfHtml);
   } catch (error) {
     console.error('Generate PDF error:', error);
@@ -1860,6 +2292,22 @@ app.get('/api/admin/invoices', authenticateToken, requireAdmin, async (req, res)
   }
 });
 
+// Get all assets (admin - grouped by user/project)
+app.get('/api/admin/assets', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT a.*, u.name as user_name, u.email as user_email, u.company_name
+       FROM assets a
+       JOIN users u ON a.user_id = u.id
+       ORDER BY a.created_at DESC`
+    );
+    res.json({ assets: result.rows });
+  } catch (error) {
+    console.error('Get assets error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Get single invoice (admin)
 app.get('/api/admin/invoices/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
@@ -2009,7 +2457,9 @@ app.get('/api/admin/invoices/:id/pdf', authenticateToken, requireAdmin, async (r
     // Generate PDF HTML
     const pdfHtml = generateInvoicePDF(invoice);
     
+    const invoiceNumber = invoice.invoice_number || `INV-${invoice.id}`;
     res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Disposition', `inline; filename="invoice-${invoiceNumber}.html"`);
     res.send(pdfHtml);
   } catch (error) {
     console.error('Generate PDF error:', error);

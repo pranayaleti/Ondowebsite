@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
@@ -12,7 +12,8 @@ import {
   X,
   BarChart3,
   MessageSquare,
-  FileText
+  FileText,
+  Folder
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -31,6 +32,7 @@ const AdminLayout = () => {
     { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/admin/clients', label: 'Clients', icon: Users },
     { path: '/admin/campaigns', label: 'Campaigns', icon: Megaphone },
+    { path: '/admin/assets', label: 'Assets', icon: Folder },
     { path: '/admin/tickets', label: 'Tickets', icon: MessageSquare },
     { path: '/admin/invoices', label: 'Invoices', icon: FileText },
   ];

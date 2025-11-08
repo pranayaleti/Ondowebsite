@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Facebook, Twitter, Linkedin, Link as LinkIcon, Copy, Check } from 'lucide-react';
 
 const ShareButtons = ({ title, url, description }) => {

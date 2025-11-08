@@ -248,21 +248,40 @@ export const portalAPI = {
   },
 
   async createInvoice(invoiceData) {
-    const response = await fetch(`${API_URL}/portal/invoices`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(invoiceData),
-    });
+    try {
+      const response = await fetch(`${API_URL}/portal/invoices`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(invoiceData),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create invoice');
+      if (!response.ok) {
+        let errorMessage = 'Failed to create invoice';
+        try {
+          const error = await response.json();
+          errorMessage = error.error || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use status text
+          errorMessage = response.status === 404 
+            ? 'Invoice endpoint not found. Please check if the server is running.'
+            : response.status === 401 || response.status === 403
+            ? 'Authentication failed. Please sign in again.'
+            : `Server error: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.message) {
+        throw error;
+      }
+      // Network error
+      throw new Error('Network error. Please check your connection and ensure the server is running.');
     }
-
-    return response.json();
   },
 };
 
@@ -353,6 +372,18 @@ export const adminAPI = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch invoices');
+    }
+
+    return response.json();
+  },
+
+  async getAssets() {
+    const response = await fetch(`${API_URL}/admin/assets`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch assets');
     }
 
     return response.json();

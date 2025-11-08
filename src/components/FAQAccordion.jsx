@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 // Fallback chevron icons if Heroicons is not available
 const ChevronDownIcon = ({ className }) => (

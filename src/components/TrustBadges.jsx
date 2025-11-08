@@ -1,4 +1,3 @@
-import React from 'react';
 import { Shield, Award, Clock, Users, TrendingUp, CheckCircle, Star } from 'lucide-react';
 
 const TrustBadges = () => {

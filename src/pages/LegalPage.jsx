@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import SEOHead from '../components/SEOHead';
 import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { companyInfo } from '../constants/companyInfo';
 
 const LegalPage = () => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>

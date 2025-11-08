@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import ServiceSchema from "../components/ServiceSchema";
 import Services from "../components/Services";

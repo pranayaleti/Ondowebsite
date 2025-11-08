@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
@@ -13,7 +13,6 @@ import {
   X,
   MessageSquare
 } from 'lucide-react';
-import { useState } from 'react';
 
 const PortalLayout = () => {
   const { user, signout } = useAuth();

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const ScriptOptimizer = () => {
   useEffect(() => {
@@ -100,15 +100,7 @@ const ScriptOptimizer = () => {
 
     // Load critical scripts immediately
     const loadCriticalScripts = () => {
-      // Preload critical fonts
-      const fontLink = document.createElement('link');
-      fontLink.rel = 'preload';
-      fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-      fontLink.as = 'style';
-      fontLink.crossOrigin = 'anonymous';
-      document.head.appendChild(fontLink);
-
-      // Load font stylesheet
+      // Load font stylesheet directly (avoiding preload warnings)
       const fontStyle = document.createElement('link');
       fontStyle.rel = 'stylesheet';
       fontStyle.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
@@ -139,7 +131,9 @@ const ScriptOptimizer = () => {
     // Cleanup function
     return () => {
       // Cleanup if needed
-      console.log('Script optimizer cleanup');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Script optimizer cleanup');
+      }
     };
   }, []);
 

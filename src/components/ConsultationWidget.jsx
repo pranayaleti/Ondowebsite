@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, Clock, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import SelectField from './SelectField';

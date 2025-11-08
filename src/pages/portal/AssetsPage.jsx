@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { portalAPI } from '../../utils/auth';
 import { FolderOpen, Loader, Upload, X, Image as ImageIcon, FileText, File, Trash2, Plus, CheckCircle2, AlertCircle, Download, CheckSquare, Square } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
@@ -46,18 +46,20 @@ const AssetsPage = () => {
       setLoading(true);
       setError(null);
       const data = await portalAPI.getAssets();
-      console.log('Fetched assets:', data.assets);
-      // Log each asset's URL to debug
-      if (data.assets && data.assets.length > 0) {
-        data.assets.forEach((asset, index) => {
-          console.log(`Asset ${index}:`, {
-            name: asset.name,
-            type: asset.type,
-            urlLength: asset.url?.length,
-            urlPreview: asset.url?.substring(0, 100),
-            hasUrl: !!asset.url
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Fetched assets:', data.assets);
+        // Log each asset's URL to debug
+        if (data.assets && data.assets.length > 0) {
+          data.assets.forEach((asset, index) => {
+            console.log(`Asset ${index}:`, {
+              name: asset.name,
+              type: asset.type,
+              urlLength: asset.url?.length,
+              urlPreview: asset.url?.substring(0, 100),
+              hasUrl: !!asset.url
+            });
           });
-        });
+        }
       }
       setAssets(data.assets || []);
     } catch (err) {
@@ -68,11 +70,15 @@ const AssetsPage = () => {
   };
 
   const handleFileSelect = async (e) => {
-    console.log('File select event:', e.target.files);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('File select event:', e.target.files);
+    }
     const files = Array.from(e.target.files || []);
     
     if (files.length === 0) {
-      console.error('No file selected');
+      if (process.env.NODE_ENV === 'development') {
+        console.error('No file selected');
+      }
       setError('No file selected. Please try again.');
       return;
     }
@@ -107,7 +113,11 @@ const AssetsPage = () => {
   // Async version of processFile that returns a promise
   const processFileAsync = (file) => {
     return new Promise((resolve, reject) => {
+      if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'development') {
       console.log('Processing file:', file.name, file.type, file.size, 'bytes');
+    }
+      }
       
       // Validate file object
       if (!file) {
@@ -206,7 +216,9 @@ const AssetsPage = () => {
   };
 
   const processFile = (file) => {
-    console.log('Processing file:', file.name, file.type, file.size, 'bytes');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Processing file:', file.name, file.type, file.size, 'bytes');
+    }
     
     // Validate file object is still valid
     if (!file) {
@@ -272,16 +284,22 @@ const AssetsPage = () => {
       category = 'image'; // Default category for images
     }
 
-    console.log('File type:', fileType, 'Category:', category);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('File type:', fileType, 'Category:', category);
+    }
 
     // Convert file to base64 using FileReader
     // First, try to create a blob URL as a fallback
     let blobUrl = null;
     try {
       blobUrl = URL.createObjectURL(file);
-      console.log('Created blob URL:', blobUrl);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Created blob URL:', blobUrl);
+      }
     } catch (blobErr) {
-      console.warn('Could not create blob URL:', blobErr);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Could not create blob URL:', blobErr);
+      }
     }
 
     try {
@@ -290,7 +308,9 @@ const AssetsPage = () => {
       // Set a timeout to detect if reading takes too long
       const timeout = setTimeout(() => {
         if (reader.readyState === FileReader.LOADING) {
-          console.warn('FileReader taking too long, aborting...');
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('FileReader taking too long, aborting...');
+          }
           reader.abort();
           setError('File reading timed out. The file might be too large or corrupted. Please try a smaller file.');
         }
@@ -300,7 +320,9 @@ const AssetsPage = () => {
         clearTimeout(timeout);
         try {
           const result = e.target.result;
-          console.log('File read complete, setting form data. Data URL length:', result?.length || 0);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('File read complete, setting form data. Data URL length:', result?.length || 0);
+          }
           
           if (!result || result.length === 0) {
             throw new Error('FileReader returned empty result');
@@ -323,7 +345,9 @@ const AssetsPage = () => {
           });
           setError(null); // Clear any previous errors
         } catch (err) {
-          console.error('Error processing file result:', err);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error processing file result:', err);
+          }
           setError('Failed to process file. Please try a different file.');
           if (blobUrl) {
             URL.revokeObjectURL(blobUrl);
@@ -333,19 +357,21 @@ const AssetsPage = () => {
       
       reader.onerror = (error) => {
         clearTimeout(timeout);
-        console.error('FileReader error event:', error);
-        console.error('FileReader error details:', {
-          error: reader.error,
-          errorCode: reader.error?.code,
-          errorName: reader.error?.name,
-          readyState: reader.readyState,
-          file: {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            lastModified: file.lastModified
-          }
-        });
+        if (process.env.NODE_ENV === 'development') {
+          console.error('FileReader error event:', error);
+          console.error('FileReader error details:', {
+            error: reader.error,
+            errorCode: reader.error?.code,
+            errorName: reader.error?.name,
+            readyState: reader.readyState,
+            file: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              lastModified: file.lastModified
+            }
+          });
+        }
         
         // If it's a NotReadableError, try ArrayBuffer fallback
         const errorCode = reader.error?.code;
@@ -353,14 +379,20 @@ const AssetsPage = () => {
                               errorCode === 0 || 
                               reader.error?.name === 'NotReadableError';
         
-        console.log('Error code:', errorCode, 'Error name:', reader.error?.name, 'Is NotReadable:', isNotReadable);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Error code:', errorCode, 'Error name:', reader.error?.name, 'Is NotReadable:', isNotReadable);
+        }
         
         if (isNotReadable) {
-          console.log('NotReadableError detected, trying ArrayBuffer fallback...');
+          if (process.env.NODE_ENV === 'development') {
+            console.log('NotReadableError detected, trying ArrayBuffer fallback...');
+          }
           
           // Validate file is still accessible
           if (!file || file.size === 0) {
-            console.error('File is no longer valid for fallback');
+            if (process.env.NODE_ENV === 'development') {
+              console.error('File is no longer valid for fallback');
+            }
             if (blobUrl) {
               URL.revokeObjectURL(blobUrl);
             }
@@ -389,7 +421,9 @@ const AssetsPage = () => {
                 const base64 = btoa(binary);
                 const dataUrl = `data:${file.type || 'application/octet-stream'};base64,${base64}`;
                 
-                console.log('File read via ArrayBuffer fallback, setting form data. Data URL length:', dataUrl.length);
+                if (process.env.NODE_ENV === 'development') {
+                  console.log('File read via ArrayBuffer fallback, setting form data. Data URL length:', dataUrl.length);
+                }
                 // Extract filename without extension for better default name
                 const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
                 setUploadFormData({
@@ -406,7 +440,9 @@ const AssetsPage = () => {
                   URL.revokeObjectURL(blobUrl);
                 }
               } catch (convertErr) {
-                console.error('Error converting ArrayBuffer to base64:', convertErr);
+                if (process.env.NODE_ENV === 'development') {
+                  console.error('Error converting ArrayBuffer to base64:', convertErr);
+                }
                 if (blobUrl) {
                   URL.revokeObjectURL(blobUrl);
                 }
@@ -415,12 +451,14 @@ const AssetsPage = () => {
             };
             
             arrayBufferReader.onerror = (err) => {
-              console.error('ArrayBuffer reader also failed:', err);
-              console.error('ArrayBuffer reader error details:', {
-                error: arrayBufferReader.error,
-                errorCode: arrayBufferReader.error?.code,
-                errorName: arrayBufferReader.error?.name
-              });
+              if (process.env.NODE_ENV === 'development') {
+                console.error('ArrayBuffer reader also failed:', err);
+                console.error('ArrayBuffer reader error details:', {
+                  error: arrayBufferReader.error,
+                  errorCode: arrayBufferReader.error?.code,
+                  errorName: arrayBufferReader.error?.name
+                });
+              }
               if (blobUrl) {
                 URL.revokeObjectURL(blobUrl);
               }
@@ -437,11 +475,15 @@ const AssetsPage = () => {
               );
             };
             
-            console.log('Attempting to read file as ArrayBuffer...');
+            if (process.env.NODE_ENV === 'development') {
+              console.log('Attempting to read file as ArrayBuffer...');
+            }
             arrayBufferReader.readAsArrayBuffer(file);
             return; // Exit early, fallback will handle it
           } catch (fallbackErr) {
-            console.error('Failed to set up ArrayBuffer fallback:', fallbackErr);
+            if (process.env.NODE_ENV === 'development') {
+              console.error('Failed to set up ArrayBuffer fallback:', fallbackErr);
+            }
             // Continue to show error message below
           }
         }
@@ -476,7 +518,9 @@ const AssetsPage = () => {
       
       reader.onabort = () => {
         clearTimeout(timeout);
-        console.error('FileReader aborted');
+        if (process.env.NODE_ENV === 'development') {
+          console.error('FileReader aborted');
+        }
         if (blobUrl) {
           URL.revokeObjectURL(blobUrl);
         }
@@ -484,7 +528,7 @@ const AssetsPage = () => {
       };
       
       reader.onprogress = (e) => {
-        if (e.lengthComputable) {
+        if (e.lengthComputable && process.env.NODE_ENV === 'development') {
           const percentLoaded = Math.round((e.loaded / e.total) * 100);
           console.log(`File reading progress: ${percentLoaded}% (${e.loaded}/${e.total} bytes)`);
         }
@@ -496,12 +540,14 @@ const AssetsPage = () => {
       }
       
       // Start reading the file
-      console.log('Starting to read file as data URL...', {
-        fileSize: file.size,
-        fileType: file.type,
-        fileName: file.name,
-        fileLastModified: file.lastModified
-      });
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Starting to read file as data URL...', {
+          fileSize: file.size,
+          fileType: file.type,
+          fileName: file.name,
+          fileLastModified: file.lastModified
+        });
+      }
       
       // Try readAsDataURL first, with fallback to readAsArrayBuffer
       try {
@@ -513,7 +559,9 @@ const AssetsPage = () => {
         // Use readAsDataURL for images and small files
         reader.readAsDataURL(file);
       } catch (readErr) {
-        console.error('Error calling readAsDataURL, trying ArrayBuffer fallback:', readErr);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error calling readAsDataURL, trying ArrayBuffer fallback:', readErr);
+        }
         
         // Fallback: Try reading as ArrayBuffer and converting to base64
         try {
@@ -530,7 +578,9 @@ const AssetsPage = () => {
               const base64 = btoa(binary);
               const dataUrl = `data:${file.type || 'application/octet-stream'};base64,${base64}`;
               
-              console.log('File read via ArrayBuffer fallback, setting form data');
+              if (process.env.NODE_ENV === 'development') {
+                console.log('File read via ArrayBuffer fallback, setting form data');
+              }
               setUploadFormData({
                 name: file.name,
                 type: fileType,
@@ -545,7 +595,9 @@ const AssetsPage = () => {
                 URL.revokeObjectURL(blobUrl);
               }
             } catch (convertErr) {
-              console.error('Error converting ArrayBuffer to base64:', convertErr);
+              if (process.env.NODE_ENV === 'development') {
+                console.error('Error converting ArrayBuffer to base64:', convertErr);
+              }
               if (blobUrl) {
                 URL.revokeObjectURL(blobUrl);
               }
@@ -554,7 +606,9 @@ const AssetsPage = () => {
           };
           
           arrayBufferReader.onerror = (err) => {
-            console.error('ArrayBuffer reader also failed:', err);
+            if (process.env.NODE_ENV === 'development') {
+              console.error('ArrayBuffer reader also failed:', err);
+            }
             if (blobUrl) {
               URL.revokeObjectURL(blobUrl);
             }
@@ -563,7 +617,9 @@ const AssetsPage = () => {
           
           arrayBufferReader.readAsArrayBuffer(file);
         } catch (fallbackErr) {
-          console.error('Fallback also failed:', fallbackErr);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Fallback also failed:', fallbackErr);
+          }
           if (blobUrl) {
             URL.revokeObjectURL(blobUrl);
           }

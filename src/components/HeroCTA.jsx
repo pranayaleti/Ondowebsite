@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowRight, Calculator, MessageCircle, Star, CheckCircle } from 'lucide-react';
 
 const HeroCTA = ({ onOpenConsultation }) => {
