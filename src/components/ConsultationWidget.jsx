@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { companyInfo } from "../constants/companyInfo";
-import { X, Calendar, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import SelectField from './SelectField';
 
 const ConsultationWidget = () => {
@@ -355,8 +355,17 @@ const ConsultationWidget = () => {
                   disabled={isSubmitting}
                   className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center disabled:opacity-70"
                 >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  {isSubmitting ? 'Saving...' : 'Continue to Booking'}
+                  {isSubmitting ? (
+                    <>
+                      <Loader className="h-5 w-5 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Calendar className="h-5 w-5 mr-2" />
+                      Continue to Booking
+                    </>
+                  )}
                 </button>
 
                 <button
@@ -368,10 +377,6 @@ const ConsultationWidget = () => {
                 </button>
               </div>
 
-              {/* Urgent requests note */}
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                For urgent requests or mobile services, please call us at <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-600 font-semibold">{companyInfo.urgentPhoneDisplay}</a>
-              </p>
             </form>
           </div>
         </div>

@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ConsultationWidget from '../components/ConsultationWidget';
 import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
-import { blogPosts, blogCategories, getFeaturedPosts, getRecentPosts } from '../data/blogData';
 import { Search, Filter } from 'lucide-react';
 
 const BlogPage = () => {
@@ -12,30 +11,70 @@ const BlogPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [blogData, setBlogData] = useState(null);
 
-  const featuredPosts = getFeaturedPosts();
-  const recentPosts = getRecentPosts(6);
+  // Lazy load blogData
+  useEffect(() => {
+    import('../data/blogData').then(module => {
+      setBlogData({
+        blogPosts: module.blogPosts,
+        blogCategories: module.blogCategories,
+        getFeaturedPosts: module.getFeaturedPosts,
+        getRecentPosts: module.getRecentPosts
+      });
+    });
+  }, []);
 
-  const filteredPosts = blogPosts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  });
+  const featuredPosts = useMemo(() => {
+    return blogData ? blogData.getFeaturedPosts() : [];
+  }, [blogData]);
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortBy === 'newest') {
-      return new Date(b.publishDate) - new Date(a.publishDate);
-    } else if (sortBy === 'oldest') {
-      return new Date(a.publishDate) - new Date(b.publishDate);
-    } else if (sortBy === 'title') {
-      return a.title.localeCompare(b.title);
-    }
-    return 0;
-  });
+  const recentPosts = useMemo(() => {
+    return blogData ? blogData.getRecentPosts(6) : [];
+  }, [blogData]);
+
+  const filteredPosts = useMemo(() => {
+    if (!blogData) return [];
+    return blogData.blogPosts.filter(post => {
+      const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, selectedCategory, blogData]);
+
+  const sortedPosts = useMemo(() => {
+    return [...filteredPosts].sort((a, b) => {
+      if (sortBy === 'newest') {
+        return new Date(b.publishDate) - new Date(a.publishDate);
+      } else if (sortBy === 'oldest') {
+        return new Date(a.publishDate) - new Date(b.publishDate);
+      } else if (sortBy === 'title') {
+        return a.title.localeCompare(b.title);
+      }
+      return 0;
+    });
+  }, [filteredPosts, sortBy]);
+
+  // Show loading state while blogData is loading
+  if (!blogData) {
+    return (
+      <>
+        <SEOHead
+          title="Business Technology Blogs | Ondosoft"
+          description="Get expert insights on small business technology, automation, SaaS solutions, and web development. Learn how to grow your business with smart software."
+          keywords="small business technology, business automation, SaaS solutions, web development, business software, technology tips"
+          canonicalUrl="https://ondosoft.com/blogs"
+        />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -85,7 +124,7 @@ const BlogPage = () => {
                 className="px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
                 <option value="all">All Categories</option>
-                {blogCategories.map(category => (
+                {blogData.blogCategories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
@@ -107,8 +146,8 @@ const BlogPage = () => {
             {/* Results Count */}
             <div className="mb-8">
               <p className="text-gray-300">
-                Showing {sortedPosts.length} of {blogPosts.length} articles
-                {selectedCategory !== 'all' && ` in ${blogCategories.find(c => c.id === selectedCategory)?.name}`}
+                Showing {sortedPosts.length} of {blogData.blogPosts.length} articles
+                {selectedCategory !== 'all' && ` in ${blogData.blogCategories.find(c => c.id === selectedCategory)?.name}`}
                 {searchTerm && ` matching "${searchTerm}"`}
               </p>
             </div>

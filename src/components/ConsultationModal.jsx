@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { companyInfo } from "../constants/companyInfo";
-import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import SelectField from './SelectField';
 
 const ConsultationModal = ({ isOpen, onClose, preset }) => {
@@ -187,13 +187,6 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6">
-          {preset?.name && (
-            <div className="mb-6 p-4 rounded-lg border border-orange-500 bg-orange-900/20 text-sm text-orange-100">
-              <div className="font-semibold">Selected Plan: {preset.name}</div>
-              <div className="mt-1 text-orange-200">{preset.price} {preset.cadence}</div>
-              <div className="mt-3 text-orange-200">We'll tailor questions to your needs. Please share specifics below.</div>
-            </div>
-          )}
           {/* Success/Error Messages */}
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 bg-green-900/30 border border-green-500 rounded-lg flex items-center">
@@ -366,8 +359,17 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               disabled={isSubmitting}
               className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center disabled:opacity-70"
             >
-              <Calendar className="h-5 w-5 mr-2" />
-              {isSubmitting ? 'Saving...' : 'Continue to Booking'}
+              {isSubmitting ? (
+                <>
+                  <Loader className="h-5 w-5 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Calendar className="h-5 w-5 mr-2" />
+                  Continue to Booking
+                </>
+              )}
             </button>
 
             <button
@@ -378,11 +380,6 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               Cancel
             </button>
           </div>
-
-          {/* Urgent requests note */}
-          <p className="text-xs text-gray-400 mt-4 text-center">
-            For urgent requests or mobile services, please call us at <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-400 font-semibold">{companyInfo.urgentPhoneDisplay}</a>
-          </p>
         </form>
       </div>
       <style>{`

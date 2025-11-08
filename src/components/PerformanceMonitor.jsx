@@ -10,7 +10,6 @@ const PerformanceMonitor = () => {
         const lcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
-          console.log('LCP:', lastEntry.startTime);
           
           // Send to analytics if needed
           if (window.gtag) {
@@ -25,7 +24,7 @@ const PerformanceMonitor = () => {
         try {
           lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
         } catch (e) {
-          console.log('LCP observer not supported');
+          // LCP observer not supported
         }
 
         // FID (First Input Delay) monitoring
@@ -33,7 +32,6 @@ const PerformanceMonitor = () => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
             const fid = entry.processingStart - entry.startTime;
-            console.log('FID:', fid);
             
             if (window.gtag) {
               window.gtag('event', 'web_vitals', {
@@ -48,7 +46,7 @@ const PerformanceMonitor = () => {
         try {
           fidObserver.observe({ entryTypes: ['first-input'] });
         } catch (e) {
-          console.log('FID observer not supported');
+          // FID observer not supported
         }
 
         // CLS (Cumulative Layout Shift) monitoring
@@ -60,7 +58,6 @@ const PerformanceMonitor = () => {
               clsValue += entry.value;
             }
           });
-          console.log('CLS:', clsValue);
           
           if (window.gtag) {
             window.gtag('event', 'web_vitals', {
@@ -74,15 +71,13 @@ const PerformanceMonitor = () => {
         try {
           clsObserver.observe({ entryTypes: ['layout-shift'] });
         } catch (e) {
-          console.log('CLS observer not supported');
+          // CLS observer not supported
         }
 
         // FCP (First Contentful Paint) monitoring
         const fcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
-            console.log('FCP:', entry.startTime);
-            
             if (window.gtag) {
               window.gtag('event', 'web_vitals', {
                 name: 'FCP',
@@ -96,7 +91,7 @@ const PerformanceMonitor = () => {
         try {
           fcpObserver.observe({ entryTypes: ['paint'] });
         } catch (e) {
-          console.log('FCP observer not supported');
+          // FCP observer not supported
         }
       }
 
@@ -108,12 +103,13 @@ const PerformanceMonitor = () => {
           resources.forEach((resource) => {
             const loadTime = resource.responseEnd - resource.startTime;
             
-            // Log slow resources
-            if (loadTime > 1000) {
-              console.warn('Slow resource detected:', {
+            // Track slow resources (only send to analytics, no console logging)
+            if (loadTime > 1000 && window.gtag) {
+              window.gtag('event', 'slow_resource', {
                 name: resource.name,
-                loadTime: Math.round(loadTime),
-                size: resource.transferSize
+                load_time: Math.round(loadTime),
+                size: resource.transferSize,
+                event_category: 'Performance'
               });
             }
           });
@@ -138,8 +134,6 @@ const PerformanceMonitor = () => {
               domComplete: navigation.domComplete - navigation.fetchStart
             };
             
-            console.log('Navigation timing:', metrics);
-            
             if (window.gtag) {
               window.gtag('event', 'navigation_timing', {
                 name: 'DOMContentLoaded',
@@ -163,7 +157,6 @@ const PerformanceMonitor = () => {
     // Cleanup function
     return () => {
       // Cleanup observers if needed
-      console.log('Performance monitoring cleanup');
     };
   }, []);
 

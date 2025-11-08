@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import user1 from '../assets/profile-pictures/user1.jpg';
@@ -9,7 +9,7 @@ import user4 from '../assets/profile-pictures/user4.jpg';
 const TestimonialCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  const testimonials = [
+  const testimonials = useMemo(() => [
     {
       id: 1,
       name: "Sarah Martinez",
@@ -50,7 +50,7 @@ const TestimonialCarousel = () => {
       quote: "From concept to deployment, Ondosoft made the entire process smooth and transparent. Our e-commerce solution is now handling 10x more traffic than before.",
       logo: "RetailMax"
     }
-  ];
+  ], []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -62,17 +62,17 @@ const TestimonialCarousel = () => {
     return () => clearInterval(timer);
   }, [testimonials.length]);
 
-  const goToPrevious = () => {
-    setCurrentIndex(currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1);
-  };
+  const goToPrevious = useCallback(() => {
+    setCurrentIndex((prevIndex) => prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1);
+  }, [testimonials.length]);
 
-  const goToNext = () => {
-    setCurrentIndex(currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1);
-  };
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prevIndex) => prevIndex === testimonials.length - 1 ? 0 : prevIndex + 1);
+  }, [testimonials.length]);
 
-  const goToSlide = (index) => {
+  const goToSlide = useCallback((index) => {
     setCurrentIndex(index);
-  };
+  }, []);
 
   return (
     <section className="py-20 bg-gray-900">
