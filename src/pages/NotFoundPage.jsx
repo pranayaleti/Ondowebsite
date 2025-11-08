@@ -15,7 +15,7 @@ const NotFoundPage = () => {
         description="The page you're looking for doesn't exist. Return to Ondosoft's homepage for software development, SaaS solutions, and freelancing services."
         noIndex={true}
       />
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
       <div className="text-center px-4">
         <div className="mb-8">
           <h1 className="text-9xl font-bold text-orange-500 mb-4">404</h1>

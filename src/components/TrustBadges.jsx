@@ -46,7 +46,7 @@ const TrustBadges = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-900">
+    <section className="py-20">
       <div className="max-w-7xl mx-auto px-4">
         {/* Trust Badges */}
         <div className="text-center mb-16">

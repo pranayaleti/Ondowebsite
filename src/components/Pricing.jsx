@@ -3,7 +3,7 @@ import { CheckCircle2 } from "lucide-react";
 import { pricingOptions } from "../constants/data";
 
 const Pricing = ({ onConsult }) => {
-  const cards = pricingOptions; // show all three options
+  const cards = pricingOptions; // show all pricing options
   const [selectedIndex, setSelectedIndex] = React.useState(1); // preselect right card ("Most Popular")
 
   return (
@@ -20,7 +20,7 @@ const Pricing = ({ onConsult }) => {
         professional development, testing, and deployment.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
         {cards.map((option, index) => {
           const isSelected = selectedIndex === index;
           return (

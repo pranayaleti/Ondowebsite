@@ -12,10 +12,9 @@ import Footer from "./Footer";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-black">
+    <div>
       {/* Hero Section with Gradient */}
-      <div className="relative bg-gradient-to-br from-black via-gray-900 to-orange-900">
-        <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative">
         <div className="relative max-w-7xl mx-auto px-4 py-24">
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-6">
             About <span className="text-orange-500">OndoSoft</span>

@@ -18,9 +18,9 @@ const SitemapPage = () => {
         canonicalUrl="https://ondosoft.com/sitemap"
       />
       
-      <div className="min-h-screen bg-black">
+      <div>
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-20 border-b border-gray-700">
+        <section className="text-white py-20 border-b border-gray-700/50">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
@@ -70,8 +70,8 @@ const SitemapPage = () => {
                       <h3 className="text-lg font-semibold text-white mb-1">Testimonials</h3>
                       <p className="text-sm text-gray-400">Client reviews and feedback</p>
                     </Link>
-                    <Link to="/blog" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                      <h3 className="text-lg font-semibold text-white mb-1">Blog</h3>
+                    <Link to="/blogs" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
+                      <h3 className="text-lg font-semibold text-white mb-1">Blogs</h3>
                       <p className="text-sm text-gray-400">Latest articles and insights</p>
                     </Link>
                     <Link to="/contact" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">

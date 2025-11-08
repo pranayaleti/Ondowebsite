@@ -30,7 +30,7 @@ const ContactPage = () => {
         canonicalUrl={`${companyInfo.urls.website}/contact`}
         structuredData={contactStructuredData}
       />
-      <div className="min-h-screen bg-black">
+      <div>
         <div className="mx-auto pt-20">
           <div id="contact" className="scroll-mt-20">
             <Contact onOpenConsultation={() => setIsModalOpen(true)} />

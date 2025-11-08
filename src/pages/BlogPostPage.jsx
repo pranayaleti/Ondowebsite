@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ShareButtons from '../components/ShareButtons';
-import EmailCapture from '../components/EmailCapture';
 import ConsultationWidget from '../components/ConsultationWidget';
 import ConsultationModal from '../components/ConsultationModal';
 import Footer from '../components/Footer';
@@ -18,15 +17,15 @@ const BlogPostPage = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Post Not Found</h1>
           <p className="text-gray-300 mb-8">The article you're looking for doesn't exist.</p>
           <Link 
-            to="/blog"
+            to="/blogs"
             className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
           >
-            Back to Blog
+            Back to Blogs
           </Link>
         </div>
       </div>
@@ -82,23 +81,23 @@ const BlogPostPage = () => {
   return (
     <>
       <SEOHead
-        title={`${post.title} | Ondosoft Blog`}
+        title={`${post.title} | Ondosoft Blogs`}
         description={post.metaDescription}
         keywords={post.tags.join(', ')}
-        canonicalUrl={`https://ondosoft.com/blog/${post.slug}`}
+        canonicalUrl={`https://ondosoft.com/blogs/${post.slug}`}
         ogImage={post.socialImage}
       />
       
-      <div className="min-h-screen bg-black">
+      <div>
         {/* Back Button */}
-        <div className="bg-black border-b border-gray-200">
+        <div className="border-b border-gray-700/50">
           <div className="max-w-4xl mx-auto px-4 py-4">
             <Link 
-              to="/blog"
+              to="/blogs"
               className="inline-flex items-center text-orange-600 hover:text-orange-700 font-medium"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Blog
+              Back to Blogs
             </Link>
           </div>
         </div>
@@ -151,14 +150,9 @@ const BlogPostPage = () => {
           <div className="mt-12">
             <ShareButtons 
               title={post.title}
-              url={`/blog/${post.slug}`}
+              url={`/blogs/${post.slug}`}
               description={post.excerpt}
             />
-          </div>
-
-          {/* Email Capture */}
-          <div className="mt-12">
-            <EmailCapture title="Get More Business Tech Tips" />
           </div>
 
           {/* Related Posts */}

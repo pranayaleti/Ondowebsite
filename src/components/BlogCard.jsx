@@ -14,7 +14,7 @@ const BlogCard = ({ post, featured = false }) => {
   return (
     <article className={`group ${featured ? 'lg:col-span-2' : ''}`}>
       <Link 
-        to={`/blog/${post.slug}`}
+        to={`/blogs/${post.slug}`}
         className="block h-full bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 overflow-hidden border border-gray-700 hover:border-orange-500/30"
       >
         {/* Image */}
