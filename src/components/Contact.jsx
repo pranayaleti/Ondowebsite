@@ -1,5 +1,5 @@
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { sanitizeInput, validateFormData, validationRules, rateLimiter, generateCSRFToken } from "../utils/security";
 import { companyInfo } from "../constants/companyInfo";
 

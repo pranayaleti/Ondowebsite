@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CreditCard, Plus, Check, X, Star } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 

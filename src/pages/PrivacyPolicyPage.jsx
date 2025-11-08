@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import SEOHead from '../components/SEOHead';
 import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
@@ -6,7 +6,7 @@ import ConsultationModal from '../components/ConsultationModal';
 import { companyInfo } from '../constants/companyInfo';
 
 const PrivacyPolicyPage = () => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <>

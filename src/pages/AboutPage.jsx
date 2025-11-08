@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import About from "../components/About";
 import ConsultationWidget from "../components/ConsultationWidget";

@@ -38,11 +38,15 @@ export default defineConfig({
     include: [
       'react',
       'react-dom',
+      'react/jsx-runtime',
       'react-router-dom',
       'lucide-react',
       'react-helmet-async'
     ],
     exclude: ['@vite/client', '@vite/env']
+  },
+  resolve: {
+    dedupe: ['react', 'react-dom']
   },
   // CSS optimization
   css: {

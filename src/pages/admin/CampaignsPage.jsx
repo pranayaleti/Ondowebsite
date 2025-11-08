@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { adminAPI } from '../../utils/auth';
 import { Megaphone, Loader, Search, Filter, Calendar, User, Mail } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';

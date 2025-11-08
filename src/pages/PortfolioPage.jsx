@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import SEOHead from '../components/SEOHead';
 import ConsultationWidget from '../components/ConsultationWidget';
 import ConsultationModal from '../components/ConsultationModal';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { portalAPI } from '../../utils/auth';
 import { Megaphone, Loader } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';

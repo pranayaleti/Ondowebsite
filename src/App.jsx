@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -50,6 +50,7 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AnalyticsPage = lazy(() => import("./pages/admin/AnalyticsPage"));
 const ClientsPage = lazy(() => import("./pages/admin/ClientsPage"));
 const AdminCampaignsPage = lazy(() => import("./pages/admin/CampaignsPage"));
+const AdminAssetsPage = lazy(() => import("./pages/admin/AssetsPage"));
 const AdminTicketsPage = lazy(() => import("./pages/admin/TicketsPage"));
 const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
 
@@ -65,7 +66,7 @@ const PageLoader = () => (
 
 const AppRoutes = () => {
   // Initialize performance optimizations
-  React.useEffect(() => {
+  useEffect(() => {
     initPerformanceOptimizations();
   }, []);
 
@@ -136,6 +137,7 @@ const AppRoutes = () => {
             <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="clients" element={<ClientsPage />} />
             <Route path="campaigns" element={<AdminCampaignsPage />} />
+            <Route path="assets" element={<AdminAssetsPage />} />
             <Route path="tickets" element={<AdminTicketsPage />} />
             <Route path="invoices" element={<AdminInvoicesPage />} />
           </Route>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { SERVICE_AREAS } from '../utils/unifiedData';
 
 // Comprehensive JSON-LD schema markup for Ondosoft

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { portalAPI } from '../../utils/auth';
 import { CreditCard, Loader, CheckCircle2, Star, X, AlertCircle } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';

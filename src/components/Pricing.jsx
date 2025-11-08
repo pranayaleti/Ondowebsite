@@ -1,10 +1,10 @@
-import React from "react";
+import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { pricingOptions } from "../constants/data";
 
 const Pricing = ({ onConsult }) => {
   const cards = pricingOptions; // show all pricing options
-  const [selectedIndex, setSelectedIndex] = React.useState(1); // preselect right card ("Most Popular")
+  const [selectedIndex, setSelectedIndex] = useState(1); // preselect right card ("Most Popular")
 
   return (
     <div className="mt-20 mb-20 md:mb-24 lg:mb-32">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import SEOHead from '../components/SEOHead';
@@ -79,6 +79,15 @@ const SignInPage = () => {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
               <p className="text-gray-400">Access your client portal</p>
+            </div>
+
+            {/* Demo Credentials for Testing */}
+            <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/50 rounded-lg">
+              <p className="text-blue-400 text-sm font-semibold mb-2">Demo Credentials (for testing):</p>
+              <div className="text-xs text-gray-400 space-y-1 font-mono">
+                <p>Client: client@ondosoft.com / client123</p>
+                <p>Admin: admin@ondosoft.com / admin123</p>
+              </div>
             </div>
 
             {registered && (

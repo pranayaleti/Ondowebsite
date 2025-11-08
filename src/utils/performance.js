@@ -1,4 +1,5 @@
 // Performance optimization utilities
+import { lazy } from 'react';
 
 // Preload critical resources
 export const preloadCriticalResources = () => {
@@ -6,19 +7,12 @@ export const preloadCriticalResources = () => {
   const heroImage = new Image();
   heroImage.src = '/logo.png';
   
-  // Preload critical fonts
+  // Load critical fonts (use stylesheet instead of preload to avoid warnings)
   const fontLink = document.createElement('link');
-  fontLink.rel = 'preload';
+  fontLink.rel = 'stylesheet';
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-  fontLink.as = 'style';
+  fontLink.crossOrigin = 'anonymous';
   document.head.appendChild(fontLink);
-  
-  // Preload critical CSS
-  const criticalCSS = document.createElement('link');
-  criticalCSS.rel = 'preload';
-  criticalCSS.href = '/assets/critical.css';
-  criticalCSS.as = 'style';
-  document.head.appendChild(criticalCSS);
 };
 
 // Lazy load non-critical scripts
@@ -71,10 +65,15 @@ export const registerServiceWorker = () => {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('SW registered: ', registration);
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SW registered: ', registration);
+          }
         })
         .catch((registrationError) => {
-          console.log('SW registration failed: ', registrationError);
+          // Only log in development to avoid console errors
+          if (process.env.NODE_ENV === 'development') {
+            console.log('SW registration failed: ', registrationError);
+          }
         });
     });
   }
@@ -113,7 +112,7 @@ export const addResourceHints = () => {
 
 // Bundle splitting utilities
 export const loadComponent = (importFunction) => {
-  return React.lazy(importFunction);
+  return lazy(importFunction);
 };
 
 // Critical CSS extraction
@@ -132,8 +131,8 @@ export const extractCriticalCSS = () => {
 
 // Performance monitoring
 export const initPerformanceMonitoring = () => {
-  // Web Vitals monitoring
-  if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
+  // Web Vitals monitoring - only log in development
+  if (typeof window !== 'undefined' && 'PerformanceObserver' in window && process.env.NODE_ENV === 'development') {
     // LCP monitoring
     const lcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();

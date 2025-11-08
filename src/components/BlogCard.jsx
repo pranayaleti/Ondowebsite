@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 
-const BlogCard = React.memo(({ post, featured = false }) => {
+const BlogCard = memo(({ post, featured = false }) => {
   const formattedDate = useMemo(() => {
     return new Date(post.publishDate).toLocaleDateString('en-US', {
       year: 'numeric',

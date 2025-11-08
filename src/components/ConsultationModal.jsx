@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import SelectField from './SelectField';

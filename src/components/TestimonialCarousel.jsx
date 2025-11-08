@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import OptimizedImage from './OptimizedImage';
 import user1 from '../assets/profile-pictures/user1.jpg';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Settings, Plus, Edit, Trash2, CheckCircle, XCircle, Clock } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
