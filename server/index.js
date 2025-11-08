@@ -17,12 +17,19 @@ const app = express();
 const PORT = process.env.PORT || 5001; // Changed from 5000 to avoid AirPlay conflict on macOS
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Initialize PostgreSQL connection
+// Initialize PostgreSQL connection with optimized pool settings
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_o0t1YrGAJByC@ep-restless-frost-adafv6il-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  // Connection pool optimization for scalability
+  max: 20, // Maximum number of clients in the pool
+  min: 5, // Minimum number of clients in the pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+  // Statement timeout (optional, can be set per query)
+  statement_timeout: 30000 // 30 seconds
 });
 
 // Test connection
@@ -185,8 +192,99 @@ const createTables = async () => {
     
     // Add new columns to existing invoices table if they don't exist
     await addInvoiceColumns();
+    
+    // Create indexes for better query performance
+    await createIndexes();
   } catch (error) {
     console.error('Error creating tables:', error);
+  }
+};
+
+// Create database indexes for optimal query performance
+const createIndexes = async () => {
+  try {
+    // Indexes for users table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+      CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+      CREATE INDEX IF NOT EXISTS idx_users_account_status ON users(account_status);
+      CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
+      CREATE INDEX IF NOT EXISTS idx_users_last_login ON users(last_login);
+    `);
+
+    // Indexes for subscriptions table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
+      CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+      CREATE INDEX IF NOT EXISTS idx_subscriptions_created_at ON subscriptions(created_at);
+      CREATE INDEX IF NOT EXISTS idx_subscriptions_user_status ON subscriptions(user_id, status);
+    `);
+
+    // Indexes for campaigns table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_campaigns_user_id ON campaigns(user_id);
+      CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
+      CREATE INDEX IF NOT EXISTS idx_campaigns_created_at ON campaigns(created_at);
+      CREATE INDEX IF NOT EXISTS idx_campaigns_user_status ON campaigns(user_id, status);
+    `);
+
+    // Indexes for assets table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_assets_user_id ON assets(user_id);
+      CREATE INDEX IF NOT EXISTS idx_assets_type ON assets(type);
+      CREATE INDEX IF NOT EXISTS idx_assets_category ON assets(category);
+      CREATE INDEX IF NOT EXISTS idx_assets_created_at ON assets(created_at);
+      CREATE INDEX IF NOT EXISTS idx_assets_user_type ON assets(user_id, type);
+    `);
+
+    // Indexes for invoices table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_invoices_user_id ON invoices(user_id);
+      CREATE INDEX IF NOT EXISTS idx_invoices_status ON invoices(status);
+      CREATE INDEX IF NOT EXISTS idx_invoices_invoice_number ON invoices(invoice_number);
+      CREATE INDEX IF NOT EXISTS idx_invoices_created_at ON invoices(created_at);
+      CREATE INDEX IF NOT EXISTS idx_invoices_due_date ON invoices(due_date);
+      CREATE INDEX IF NOT EXISTS idx_invoices_user_status ON invoices(user_id, status);
+      CREATE INDEX IF NOT EXISTS idx_invoices_status_created ON invoices(status, created_at);
+    `);
+
+    // Indexes for api_requests table (for analytics)
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_api_requests_user_id ON api_requests(user_id);
+      CREATE INDEX IF NOT EXISTS idx_api_requests_endpoint ON api_requests(endpoint);
+      CREATE INDEX IF NOT EXISTS idx_api_requests_status_code ON api_requests(status_code);
+      CREATE INDEX IF NOT EXISTS idx_api_requests_created_at ON api_requests(created_at);
+      CREATE INDEX IF NOT EXISTS idx_api_requests_user_created ON api_requests(user_id, created_at);
+    `);
+
+    // Indexes for tickets table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
+      CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets(status);
+      CREATE INDEX IF NOT EXISTS idx_tickets_priority ON tickets(priority);
+      CREATE INDEX IF NOT EXISTS idx_tickets_assigned_to ON tickets(assigned_to);
+      CREATE INDEX IF NOT EXISTS idx_tickets_created_at ON tickets(created_at);
+      CREATE INDEX IF NOT EXISTS idx_tickets_user_status ON tickets(user_id, status);
+      CREATE INDEX IF NOT EXISTS idx_tickets_status_created ON tickets(status, created_at);
+    `);
+
+    // Indexes for ticket_messages table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_ticket_messages_ticket_id ON ticket_messages(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_ticket_messages_user_id ON ticket_messages(user_id);
+      CREATE INDEX IF NOT EXISTS idx_ticket_messages_created_at ON ticket_messages(created_at);
+      CREATE INDEX IF NOT EXISTS idx_ticket_messages_ticket_created ON ticket_messages(ticket_id, created_at);
+    `);
+
+    // Indexes for ticket_attachments table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_ticket_attachments_ticket_id ON ticket_attachments(ticket_id);
+      CREATE INDEX IF NOT EXISTS idx_ticket_attachments_message_id ON ticket_attachments(message_id);
+    `);
+
+    console.log('Database indexes created/verified successfully');
+  } catch (error) {
+    console.error('Error creating indexes:', error);
   }
 };
 
@@ -384,6 +482,8 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'https://ondosoft.com',
+  'https://www.ondosoft.com',
   process.env.FRONTEND_URL
 ].filter(Boolean); // Remove undefined values
 
@@ -391,12 +491,24 @@ const allowedOrigins = [
 app.options('*', (req, res) => {
   const origin = req.headers.origin;
   
-  if (origin && (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production')) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-    res.header('Access-Control-Max-Age', '86400');
+  // In production, only allow specific origins
+  if (process.env.NODE_ENV === 'production') {
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      res.header('Access-Control-Max-Age', '86400');
+    }
+  } else {
+    // In development, allow all origins
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      res.header('Access-Control-Max-Age', '86400');
+    }
   }
   
   res.sendStatus(200);
@@ -406,18 +518,24 @@ app.options('*', (req, res) => {
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   
-  // In development, allow all origins; in production, check allowed list
-  const isAllowed = !origin || 
-                   allowedOrigins.includes(origin) || 
-                   process.env.NODE_ENV !== 'production';
-  
-  if (isAllowed && origin) {
-    // When using credentials, must specify exact origin, not '*'
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+  // In production, only allow specific origins
+  if (process.env.NODE_ENV === 'production') {
+    if (origin && allowedOrigins.includes(origin)) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+    }
+  } else {
+    // In development, allow all origins
+    if (origin) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+    }
   }
   
   next();

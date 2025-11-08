@@ -41,12 +41,12 @@ const InvoicesPage = () => {
   };
 
   const handleViewPDF = (invoiceId) => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+    const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5001/api');
     window.open(`${API_URL}/portal/invoices/${invoiceId}/pdf`, '_blank');
   };
 
   const handleDownloadPDF = (invoiceId, invoiceNumber) => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+    const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5001/api');
     const link = document.createElement('a');
     link.href = `${API_URL}/portal/invoices/${invoiceId}/pdf`;
     link.download = `invoice-${invoiceNumber || invoiceId}.html`;

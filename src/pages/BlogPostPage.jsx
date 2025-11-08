@@ -68,36 +68,37 @@ const BlogPostPage = () => {
   const formatContent = (content) => {
     return content.split('\n').map((paragraph, index) => {
       if (paragraph.startsWith('# ')) {
+        const text = paragraph.substring(2);
+        // Highlight important words/phrases in orange
+        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
         return (
-          <h1 key={index} className="text-3xl font-bold text-gray-900 mt-8 mb-4">
-            {paragraph.substring(2)}
-          </h1>
+          <h1 key={index} className="text-3xl font-bold text-white mt-8 mb-4" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
       } else if (paragraph.startsWith('## ')) {
+        const text = paragraph.substring(3);
+        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
         return (
-          <h2 key={index} className="text-2xl font-bold text-gray-900 mt-6 mb-3">
-            {paragraph.substring(3)}
-          </h2>
+          <h2 key={index} className="text-2xl font-bold text-white mt-6 mb-3" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
       } else if (paragraph.startsWith('### ')) {
+        const text = paragraph.substring(4);
+        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
         return (
-          <h3 key={index} className="text-xl font-semibold text-gray-900 mt-4 mb-2">
-            {paragraph.substring(4)}
-          </h3>
+          <h3 key={index} className="text-xl font-semibold text-white mt-4 mb-2" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
       } else if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
         return (
-          <p key={index} className="text-lg font-semibold text-gray-900 my-4">
+          <p key={index} className="text-lg font-semibold text-orange-400 my-4">
             {paragraph.substring(2, paragraph.length - 2)}
           </p>
         );
       } else if (paragraph.trim() === '') {
         return <br key={index} />;
       } else {
+        // Only highlight bold text (**text**) in orange, nothing else
+        const highlightedParagraph = paragraph.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
         return (
-          <p key={index} className="text-gray-700 leading-relaxed mb-4">
-            {paragraph}
-          </p>
+          <p key={index} className="text-gray-300 leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: highlightedParagraph }} />
         );
       }
     });
@@ -119,7 +120,7 @@ const BlogPostPage = () => {
           <div className="max-w-4xl mx-auto px-4 py-4">
             <Link 
               to="/blogs"
-              className="inline-flex items-center text-orange-600 hover:text-orange-700 font-medium"
+              className="inline-flex items-center text-orange-400 hover:text-orange-300 font-medium"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Blogs
@@ -131,31 +132,38 @@ const BlogPostPage = () => {
         <article className="max-w-4xl mx-auto px-4 py-12">
           {/* Category */}
           <div className="mb-4">
-            <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
+            <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full text-sm font-medium border border-orange-500/30">
               {blogData.blogCategories.find(cat => cat.id === post.category)?.name}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
             {post.title}
           </h1>
 
           {/* Meta */}
-          <div className="flex flex-wrap items-center gap-6 text-gray-600 mb-8">
+          <div className="flex flex-wrap items-center gap-6 text-gray-300 mb-8">
             <div className="flex items-center">
-              <User className="h-4 w-4 mr-2" />
+              <User className="h-4 w-4 mr-2 text-gray-400" />
               {post.author}
             </div>
             <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-2" />
+              <Calendar className="h-4 w-4 mr-2 text-gray-400" />
               {formatDate(post.publishDate)}
             </div>
             <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-2" />
+              <Clock className="h-4 w-4 mr-2 text-gray-400" />
               {post.readTime}
             </div>
           </div>
+
+          {/* Excerpt/Subtitle */}
+          {post.excerpt && (
+            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+              {post.excerpt}
+            </p>
+          )}
 
           {/* Featured Image */}
           <div className="mb-8">
@@ -183,7 +191,7 @@ const BlogPostPage = () => {
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
             <div className="mt-16">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Related Articles</h3>
+              <h3 className="text-2xl font-bold text-white mb-8">Related Articles</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {relatedPosts.map(relatedPost => (
                   <BlogCard key={relatedPost.id} post={relatedPost} />

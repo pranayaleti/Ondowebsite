@@ -40,7 +40,8 @@ const SignInPage = () => {
     try {
       // Google OAuth implementation
       // For now, this is a placeholder - you'll need to integrate with Google OAuth
-      window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/auth/google`;
+      const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5001');
+      window.location.href = `${API_BASE}/api/auth/google`;
     } catch (err) {
       setError(err.message || 'Google sign-in failed. Please try again.');
       setLoading(false);
