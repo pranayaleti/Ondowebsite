@@ -11,6 +11,8 @@ import SchemaMarkup from "./components/SchemaMarkup";
 import PerformanceMonitor from "./components/PerformanceMonitor";
 import ScriptOptimizer from "./components/ScriptOptimizer";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
 import { initPerformanceOptimizations } from "./utils/performance";
 
 // Lazy load page components for better performance
@@ -34,6 +36,22 @@ const NDAPage = lazy(() => import("./pages/NDAPage"));
 const LicensingPage = lazy(() => import("./pages/LicensingPage"));
 const AccessibilityPage = lazy(() => import("./pages/AccessibilityPage"));
 const CapabilitiesDeckPage = lazy(() => import("./pages/CapabilitiesDeckPage"));
+const SignUpPage = lazy(() => import("./pages/SignUpPage"));
+const SignInPage = lazy(() => import("./pages/SignInPage"));
+const PortalLayout = lazy(() => import("./pages/portal/PortalLayout"));
+const PortalDashboard = lazy(() => import("./pages/portal/PortalDashboard"));
+const SubscriptionsPage = lazy(() => import("./pages/portal/SubscriptionsPage"));
+const CampaignsPage = lazy(() => import("./pages/portal/CampaignsPage"));
+const AssetsPage = lazy(() => import("./pages/portal/AssetsPage"));
+const InvoicesPage = lazy(() => import("./pages/portal/InvoicesPage"));
+const TicketsPage = lazy(() => import("./pages/portal/TicketsPage"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AnalyticsPage = lazy(() => import("./pages/admin/AnalyticsPage"));
+const ClientsPage = lazy(() => import("./pages/admin/ClientsPage"));
+const AdminCampaignsPage = lazy(() => import("./pages/admin/CampaignsPage"));
+const AdminTicketsPage = lazy(() => import("./pages/admin/TicketsPage"));
+const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
 
 // Loading component
 const PageLoader = () => (
@@ -60,6 +78,7 @@ const AppRoutes = () => {
         <Navbar />
         <Suspense fallback={<PageLoader />}>
           <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<PortfolioPage />} />
           <Route path="/services" element={<ServicesPage />} />
@@ -82,6 +101,45 @@ const AppRoutes = () => {
           <Route path="/sitemap" element={<SitemapPage />} />
           <Route path="/sitemap.xml" element={<SitemapPage />} />
           <Route path="/robots.txt" element={<RobotsPage />} />
+          
+          {/* Auth Routes */}
+          <Route path="/auth/signup" element={<SignUpPage />} />
+          <Route path="/auth/signin" element={<SignInPage />} />
+          
+          {/* Portal Routes */}
+          <Route
+            path="/portal"
+            element={
+              <ProtectedRoute>
+                <PortalLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PortalDashboard />} />
+            <Route path="subscriptions" element={<SubscriptionsPage />} />
+            <Route path="campaigns" element={<CampaignsPage />} />
+            <Route path="assets" element={<AssetsPage />} />
+            <Route path="invoices" element={<InvoicesPage />} />
+            <Route path="tickets" element={<TicketsPage />} />
+          </Route>
+          
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="analytics" element={<AnalyticsPage />} />
+            <Route path="clients" element={<ClientsPage />} />
+            <Route path="campaigns" element={<AdminCampaignsPage />} />
+            <Route path="tickets" element={<AdminTicketsPage />} />
+            <Route path="invoices" element={<AdminInvoicesPage />} />
+          </Route>
+          
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </Suspense>
@@ -93,9 +151,11 @@ const AppRoutes = () => {
 export default function App() {
   return (
     <HelmetProvider>
-      <Router basename={import.meta.env.BASE_URL}>
-        <AppRoutes />
-      </Router>
+      <AuthProvider>
+        <Router basename={import.meta.env.BASE_URL}>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
     </HelmetProvider>
   );
 }

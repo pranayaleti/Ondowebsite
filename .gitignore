@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Database (PostgreSQL connection string should be in .env)
+# No local database files to ignore
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
