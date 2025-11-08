@@ -22,9 +22,9 @@ const CapabilitiesDeckPage = () => {
         canonicalUrl="https://ondosoft.com/capabilities-deck"
       />
       
-      <div className="min-h-screen bg-black print:bg-white">
+      <div className="print:bg-white">
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-20 border-b border-gray-700 print:bg-gray-900 print:border-gray-600">
+        <section className="text-white py-20 border-b border-gray-700/50 print:bg-gray-900 print:border-gray-600">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
@@ -312,7 +312,7 @@ const CapabilitiesDeckPage = () => {
               </div>
 
               {/* Contact Information */}
-              <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-8 rounded-lg border border-gray-700 print:bg-gray-100 print:border-gray-300">
+              <div className="bg-gray-800/50 p-8 rounded-lg border border-gray-700/50 print:bg-gray-100 print:border-gray-300">
                 <h2 className="text-3xl font-bold text-white mb-6 print:text-black">Get Started Today</h2>
                 <p className="text-gray-300 mb-6 text-lg print:text-gray-700 print:hidden">
                   Ready to transform your business with custom software solutions? Contact us for a free consultation.

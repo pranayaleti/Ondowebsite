@@ -50,7 +50,7 @@ const TestimonialsPage = () => {
         canonicalUrl="https://ondosoft.com/testimonials"
         structuredData={testimonialsStructuredData}
       />
-      <div className="min-h-screen bg-black">
+      <div>
         <div className="mx-auto pt-20">
           <div id="testimonials" className="scroll-mt-20">
             <Testimonials />

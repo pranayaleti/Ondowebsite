@@ -40,19 +40,19 @@ const BlogPage = () => {
   return (
     <>
       <SEOHead
-        title="Business Technology Blog | Ondosoft"
+        title="Business Technology Blogs | Ondosoft"
         description="Get expert insights on small business technology, automation, SaaS solutions, and web development. Learn how to grow your business with smart software."
         keywords="small business technology, business automation, SaaS solutions, web development, business software, technology tips"
-        canonicalUrl="https://ondosoft.com/blog"
+        canonicalUrl="https://ondosoft.com/blogs"
       />
       
-      <div className="min-h-screen bg-black">
+      <div>
         {/* Hero Section */}
-        <section className="bg-gradient-to-r from-gray-800 to-gray-900 py-20 border-b border-gray-700">
+        <section className="py-20 border-b border-gray-700/50">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-                Business <span className="text-orange-500">Technology</span> Blog
+                Business <span className="text-orange-500">Technology</span> Blogs
               </h1>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                 Get expert insights on automation, SaaS solutions, and web development. 
@@ -63,7 +63,7 @@ const BlogPage = () => {
         </section>
 
         {/* Search and Filter Section */}
-        <section className="py-12 bg-black">
+        <section className="py-12">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-col md:flex-row gap-4 mb-8">
               {/* Search */}
@@ -117,7 +117,7 @@ const BlogPage = () => {
 
         {/* Featured Posts */}
         {featuredPosts.length > 0 && (
-          <section className="py-16 bg-gradient-to-b from-black to-gray-900">
+          <section className="py-16">
             <div className="max-w-7xl mx-auto px-4">
               <div className="flex items-center gap-3 mb-8">
                 <div className="h-1 w-12 bg-orange-500"></div>
@@ -134,7 +134,7 @@ const BlogPage = () => {
         )}
 
         {/* All Posts */}
-        <section className="py-16 bg-black">
+        <section className="py-16">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center gap-3 mb-8">
               <div className="h-1 w-12 bg-orange-500"></div>
@@ -161,35 +161,6 @@ const BlogPage = () => {
                 </p>
               </div>
             )}
-          </div>
-        </section>
-
-        {/* Newsletter Signup */}
-        <section className="py-16 bg-black">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                Stay Updated with Business Tech Tips
-              </h2>
-              <p className="text-xl text-gray-300 mb-8">
-                Get weekly insights on automation, software, and growing your business.
-              </p>
-              <div className="max-w-md mx-auto">
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="flex-1 px-4 py-3 border border-gray-600 bg-gray-800 text-white rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                  <button className="bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors border border-gray-600">
-                    Subscribe
-                  </button>
-                </div>
-                <p className="text-sm text-gray-400 mt-2">
-                  No spam. Unsubscribe anytime.
-                </p>
-              </div>
-            </div>
           </div>
         </section>
 

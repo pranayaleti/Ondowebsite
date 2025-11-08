@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
 import HeroCTA from "../components/HeroCTA";
-import TestimonialCarousel from "../components/TestimonialCarousel";
-import NewsletterSignup from "../components/NewsletterSignup";
 import TrustBadges from "../components/TrustBadges";
 import ConsultationWidget from "../components/ConsultationWidget";
 import ConsultationModal from "../components/ConsultationModal";
@@ -256,14 +254,14 @@ const HomePage = () => {
         canonicalUrl="https://ondosoft.com"
         structuredData={homeStructuredData}
       />
-      <div className="min-h-screen bg-black">
+      <div>
         {/* Hero Section */}
         <div id="top" className="mx-auto pt-20">
           <HeroSection onOpenConsultation={() => setIsModalOpen(true)} />
         </div>
 
         {/* Value Proposition Section */}
-        <section className="py-20 bg-gradient-to-b from-black to-neutral-900">
+        <section className="py-20">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -320,7 +318,7 @@ const HomePage = () => {
         </section>
 
         {/* Services Section */}
-        <section className="py-20 bg-neutral-900">
+        <section className="py-20">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -426,7 +424,7 @@ const HomePage = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="py-20 bg-gradient-to-r from-gray-800 to-gray-900 border-t border-b border-gray-700">
+        <section className="py-20 border-t border-b border-gray-700/50">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
@@ -461,14 +459,9 @@ const HomePage = () => {
         {/* Hero CTA Section */}
         <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
 
-        {/* Testimonial Carousel */}
-        <TestimonialCarousel />
-
         {/* Trust Badges & Success Story */}
         <TrustBadges />
 
-        {/* Newsletter Signup */}
-        <NewsletterSignup />
 
         {/* Consultation Widget */}
         <ConsultationWidget />

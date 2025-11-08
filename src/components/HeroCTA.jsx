@@ -3,7 +3,7 @@ import { ArrowRight, Calculator, MessageCircle, Star, CheckCircle } from 'lucide
 
 const HeroCTA = ({ onOpenConsultation }) => {
   return (
-    <section className="bg-gradient-to-r from-gray-800 to-gray-900 py-16 border-t border-b border-gray-700">
+    <section className="py-16 border-t border-b border-gray-700/50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">

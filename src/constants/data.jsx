@@ -16,10 +16,8 @@ export const navItems = [
   { label: "Home", href: "/" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Services", href: "/services" },
-  { label: "Blog", href: "/blog" },
+  { label: "Blogs", href: "/blogs" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Testimonials", href: "/testimonials" },
-  { label: "FAQ", href: "/faq" },
   { label: "About", href: "/about" },
 ];
 
@@ -196,7 +194,7 @@ export const pricingOptions = [
     title: "Full Stack Development",
     price: "$3,000",
     features: [
-      "Comprehensive Website (8-12 Pages)",
+      "Comprehensive Website (12-20 Pages)",
       "Custom Web Application Development",
       "User Authentication & Authorization",
       "Advanced SEO & Performance Optimization",
@@ -222,6 +220,22 @@ export const pricingOptions = [
       "Analytics & Business Intelligence",
       "Third-Party Integrations",
       "12 Months Comprehensive Support"
+    ],
+  },
+  {
+    title: "Upfront & Subscription",
+    price: "Custom",
+    features: [
+      "Constant Contact Updates & Upgrades",
+      "Subscription Model Implementation",
+      "Continuous Maintenance & Support",
+      "Regular Feature Enhancements & Upgrades",
+      "Constant Security Updates & Patches",
+      "Ongoing Performance Optimization",
+      "Regular Content Updates & Upgrades",
+      "Frequent Technical Support",
+      "Flexible Pricing Plans",
+      "Scalable Subscription Tiers"
     ],
   },
 ];

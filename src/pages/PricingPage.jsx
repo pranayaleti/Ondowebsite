@@ -52,7 +52,7 @@ const PricingPage = () => {
         canonicalUrl="https://ondosoft.com/pricing"
         structuredData={pricingStructuredData}
       />
-      <div className="min-h-screen bg-black">
+      <div>
         <div className="mx-auto pt-20">
           <div id="pricing" className="scroll-mt-20">
             <Pricing onConsult={(plan) => { setPreset(plan); setIsModalOpen(true); }} />

@@ -37,7 +37,7 @@ const CapabilitiesDeckPage = lazy(() => import("./pages/CapabilitiesDeckPage"));
 
 // Loading component
 const PageLoader = () => (
-  <div className="min-h-screen bg-black flex items-center justify-center">
+  <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center">
     <div className="text-center">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
       <p className="text-white">Loading...</p>
@@ -53,12 +53,13 @@ const AppRoutes = () => {
 
   return (
     <ErrorBoundary>
-      <PerformanceMonitor />
-      <ScriptOptimizer />
-      <SchemaMarkup />
-      <Navbar />
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
+      <div className="min-h-screen bg-gradient-to-b from-black to-gray-900">
+        <PerformanceMonitor />
+        <ScriptOptimizer />
+        <SchemaMarkup />
+        <Navbar />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<PortfolioPage />} />
           <Route path="/services" element={<ServicesPage />} />
@@ -66,8 +67,8 @@ const AppRoutes = () => {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/blogs" element={<BlogPage />} />
+          <Route path="/blogs/:slug" element={<BlogPostPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/faq" element={<FAQPage />} />
@@ -83,7 +84,8 @@ const AppRoutes = () => {
           <Route path="/robots.txt" element={<RobotsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      </Suspense>
+        </Suspense>
+      </div>
     </ErrorBoundary>
   );
 };

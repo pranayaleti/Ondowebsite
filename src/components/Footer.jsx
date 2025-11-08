@@ -1,10 +1,30 @@
 import { Link } from "react-router-dom";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
+import { navItems } from "../constants/data";
 
 const Footer = () => {
   // Get service areas data from consolidated utility
   const { states, topCities } = SERVICE_AREAS;
+  
+  // All available links
+  const allLinks = [
+    { label: "Home", href: "/" },
+    { label: "Portfolio", href: "/portfolio" },
+    { label: "Services", href: "/services" },
+    { label: "Blogs", href: "/blogs" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+    { label: "FAQ", href: "/faq" },
+    { label: "Testimonials", href: "/testimonials" },
+  ];
+  
+  // Get navbar hrefs to filter them out
+  const navbarHrefs = navItems.map(item => item.href);
+  
+  // Filter to show only links NOT in navbar
+  const quickLinks = allLinks.filter(link => !navbarHrefs.includes(link.href));
 
   return (
     <>
@@ -37,7 +57,7 @@ const Footer = () => {
           })
         }}
       />
-      <footer className="bg-gray-900 text-gray-200 py-12" role="contentinfo">
+      <footer className="text-gray-200 py-6 md:py-0" role="contentinfo">
         <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
           {/* Company Description */}
           <div className="pr-8">
@@ -47,15 +67,17 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links - Only show links NOT in navbar */}
           <div>
             <h4 className="text-lg font-semibold mb-3">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/" className="hover:underline">Home</Link></li>
-              <li><Link to="/services" className="hover:underline">Services</Link></li>
-              <li><Link to="/portfolio" className="hover:underline">Portfolio</Link></li>
-              <li><Link to="/blog" className="hover:underline">Blog</Link></li>
-              <li><Link to="/contact" className="hover:underline">Contact</Link></li>
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link to={link.href} className="hover:underline">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

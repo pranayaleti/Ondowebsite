@@ -83,7 +83,7 @@ const ServicesPage = () => {
         serviceType="Software Development"
         pageUrl="https://ondosoft.com/services"
       />
-      <div className="min-h-screen bg-black">
+      <div>
         <div className="mx-auto pt-20">
           <div id="services" className="scroll-mt-20">
             <Services />
