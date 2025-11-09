@@ -69,11 +69,6 @@ export const authAPI = {
   },
 
   async signin(email, password) {
-    // Check if API_URL is configured
-    if (!API_URL) {
-      throw new Error('Backend API is not configured. Please contact support or check your configuration.');
-    }
-    
     try {
       const response = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
