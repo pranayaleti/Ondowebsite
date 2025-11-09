@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 const { Pool } = pkg;
 
 const app = express();
-const PORT = process.env.PORT || 5001; // Changed from 5000 to avoid AirPlay conflict on macOS
+const PORT = process.env.PORT || 5001; // Render will set PORT automatically
 const JWT_SECRET = process.env.JWT_SECRET || (() => {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('JWT_SECRET environment variable is required in production');
