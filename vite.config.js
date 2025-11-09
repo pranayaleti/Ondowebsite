@@ -56,7 +56,16 @@ export default defineConfig({
     port: 3000,
     open: true,
     // Enable compression in dev
-    middlewareMode: false
+    middlewareMode: false,
+    // Proxy API requests to backend server
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+        secure: false,
+        ws: true
+      }
+    }
   },
   preview: {
     port: 4173,

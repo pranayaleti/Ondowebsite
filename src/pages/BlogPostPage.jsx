@@ -15,6 +15,11 @@ const BlogPostPage = () => {
   const [post, setPost] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
 
+  // Scroll to top when navigating to a blog post
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [slug]);
+
   // Lazy load blogData
   useEffect(() => {
     import('../data/blogData').then(module => {
@@ -66,42 +71,89 @@ const BlogPostPage = () => {
   };
 
   const formatContent = (content) => {
-    return content.split('\n').map((paragraph, index) => {
-      if (paragraph.startsWith('# ')) {
-        const text = paragraph.substring(2);
-        // Highlight important words/phrases in orange
-        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
-        return (
-          <h1 key={index} className="text-3xl font-bold text-white mt-8 mb-4" dangerouslySetInnerHTML={{ __html: highlightedText }} />
+    const lines = content.split('\n');
+    const elements = [];
+    let currentList = [];
+    let listKey = 0;
+
+    const flushList = () => {
+      if (currentList.length > 0) {
+        elements.push(
+          <ul key={`list-${listKey++}`} className="space-y-3 mb-6 ml-6 list-disc list-outside text-gray-300">
+            {currentList.map((item, idx) => (
+              <li key={idx} className="leading-relaxed pl-2">{item}</li>
+            ))}
+          </ul>
         );
-      } else if (paragraph.startsWith('## ')) {
-        const text = paragraph.substring(3);
+        currentList = [];
+      }
+    };
+
+    lines.forEach((line, index) => {
+      const trimmed = line.trim();
+      
+      // Handle headings
+      if (trimmed.startsWith('# ')) {
+        flushList();
+        const text = trimmed.substring(2);
         const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
-        return (
-          <h2 key={index} className="text-2xl font-bold text-white mt-6 mb-3" dangerouslySetInnerHTML={{ __html: highlightedText }} />
+        elements.push(
+          <h1 key={index} className="text-3xl font-bold text-white mt-12 mb-6 pt-8 border-t border-gray-700/50 first:mt-0 first:pt-0 first:border-t-0" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
-      } else if (paragraph.startsWith('### ')) {
-        const text = paragraph.substring(4);
+      } else if (trimmed.startsWith('## ')) {
+        flushList();
+        const text = trimmed.substring(3);
         const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
-        return (
-          <h3 key={index} className="text-xl font-semibold text-white mt-4 mb-2" dangerouslySetInnerHTML={{ __html: highlightedText }} />
+        elements.push(
+          <h2 key={index} className="text-2xl font-bold text-white mt-10 mb-5 pt-6 border-t border-gray-700/30" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
-      } else if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-        return (
-          <p key={index} className="text-lg font-semibold text-orange-400 my-4">
-            {paragraph.substring(2, paragraph.length - 2)}
+      } else if (trimmed.startsWith('### ')) {
+        flushList();
+        const text = trimmed.substring(4);
+        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        elements.push(
+          <h3 key={index} className="text-xl font-semibold text-white mt-8 mb-4" dangerouslySetInnerHTML={{ __html: highlightedText }} />
+        );
+      } 
+      // Handle sub-headings (like "Key Principle:", "Implementation:")
+      else if (trimmed.match(/^[A-Z][a-z\s]+:/) && trimmed.endsWith(':')) {
+        flushList();
+        const text = trimmed.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        elements.push(
+          <h4 key={index} className="text-lg font-semibold text-orange-400 mt-6 mb-3" dangerouslySetInnerHTML={{ __html: text }} />
+        );
+      }
+      // Handle list items
+      else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        const itemText = trimmed.substring(2).replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        currentList.push(itemText);
+      }
+      // Handle bold paragraphs (standalone)
+      else if (trimmed.startsWith('**') && trimmed.endsWith('**') && trimmed.length > 4) {
+        flushList();
+        elements.push(
+          <p key={index} className="text-lg font-semibold text-orange-400 my-6 px-4 py-3 bg-orange-500/10 border-l-4 border-orange-500 rounded-r-lg">
+            {trimmed.substring(2, trimmed.length - 2)}
           </p>
         );
-      } else if (paragraph.trim() === '') {
-        return <br key={index} />;
-      } else {
-        // Only highlight bold text (**text**) in orange, nothing else
-        const highlightedParagraph = paragraph.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
-        return (
-          <p key={index} className="text-gray-300 leading-relaxed mb-4" dangerouslySetInnerHTML={{ __html: highlightedParagraph }} />
+      }
+      // Handle empty lines
+      else if (trimmed === '') {
+        flushList();
+        elements.push(<div key={index} className="h-4" />);
+      }
+      // Handle regular paragraphs
+      else {
+        flushList();
+        const highlightedParagraph = trimmed.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        elements.push(
+          <p key={index} className="text-gray-300 leading-relaxed mb-5 text-base" dangerouslySetInnerHTML={{ __html: highlightedParagraph }} />
         );
       }
     });
+
+    flushList(); // Flush any remaining list items
+    return elements;
   };
 
   return (
@@ -174,9 +226,11 @@ const BlogPostPage = () => {
             />
           </div>
 
-          {/* Content */}
+          {/* Content - Gestalt: Proximity, Continuity, Figure/Ground */}
           <div className="prose prose-lg max-w-none">
-            {formatContent(post.content)}
+            <div className="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-gray-700/50">
+              {formatContent(post.content)}
+            </div>
           </div>
 
           {/* Share Buttons */}

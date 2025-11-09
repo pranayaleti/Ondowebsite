@@ -19,6 +19,20 @@ body {
   text-rendering: optimizeLegibility;
   background-color: #000000;
   color: #ffffff;
+  /* Prevent layout shifts from font loading */
+  font-display: swap;
+}
+
+/* Prevent layout shifts from images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Reserve space for images to prevent CLS */
+img[width][height] {
+  aspect-ratio: attr(width) / attr(height);
 }
 
 html {

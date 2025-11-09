@@ -203,7 +203,7 @@ export const pricingOptions = [
       "Content Management System (CMS)",
       "API Development & Integration",
       "Security & Data Protection",
-      "6 Months Technical Support"
+      "3 Months Technical Support"
     ],
   },
   {
@@ -219,7 +219,7 @@ export const pricingOptions = [
       "Advanced Security & Compliance",
       "Analytics & Business Intelligence",
       "Third-Party Integrations",
-      "12 Months Comprehensive Support"
+      "6 Months Comprehensive Support"
     ],
   },
   {

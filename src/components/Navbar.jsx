@@ -65,6 +65,26 @@ const Navbar = () => {
     setMobileDrawerOpen(false);
   };
 
+  // Prefetch pages on hover for faster navigation
+  const handleNavHover = (href) => {
+    // Prefetch the route component - using absolute paths from src/
+    if (href === '/') {
+      import('../pages/HomePage');
+    } else if (href === '/portfolio' || href === '/products') {
+      import('../pages/PortfolioPage');
+    } else if (href === '/services' || href === '/workflow') {
+      import('../pages/ServicesPage');
+    } else if (href === '/pricing') {
+      import('../pages/PricingPage');
+    } else if (href === '/about') {
+      import('../pages/AboutPage');
+    } else if (href === '/blogs') {
+      import('../pages/BlogPage');
+    } else if (href === '/contact') {
+      import('../pages/ContactPage');
+    }
+  };
+
 
   // Helper to determine if nav item is active
   const isActive = (href) => {
@@ -117,6 +137,7 @@ const Navbar = () => {
                   <Link
                     to={item.href}
                     onClick={item.label === "Home" ? handleLogoClick : undefined}
+                    onMouseEnter={() => handleNavHover(item.href)}
                     className={
                       isActive(item.href)
                         ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-2 rounded-md font-semibold shadow-md"
@@ -206,6 +227,7 @@ const Navbar = () => {
                       <Link
                         to={item.href}
                         onClick={e => handleMobileNavClick(e, item)}
+                        onMouseEnter={() => handleNavHover(item.href)}
                         className={
                           isActive(item.href)
                             ? "block py-3 px-4 rounded-md bg-orange-500 text-white font-semibold"

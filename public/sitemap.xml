@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://ondosoft.com/</loc>
     <lastmod>2024-12-19</lastmod>
@@ -99,6 +100,28 @@
       <image:loc>https://ondosoft.com/logo.png</image:loc>
       <image:title>Ondosoft - Full Stack Software Development</image:title>
       <image:caption>Ondosoft logo for software development services</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ondosoft.com/blogs</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo.png</image:loc>
+      <image:title>Ondosoft Blog - Software Development Insights</image:title>
+      <image:caption>Ondosoft blog for software development articles</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://ondosoft.com/portfolio</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://ondosoft.com/logo.png</image:loc>
+      <image:title>Ondosoft Portfolio - Our Work</image:title>
+      <image:caption>Ondosoft portfolio showcasing our projects</image:caption>
     </image:image>
   </url>
 </urlset>

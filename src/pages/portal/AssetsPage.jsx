@@ -23,8 +23,7 @@ const AssetsPage = () => {
   
   // Default metadata that applies to all files (can be overridden per file)
   const [defaultMetadata, setDefaultMetadata] = useState({
-    type: 'image',
-    category: 'logo',
+    category: 'image',
     description: ''
   });
 
@@ -163,18 +162,18 @@ const AssetsPage = () => {
       }
 
       // Determine category
-      let category = 'other';
+      let category = 'image';
       const fileName = file.name.toLowerCase();
       if (fileName.includes('logo')) {
         category = 'logo';
-      } else if (fileName.includes('brand') || fileName.includes('identity')) {
-        category = 'branding';
-      } else if (fileName.includes('image') || fileName.includes('photo') || fileName.includes('picture')) {
-        category = 'image';
       } else if (fileName.includes('document') || fileName.includes('doc') || fileName.includes('pdf')) {
         category = 'document';
+      } else if (fileName.includes('image') || fileName.includes('photo') || fileName.includes('picture')) {
+        category = 'image';
       } else if (fileType === 'image') {
         category = 'image';
+      } else if (fileType === 'document') {
+        category = 'document';
       }
 
       // Extract filename without extension
@@ -195,7 +194,7 @@ const AssetsPage = () => {
             id: Date.now() + Math.random(), // Unique ID for React key
             file: file,
             name: fileNameWithoutExt || file.name,
-            type: fileType,
+            type: fileType, // Keep for backward compatibility
             category: category,
             description: '',
             url: result,
@@ -270,18 +269,18 @@ const AssetsPage = () => {
     }
 
     // Determine category based on file name
-    let category = 'other';
+    let category = 'image';
     const fileName = file.name.toLowerCase();
     if (fileName.includes('logo')) {
       category = 'logo';
-    } else if (fileName.includes('brand') || fileName.includes('identity')) {
-      category = 'branding';
-    } else if (fileName.includes('image') || fileName.includes('photo') || fileName.includes('picture')) {
-      category = 'image';
     } else if (fileName.includes('document') || fileName.includes('doc') || fileName.includes('pdf')) {
       category = 'document';
+    } else if (fileName.includes('image') || fileName.includes('photo') || fileName.includes('picture')) {
+      category = 'image';
     } else if (fileType === 'image') {
       category = 'image'; // Default category for images
+    } else if (fileType === 'document') {
+      category = 'document';
     }
 
     if (process.env.NODE_ENV === 'development') {
@@ -706,9 +705,14 @@ const AssetsPage = () => {
       // Upload all files
       for (const fileData of selectedFiles) {
         try {
+          // Derive type from category for backward compatibility
+          const derivedType = fileData.category === 'document' ? 'document' : 
+                             fileData.category === 'logo' ? 'image' : 
+                             fileData.category === 'image' ? 'image' : 'image';
+          
           const assetData = {
             name: fileData.name,
-            type: fileData.type,
+            type: derivedType,
             category: fileData.category,
             description: fileData.description || '',
             url: fileData.url,
@@ -741,8 +745,7 @@ const AssetsPage = () => {
       setShowUploadModal(false);
       setSelectedFiles([]);
       setDefaultMetadata({
-        type: 'image',
-        category: 'logo',
+        category: 'image',
         description: ''
       });
       if (fileInputRef.current) {
@@ -770,7 +773,6 @@ const AssetsPage = () => {
   const handleApplyDefaultMetadata = () => {
     setSelectedFiles(prev => prev.map(f => ({
       ...f,
-      type: defaultMetadata.type,
       category: defaultMetadata.category,
       description: defaultMetadata.description
     })));
@@ -944,7 +946,14 @@ const AssetsPage = () => {
   };
 
   const getAssetIcon = (type, category) => {
-    if (category === 'logo' || type === 'image') {
+    if (category === 'logo' || category === 'image') {
+      return ImageIcon;
+    }
+    if (category === 'document') {
+      return FileText;
+    }
+    // Fallback to type for backward compatibility
+    if (type === 'image') {
       return ImageIcon;
     }
     if (type === 'document') {
@@ -1054,7 +1063,7 @@ const AssetsPage = () => {
             {assets.map((asset) => {
               const AssetIcon = getAssetIcon(asset.type, asset.category);
               // Debug: Log asset data
-              if (asset.type === 'image') {
+              if (asset.category === 'image' || asset.category === 'logo') {
                 console.log('Rendering image asset:', {
                   id: asset.id,
                   name: asset.name,
@@ -1093,9 +1102,6 @@ const AssetsPage = () => {
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-white mb-1">{asset.name}</h3>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="px-2 py-1 rounded text-xs bg-blue-500/20 text-blue-400">
-                            {asset.type}
-                          </span>
                           {asset.category && (
                             <span className="px-2 py-1 rounded text-xs bg-purple-500/20 text-purple-400">
                               {asset.category}
@@ -1117,7 +1123,7 @@ const AssetsPage = () => {
 
                   {asset.url && (
                     <div className="mb-4">
-                      {asset.type === 'image' ? (
+                      {(asset.category === 'image' || asset.category === 'logo') ? (
                         <div className="w-full h-48 rounded-lg mb-2 overflow-hidden bg-gray-900/50 flex items-center justify-center relative group cursor-pointer"
                           onClick={() => {
                             // Open preview on click
@@ -1183,8 +1189,11 @@ const AssetsPage = () => {
                                 }
                               }}
                               onLoad={(e) => {
-                                console.log('Image loaded successfully:', asset.name);
-                                console.log('Image dimensions:', e.target.naturalWidth, 'x', e.target.naturalHeight);
+                                // Only log in development
+                                if (process.env.NODE_ENV === 'development') {
+                                  console.log('Image loaded successfully:', asset.name);
+                                  console.log('Image dimensions:', e.target.naturalWidth, 'x', e.target.naturalHeight);
+                                }
                                 // Remove any existing placeholder
                                 const parent = e.target.parentElement;
                                 const placeholder = parent.querySelector('.image-placeholder');
@@ -1209,7 +1218,7 @@ const AssetsPage = () => {
                             <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded">Click to view full size</span>
                           </div>
                         </div>
-                      ) : asset.type === 'document' && asset.url && asset.url.includes('pdf') ? (
+                      ) : asset.category === 'document' && asset.url && asset.url.includes('pdf') ? (
                         <div className="w-full h-48 rounded-lg mb-2 overflow-hidden bg-gray-900/50 flex items-center justify-center relative group cursor-pointer"
                           onClick={() => {
                             // Open PDF preview
@@ -1250,7 +1259,7 @@ const AssetsPage = () => {
                         <div className="w-full h-48 bg-gray-900/50 rounded-lg mb-2 flex items-center justify-center">
                           <div className="flex flex-col items-center gap-2">
                             <FileText className="w-16 h-16 text-gray-500" />
-                            <span className="text-gray-400 text-sm">{asset.type || 'File'}</span>
+                            <span className="text-gray-400 text-sm">{asset.category || 'File'}</span>
                           </div>
                         </div>
                       )}
@@ -1306,9 +1315,9 @@ const AssetsPage = () => {
                                     </style>
                                   </head>
                                   <body>
-                                    ${asset.type === 'image' 
+                                    ${(asset.category === 'image' || asset.category === 'logo')
                                       ? `<img src="${asset.url}" alt="${asset.name}" />`
-                                      : asset.type === 'document' && asset.url.includes('pdf')
+                                      : asset.category === 'document' && asset.url.includes('pdf')
                                       ? `<iframe src="${asset.url}" type="application/pdf"></iframe>`
                                       : `<p>Preview not available. <a href="${asset.url}" download="${asset.name}" style="color: #f97316;">Download</a> to view.</p>`
                                     }
@@ -1430,34 +1439,17 @@ const AssetsPage = () => {
                       Apply to All
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-400 mb-1">Type</label>
-                      <select
-                        value={defaultMetadata.type}
-                        onChange={(e) => setDefaultMetadata({ ...defaultMetadata, type: e.target.value })}
-                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      >
-                        <option value="image">Image</option>
-                        <option value="document">Document</option>
-                        <option value="video">Video</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
-                      <select
-                        value={defaultMetadata.category}
-                        onChange={(e) => setDefaultMetadata({ ...defaultMetadata, category: e.target.value })}
-                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      >
-                        <option value="logo">Logo</option>
-                        <option value="branding">Branding</option>
-                        <option value="image">Image</option>
-                        <option value="document">Document</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
+                    <select
+                      value={defaultMetadata.category}
+                      onChange={(e) => setDefaultMetadata({ ...defaultMetadata, category: e.target.value })}
+                      className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      <option value="image">Image</option>
+                      <option value="logo">Logo</option>
+                      <option value="document">Document</option>
+                    </select>
                   </div>
                 </div>
               )}
@@ -1504,7 +1496,7 @@ const AssetsPage = () => {
                         <div className="flex gap-4">
                           {/* Preview */}
                           <div className="flex-shrink-0">
-                            {fileData.type === 'image' ? (
+                            {(fileData.category === 'image' || fileData.category === 'logo') ? (
                               <img
                                 src={fileData.url}
                                 alt={fileData.name}
@@ -1532,34 +1524,17 @@ const AssetsPage = () => {
                               />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <label className="block text-xs font-medium text-gray-400 mb-1">Type</label>
-                                <select
-                                  value={fileData.type}
-                                  onChange={(e) => handleUpdateFileMetadata(fileData.id, { type: e.target.value })}
-                                  className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                >
-                                  <option value="image">Image</option>
-                                  <option value="document">Document</option>
-                                  <option value="video">Video</option>
-                                  <option value="other">Other</option>
-                                </select>
-                              </div>
-                              <div>
-                                <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
-                                <select
-                                  value={fileData.category}
-                                  onChange={(e) => handleUpdateFileMetadata(fileData.id, { category: e.target.value })}
-                                  className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                >
-                                  <option value="logo">Logo</option>
-                                  <option value="branding">Branding</option>
-                                  <option value="image">Image</option>
-                                  <option value="document">Document</option>
-                                  <option value="other">Other</option>
-                                </select>
-                              </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
+                              <select
+                                value={fileData.category}
+                                onChange={(e) => handleUpdateFileMetadata(fileData.id, { category: e.target.value })}
+                                className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              >
+                                <option value="image">Image</option>
+                                <option value="logo">Logo</option>
+                                <option value="document">Document</option>
+                              </select>
                             </div>
 
                             <div className="flex items-center justify-between text-xs text-gray-400">

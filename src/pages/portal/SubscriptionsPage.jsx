@@ -1,15 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { portalAPI } from '../../utils/auth';
 import { CreditCard, Loader, CheckCircle2, Star, X, AlertCircle } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { pricingOptions } from '../../constants/data';
+
+// Transform pricingOptions to subscription format
+const transformPricingToSubscription = (pricingOptions) => {
+  return pricingOptions.map((option, index) => {
+    // Extract numeric price from string like "$1,200" or handle "Custom"
+    let price = null;
+    let priceDisplay = option.price;
+    if (option.price !== 'Custom') {
+      const numericPrice = parseFloat(option.price.replace(/[^0-9.]/g, ''));
+      price = numericPrice;
+      priceDisplay = option.price;
+    }
+
+    // Generate ID from title
+    const id = option.title.toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
+    // Determine billing period
+    let billingPeriod = 'one-time';
+    if (option.title === 'Upfront & Subscription') {
+      billingPeriod = 'custom';
+    }
+
+    return {
+      id,
+      plan_name: option.title,
+      price,
+      price_display: priceDisplay,
+      status: 'available',
+      billing_period: billingPeriod,
+      features: JSON.stringify(option.features)
+    };
+  });
+};
 
 const SubscriptionsPage = () => {
   const [subscriptions, setSubscriptions] = useState([]);
-  const [availablePlans, setAvailablePlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [subscribing, setSubscribing] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [subscriptionToCancel, setSubscriptionToCancel] = useState(null);
+
+  // Transform pricingOptions to subscription format - single source of truth
+  const availablePlans = useMemo(() => transformPricingToSubscription(pricingOptions), []);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -20,8 +60,13 @@ const SubscriptionsPage = () => {
       setLoading(true);
       setError(null);
       const data = await portalAPI.getSubscriptions();
-      setSubscriptions(data.subscriptions || []);
-      setAvailablePlans(data.availablePlans || []);
+      // Normalize status to lowercase for all subscriptions
+      const normalizedSubscriptions = (data.subscriptions || []).map(sub => ({
+        ...sub,
+        status: sub.status ? String(sub.status).toLowerCase().trim() : 'active'
+      }));
+      console.log('Fetched subscriptions with statuses:', normalizedSubscriptions.map(s => ({ id: s.id, plan: s.plan_name, status: s.status })));
+      setSubscriptions(normalizedSubscriptions);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -69,20 +114,47 @@ const SubscriptionsPage = () => {
     }
   };
 
-  const handleCancelSubscription = async (subscriptionId) => {
-    if (!window.confirm('Are you sure you want to cancel this subscription? You can reactivate it later if needed.')) {
-      return;
-    }
+  const handleCancelClick = (subscriptionId) => {
+    setSubscriptionToCancel(subscriptionId);
+    setShowCancelConfirm(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    if (!subscriptionToCancel) return;
 
     try {
       setError(null);
       setSuccessMessage(null);
-      await portalAPI.updateSubscription(subscriptionId, { status: 'cancelled' });
-      setSuccessMessage('Subscription cancelled successfully. You can subscribe to a new plan anytime.');
+      
+      // Update subscription status to cancelled
+      const response = await portalAPI.updateSubscription(subscriptionToCancel, { status: 'cancelled' });
+      
+      console.log('Subscription cancelled response:', response);
+      
+      // Immediately remove cancelled subscription from local state
+      setSubscriptions(prev => {
+        const updated = prev.filter(sub => String(sub.id) !== String(subscriptionToCancel));
+        console.log(`Removed subscription ${subscriptionToCancel} from list. Remaining: ${updated.length}`);
+        return updated;
+      });
+      
+      setSuccessMessage('Subscription cancelled successfully. Please choose the most suitable option for your requirements from the available plans below.');
+      setShowCancelConfirm(false);
+      setSubscriptionToCancel(null);
+      
+      // Refresh from server to ensure consistency
       await fetchSubscriptions();
     } catch (err) {
+      console.error('Cancel subscription error:', err);
       setError(err.message || 'Failed to cancel subscription. Please try again.');
+      setShowCancelConfirm(false);
+      setSubscriptionToCancel(null);
     }
+  };
+
+  const handleCancelCancel = () => {
+    setShowCancelConfirm(false);
+    setSubscriptionToCancel(null);
   };
 
   if (loading) {
@@ -123,24 +195,37 @@ const SubscriptionsPage = () => {
         {successMessage && (
           <div className="bg-green-500/10 border border-green-500/50 rounded-lg p-4 text-green-400 mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5" />
               <span>{successMessage}</span>
             </div>
             <button
               onClick={() => setSuccessMessage(null)}
-              className="text-green-400 hover:text-green-300"
+              className="text-green-400 hover:text-green-300 flex-shrink-0"
             >
-              <X className="w-4 h-4" />
+              <X className="w-6 h-6 sm:w-5 h-5" />
             </button>
           </div>
         )}
 
         {/* Active Subscriptions */}
-        {subscriptions.length > 0 && (
+        {(() => {
+          const activeSubscriptions = subscriptions.filter(s => {
+            const status = String(s.status || '').toLowerCase().trim();
+            const isActive = status === 'active';
+            if (!isActive) {
+              console.log(`Filtering out subscription ${s.id} (${s.plan_name}) with status: "${status}"`);
+            }
+            return isActive;
+          });
+          console.log(`Active subscriptions count: ${activeSubscriptions.length} out of ${subscriptions.length} total`);
+          return activeSubscriptions.length > 0;
+        })() && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white mb-4">Your Active Subscriptions</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {subscriptions.map((subscription) => {
+              {subscriptions.filter(s => {
+                const status = String(s.status || '').toLowerCase().trim();
+                return status === 'active';
+              }).map((subscription) => {
                 const features = subscription.features ? JSON.parse(subscription.features) : [];
                 return (
                   <div
@@ -193,8 +278,8 @@ const SubscriptionsPage = () => {
                         Started: {new Date(subscription.created_at).toLocaleDateString()}
                       </p>
                       <button
-                        onClick={() => handleCancelSubscription(subscription.id)}
-                        className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                        onClick={() => handleCancelClick(subscription.id)}
+                        className="px-4 py-2 text-xs font-medium text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg hover:bg-red-500/20 hover:border-red-500/50 hover:text-red-300 transition-all duration-200"
                       >
                         Cancel Subscription
                       </button>
@@ -209,7 +294,7 @@ const SubscriptionsPage = () => {
         {/* Available Plans */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4">
-            {subscriptions.length > 0 ? 'Available Plans' : 'Choose a Subscription Plan'}
+            {subscriptions.filter(s => s.status?.toLowerCase() === 'active').length > 0 ? 'Available Plans' : 'Choose a Subscription Plan'}
           </h2>
           {availablePlans.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -259,7 +344,7 @@ const SubscriptionsPage = () => {
 
                     <button
                       onClick={() => handleSubscribe(plan)}
-                      disabled={subscribing || subscriptions.some(s => s.plan_name === plan.plan_name && s.status === 'active')}
+                      disabled={subscribing || subscriptions.some(s => s.plan_name === plan.plan_name && s.status?.toLowerCase() === 'active')}
                       className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
                         isPopular
                           ? 'bg-orange-600 text-white hover:bg-orange-700'
@@ -271,7 +356,7 @@ const SubscriptionsPage = () => {
                           <Loader className="w-4 h-4 animate-spin" />
                           Subscribing...
                         </>
-                      ) : subscriptions.some(s => s.plan_name === plan.plan_name && s.status === 'active') ? (
+                      ) : subscriptions.some(s => s.plan_name === plan.plan_name && s.status?.toLowerCase() === 'active') ? (
                         <>
                           <CheckCircle2 className="w-4 h-4" />
                           Subscribed
@@ -280,7 +365,7 @@ const SubscriptionsPage = () => {
                         'Subscribe Now'
                       )}
                     </button>
-                    {subscriptions.some(s => s.plan_name === plan.plan_name && s.status === 'active') && (
+                    {subscriptions.some(s => s.plan_name === plan.plan_name && s.status?.toLowerCase() === 'active') && (
                       <p className="text-xs text-center text-gray-400 mt-2">
                         You can change or cancel anytime
                       </p>
@@ -298,6 +383,42 @@ const SubscriptionsPage = () => {
           ) : null}
         </div>
       </div>
+
+      {/* Cancel Subscription Confirmation Modal */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-2xl max-w-md w-full transform transition-all animate-scale-in">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-orange-400" />
+              </div>
+            </div>
+            
+            <h3 className="text-2xl font-bold text-white text-center mb-2">
+              Cancel Subscription?
+            </h3>
+            
+            <p className="text-gray-400 text-center mb-8">
+              Are you sure you want to cancel this subscription? After cancellation, you can choose the most suitable option for your requirements from our available plans.
+            </p>
+            
+            <div className="flex gap-4">
+              <button
+                onClick={handleCancelCancel}
+                className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCancelConfirm}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

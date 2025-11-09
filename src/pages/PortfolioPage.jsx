@@ -357,13 +357,13 @@ const PortfolioPage = () => {
 
                 {/* Before/After Comparison */}
                 <div className="bg-gray-800 rounded-2xl p-8 mb-8 border border-gray-700">
-                  <h3 className="text-xl font-semibold text-white mb-6">Before vs After</h3>
-                  <div className="grid grid-cols-2 gap-6">
+                  <h3 className="text-xl font-semibold text-white mb-6 text-center">Before vs After</h3>
+                  <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
                     <div>
-                      <h4 className="font-semibold text-red-400 mb-4">Before</h4>
+                      <h4 className="font-semibold text-red-400 mb-4 text-center">Before</h4>
                       <div className="space-y-3">
                         {Object.entries(currentProject.beforeAfter.before).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
+                          <div key={key} className="flex justify-between items-center">
                             <span className="text-gray-400 capitalize">{key}:</span>
                             <span className="font-semibold text-white">{value}</span>
                           </div>
@@ -371,10 +371,10 @@ const PortfolioPage = () => {
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-green-400 mb-4">After</h4>
+                      <h4 className="font-semibold text-green-400 mb-4 text-center">After</h4>
                       <div className="space-y-3">
                         {Object.entries(currentProject.beforeAfter.after).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
+                          <div key={key} className="flex justify-between items-center">
                             <span className="text-gray-400 capitalize">{key}:</span>
                             <span className="font-semibold text-white">{value}</span>
                           </div>

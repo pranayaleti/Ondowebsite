@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { adminAPI } from '../../utils/auth';
-import { FileText, Download, Eye, Loader, AlertCircle, DollarSign, Calendar, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { FileText, Download, Eye, Loader, AlertCircle, DollarSign, Calendar, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Save, X, User, Mail } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
 const InvoicesPage = () => {
@@ -184,9 +184,12 @@ const InvoicesPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader className="w-8 h-8 animate-spin text-orange-500" />
-      </div>
+      <>
+        <SEOHead title="Invoices - Admin" />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader className="w-12 h-12 animate-spin text-orange-500" />
+        </div>
+      </>
     );
   }
 
@@ -196,7 +199,7 @@ const InvoicesPage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Invoices</h1>
+            <h1 className="text-4xl font-bold text-white mb-2">Invoices Management</h1>
             <p className="text-gray-400">Manage all invoices</p>
           </div>
           <button
@@ -209,183 +212,183 @@ const InvoicesPage = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400">
-            <AlertCircle className="w-5 h-5" />
-            <span>{error}</span>
+          <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400 mb-6">
+            Error: {error}
           </div>
         )}
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                <FileText className="w-6 h-6 text-orange-400" />
-              </div>
+          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30">
+            <div className="flex items-center gap-3 mb-2">
+              <FileText className="w-6 h-6 text-orange-400" />
+              <span className="text-sm text-gray-400">Total Invoices</span>
             </div>
-            <h3 className="text-sm text-gray-400 mb-1">Total Invoices</h3>
-            <p className="text-2xl font-bold text-white">{invoices.length}</p>
+            <h3 className="text-3xl font-bold text-white">{invoices.length}</h3>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-400" />
-              </div>
+          <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 backdrop-blur-sm rounded-xl p-6 border border-yellow-500/30">
+            <div className="flex items-center gap-3 mb-2">
+              <Clock className="w-6 h-6 text-yellow-400" />
+              <span className="text-sm text-gray-400">Pending</span>
             </div>
-            <h3 className="text-sm text-gray-400 mb-1">Pending</h3>
-            <p className="text-2xl font-bold text-white">
+            <h3 className="text-3xl font-bold text-white">
               {invoices.filter(inv => inv.status === 'pending').length}
-            </p>
+            </h3>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-green-400" />
-              </div>
+          <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30">
+            <div className="flex items-center gap-3 mb-2">
+              <CheckCircle className="w-6 h-6 text-green-400" />
+              <span className="text-sm text-gray-400">Paid</span>
             </div>
-            <h3 className="text-sm text-gray-400 mb-1">Paid</h3>
-            <p className="text-2xl font-bold text-white">
+            <h3 className="text-3xl font-bold text-white">
               {invoices.filter(inv => inv.status === 'paid').length}
-            </p>
+            </h3>
           </div>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-red-400" />
-              </div>
+          <div className="bg-gradient-to-br from-red-500/20 to-red-600/20 backdrop-blur-sm rounded-xl p-6 border border-red-500/30">
+            <div className="flex items-center gap-3 mb-2">
+              <DollarSign className="w-6 h-6 text-red-400" />
+              <span className="text-sm text-gray-400">Total Due</span>
             </div>
-            <h3 className="text-sm text-gray-400 mb-1">Total Due</h3>
-            <p className="text-2xl font-bold text-white">${calculateTotalDue().toFixed(2)}</p>
+            <h3 className="text-3xl font-bold text-white">${calculateTotalDue().toFixed(2)}</h3>
           </div>
         </div>
 
         {/* Invoices List */}
         {invoices.length > 0 ? (
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-900/50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Invoice #</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Client</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Date</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Due Date</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Amount</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-300">Status</th>
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-300">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-700">
-                  {invoices.map((invoice) => {
-                    const total = parseFloat(invoice.total_amount || invoice.amount || 0);
-                    const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
-                    const isOverdue = dueDate && dueDate < new Date() && invoice.status !== 'paid';
-                    
-                    return (
-                      <tr key={invoice.id} className="hover:bg-gray-800/30 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <FileText className="w-4 h-4 text-gray-400" />
-                            <span className="text-white font-medium">
-                              {invoice.invoice_number || `INV-${invoice.id}`}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div>
-                            <div className="text-white font-medium">{invoice.user_name || 'N/A'}</div>
-                            <div className="text-gray-400 text-sm">{invoice.user_email || ''}</div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-gray-300">
-                          {new Date(invoice.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4">
-                          {dueDate ? (
-                            <span className={isOverdue ? 'text-red-400' : 'text-gray-300'}>
-                              {dueDate.toLocaleDateString()}
-                            </span>
-                          ) : (
-                            <span className="text-gray-500">N/A</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-white font-semibold">${total.toFixed(2)}</span>
-                        </td>
-                        <td className="px-6 py-4">
+          <div className="space-y-4">
+            {invoices.map((invoice) => {
+              const total = parseFloat(invoice.total_amount || invoice.amount || 0);
+              const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
+              const isOverdue = dueDate && dueDate < new Date() && invoice.status !== 'paid';
+              
+              return (
+                <div
+                  key={invoice.id}
+                  className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-gray-600 transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-bold text-white">
+                            {invoice.invoice_number || `INV-${invoice.id}`}
+                          </h3>
                           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(isOverdue ? 'overdue' : invoice.status)}`}>
-                            {isOverdue ? <XCircle className="w-4 h-4" /> : invoice.status === 'paid' ? <CheckCircle className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+                            {isOverdue ? <XCircle className="w-3 h-3" /> : invoice.status === 'paid' ? <CheckCircle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
                             {isOverdue ? 'Overdue' : invoice.status}
                           </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-end gap-2">
-                            {editingInvoice === invoice.id ? (
-                              <>
-                                <button
-                                  onClick={() => handleUpdateInvoice(invoice.id)}
-                                  className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
-                                  title="Save"
-                                >
-                                  <Save className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setEditingInvoice(null);
-                                    setFormData({
-                                      user_id: '',
-                                      amount: '',
-                                      tax: '0',
-                                      total_amount: '',
-                                      status: 'pending',
-                                      due_date: '',
-                                      description: '',
-                                      items: [],
-                                      notes: ''
-                                    });
-                                  }}
-                                  className="p-2 rounded-lg bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 transition-colors"
-                                  title="Cancel"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </>
-                            ) : (
-                              <>
-                                <button
-                                  onClick={() => handleEditInvoice(invoice)}
-                                  className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition-colors"
-                                  title="Edit"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleViewPDF(invoice.id)}
-                                  className="p-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 transition-colors"
-                                  title="View PDF"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleDownloadPDF(invoice.id, invoice.invoice_number || invoice.id)}
-                                  className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
-                                  title="Download PDF"
-                                >
-                                  <Download className="w-4 h-4" />
-                                </button>
-                              </>
-                            )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-400">
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            <span className="text-white font-medium">{invoice.user_name || 'N/A'}</span>
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            <span>{invoice.user_email || ''}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4" />
+                            <span>Created {new Date(invoice.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}</span>
+                          </div>
+                          {dueDate && (
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              <span className={isOverdue ? 'text-red-400' : 'text-gray-400'}>
+                                Due {dueDate.toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="w-4 h-4" />
+                            <span className="text-white font-semibold text-lg">${total.toFixed(2)}</span>
+                          </div>
+                        </div>
+                        {invoice.description && (
+                          <p className="mt-2 text-sm text-gray-400 line-clamp-2">{invoice.description}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {editingInvoice === invoice.id ? (
+                        <>
+                          <button
+                            onClick={() => handleUpdateInvoice(invoice.id)}
+                            className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
+                            title="Save"
+                          >
+                            <Save className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingInvoice(null);
+                              setFormData({
+                                user_id: '',
+                                amount: '',
+                                tax: '0',
+                                total_amount: '',
+                                status: 'pending',
+                                due_date: '',
+                                description: '',
+                                items: [],
+                                notes: ''
+                              });
+                            }}
+                            className="p-2 rounded-lg bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 transition-colors"
+                            title="Cancel"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleEditInvoice(invoice)}
+                            className="p-2 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleViewPDF(invoice.id)}
+                            className="p-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 transition-colors"
+                            title="View PDF"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDownloadPDF(invoice.id, invoice.invoice_number || invoice.id)}
+                            className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-colors"
+                            title="Download PDF"
+                          >
+                            <Download className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {editingInvoice === invoice.id && (
+                    <div className="mt-4 pt-4 border-t border-gray-700">
+                      {/* Edit form will be shown here - keeping the modal approach for now */}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-12 border border-gray-700 text-center">

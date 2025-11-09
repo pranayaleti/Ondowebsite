@@ -15,16 +15,19 @@ const BlogCard = memo(({ post, featured = false }) => {
     <article className={`group ${featured ? 'lg:col-span-2' : ''}`}>
       <Link 
         to={`/blogs/${post.slug}`}
-        className="block h-full bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 overflow-hidden border border-gray-700 hover:border-orange-500/30"
+        className="block h-full bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl hover:shadow-orange-500/20 transition-all duration-300 overflow-hidden border border-gray-700/50 hover:border-orange-500/50"
       >
-        {/* Image */}
-        <div className={`relative overflow-hidden ${featured ? 'h-64' : 'h-48'} bg-gray-700`}>
+        {/* Image - Gestalt: Figure/Ground separation */}
+        <div className={`relative overflow-hidden ${featured ? 'h-64' : 'h-56'} bg-gray-700/50`}>
           {post.image ? (
             <img
               src={post.image}
               alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              width={featured ? 768 : 384}
+              height={featured ? 256 : 224}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
+              decoding="async"
               onError={(e) => {
                 e.target.style.display = 'none';
                 e.target.nextSibling.style.display = 'flex';
@@ -32,56 +35,59 @@ const BlogCard = memo(({ post, featured = false }) => {
             />
           ) : null}
           <div 
-            className={`absolute inset-0 bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center ${post.image ? 'hidden' : 'flex'}`}
+            className={`absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center ${post.image ? 'hidden' : 'flex'}`}
           >
-            <div className="text-gray-500 text-4xl font-bold">
+            <div className="text-gray-500 text-5xl font-bold">
               {post.title.charAt(0)}
             </div>
           </div>
           {post.featured && (
-            <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg z-10">
+            <div className="absolute top-4 left-4 bg-orange-500 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg z-10 uppercase tracking-wide">
               Featured
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent" />
         </div>
 
-        {/* Content */}
-        <div className="p-6">
-          {/* Category */}
-          <div className="flex items-center mb-3">
-            <span className="bg-orange-500/20 text-orange-400 px-3 py-1 rounded-full text-sm font-medium border border-orange-500/30">
+        {/* Content - Gestalt: Proximity grouping, clear hierarchy */}
+        <div className={`p-6 ${featured ? 'p-8' : ''} flex flex-col h-full`}>
+          {/* Category - Gestalt: Common region */}
+          <div className="mb-4">
+            <span className="inline-block bg-orange-500/15 text-orange-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-orange-500/30 uppercase tracking-wide">
               {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </span>
           </div>
 
-          {/* Title */}
-          <h3 className={`font-bold text-white group-hover:text-orange-400 transition-colors mb-3 ${
-            featured ? 'text-2xl' : 'text-xl'
+          {/* Title - Gestalt: Figure prominence */}
+          <h3 className={`font-bold text-white group-hover:text-orange-400 transition-colors mb-4 leading-tight ${
+            featured ? 'text-2xl mb-5' : 'text-xl'
           }`}>
             {post.title}
           </h3>
 
-          {/* Excerpt */}
-          <p className="text-gray-300 mb-4 line-clamp-3">
+          {/* Excerpt - Gestalt: Continuity, readable spacing */}
+          <p className={`text-gray-300 mb-6 line-clamp-3 leading-relaxed flex-grow ${
+            featured ? 'text-base mb-8' : 'text-sm'
+          }`}>
             {post.excerpt}
           </p>
 
-          {/* Meta */}
-          <div className="flex items-center justify-between text-sm text-gray-400">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-1" />
-                {formattedDate}
+          {/* Meta - Gestalt: Similarity, proximity grouping */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-700/50">
+            <div className="flex items-center gap-4 text-xs text-gray-400">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5" />
+                <span className="font-medium">{formattedDate}</span>
               </div>
-              <div className="flex items-center">
-                <Clock className="h-4 w-4 mr-1" />
-                {post.readTime}
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                <span className="font-medium">{post.readTime}</span>
               </div>
             </div>
-            <div className="flex items-center text-orange-400 font-semibold group-hover:text-orange-300">
-              Read More
-              <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+            <div className="flex items-center gap-2 text-orange-400 font-semibold text-sm group-hover:text-orange-300 transition-colors">
+              <span>Read</span>
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </div>
