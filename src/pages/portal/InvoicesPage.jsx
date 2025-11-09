@@ -42,12 +42,12 @@ const InvoicesPage = () => {
   };
 
   const handleViewPDF = (invoiceId) => {
-    window.open(`${API_URL}/portal/invoices/${invoiceId}/pdf`, '_blank');
+    window.open(`${API_URL}/dashboard/invoices/${invoiceId}/pdf`, '_blank');
   };
 
   const handleDownloadPDF = (invoiceId, invoiceNumber) => {
     const link = document.createElement('a');
-    link.href = `${API_URL}/portal/invoices/${invoiceId}/pdf`;
+    link.href = `${API_URL}/dashboard/invoices/${invoiceId}/pdf`;
     link.download = `invoice-${invoiceNumber || invoiceId}.html`;
     link.click();
   };
@@ -161,7 +161,7 @@ const InvoicesPage = () => {
 
   return (
     <>
-      <SEOHead title="Invoices - Portal" />
+      <SEOHead title="Invoices - Dashboard" />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>

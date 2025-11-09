@@ -41,7 +41,7 @@ const PortalDashboard = () => {
   if (loading) {
     return (
       <>
-        <SEOHead title="Dashboard - Portal" />
+        <SEOHead title="Dashboard" />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader className="w-12 h-12 animate-spin text-orange-500" />
         </div>
@@ -52,7 +52,7 @@ const PortalDashboard = () => {
   if (error) {
     return (
       <>
-        <SEOHead title="Dashboard - Portal" />
+        <SEOHead title="Dashboard" />
         <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400">
           Error: {error}
         </div>
@@ -88,7 +88,7 @@ const PortalDashboard = () => {
 
   return (
     <>
-      <SEOHead title="Dashboard - Portal" />
+      <SEOHead title="Dashboard" />
       <div className="max-w-7xl mx-auto">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -100,7 +100,10 @@ const PortalDashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30">
+          <Link
+            to="/dashboard/subscriptions"
+            className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <CreditCard className="w-8 h-8 text-orange-400" />
               <span className="text-sm text-gray-400">Plan</span>
@@ -115,17 +118,15 @@ const PortalDashboard = () => {
             }`}>
               {subscription?.status || 'Not subscribed'}
             </p>
-            {!subscription && (
-              <Link
-                to="/portal/subscriptions"
-                className="text-xs text-orange-400 hover:text-orange-300 mt-2 inline-block"
-              >
-                View plans →
-              </Link>
-            )}
-          </div>
+            <span className="text-xs text-orange-400 hover:text-orange-300 mt-2 inline-block">
+              {!subscription ? 'View plans →' : 'Manage plan →'}
+            </span>
+          </Link>
 
-          <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30">
+          <Link
+            to="/dashboard/campaigns"
+            className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <Megaphone className="w-8 h-8 text-blue-400" />
               <span className="text-sm text-gray-400">Active</span>
@@ -134,15 +135,15 @@ const PortalDashboard = () => {
               {campaignCount}
             </h3>
             <p className="text-sm text-gray-400">Campaigns</p>
-            <Link
-              to="/portal/campaigns"
-              className="text-xs text-blue-400 hover:text-blue-300 mt-2 inline-block"
-            >
+            <span className="text-xs text-blue-400 hover:text-blue-300 mt-2 inline-block">
               Manage →
-            </Link>
-          </div>
+            </span>
+          </Link>
 
-          <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30">
+          <Link
+            to="/dashboard/assets"
+            className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:border-green-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <FolderOpen className="w-8 h-8 text-green-400" />
               <span className="text-sm text-gray-400">Stored</span>
@@ -151,15 +152,15 @@ const PortalDashboard = () => {
               {assetCount}
             </h3>
             <p className="text-sm text-gray-400">Assets</p>
-            <Link
-              to="/portal/assets"
-              className="text-xs text-green-400 hover:text-green-300 mt-2 inline-block"
-            >
+            <span className="text-xs text-green-400 hover:text-green-300 mt-2 inline-block">
               View all →
-            </Link>
-          </div>
+            </span>
+          </Link>
 
-          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30">
+          <Link
+            to="/dashboard/invoices"
+            className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:border-purple-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <DollarSign className="w-8 h-8 text-purple-400" />
               <span className="text-sm text-gray-400">Revenue</span>
@@ -173,13 +174,16 @@ const PortalDashboard = () => {
                 {pendingInvoices} pending invoice{pendingInvoices > 1 ? 's' : ''}
               </p>
             )}
-          </div>
+            <span className="text-xs text-purple-400 hover:text-purple-300 mt-2 inline-block">
+              View invoices →
+            </span>
+          </Link>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link
-            to="/portal/campaigns"
+            to="/dashboard/campaigns"
             className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors group"
           >
             <div className="flex items-center gap-3 mb-3">
@@ -190,7 +194,7 @@ const PortalDashboard = () => {
           </Link>
 
           <Link
-            to="/portal/assets"
+            to="/dashboard/assets"
             className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors group"
           >
             <div className="flex items-center gap-3 mb-3">
@@ -201,7 +205,7 @@ const PortalDashboard = () => {
           </Link>
 
           <Link
-            to="/portal/subscriptions"
+            to="/dashboard/subscriptions"
             className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors group"
           >
             <div className="flex items-center gap-3 mb-3">
@@ -222,7 +226,7 @@ const PortalDashboard = () => {
                 Recent Campaigns
               </h2>
               <Link
-                to="/portal/campaigns"
+                to="/dashboard/campaigns"
                 className="text-orange-500 hover:text-orange-400 flex items-center gap-2 text-sm"
               >
                 View All
@@ -235,7 +239,7 @@ const PortalDashboard = () => {
                 {recentCampaigns.map((campaign) => (
                   <div
                     key={campaign.id}
-                    className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                    className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-default"
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-2 h-2 rounded-full ${
@@ -266,7 +270,7 @@ const PortalDashboard = () => {
                 <Megaphone className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                 <p className="text-gray-400 mb-4">No campaigns yet</p>
                 <Link
-                  to="/portal/campaigns"
+                  to="/dashboard/campaigns"
                   className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-400"
                 >
                   Create your first campaign
@@ -284,7 +288,7 @@ const PortalDashboard = () => {
                 Recent Invoices
               </h2>
               <Link
-                to="/portal/invoices"
+                to="/dashboard/invoices"
                 className="text-orange-500 hover:text-orange-400 flex items-center gap-2 text-sm"
               >
                 View All
@@ -297,7 +301,7 @@ const PortalDashboard = () => {
                 {recentInvoices.map((invoice) => (
                   <div
                     key={invoice.id}
-                    className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                    className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-default"
                   >
                     <div className="flex items-center gap-3">
                       {invoice.status === 'paid' ? (
@@ -350,7 +354,7 @@ const PortalDashboard = () => {
                 Recent Assets
               </h2>
               <Link
-                to="/portal/assets"
+                to="/dashboard/assets"
                 className="text-orange-500 hover:text-orange-400 flex items-center gap-2 text-sm"
               >
                 View All
@@ -361,7 +365,7 @@ const PortalDashboard = () => {
               {recentAssets.map((asset) => (
                 <div
                   key={asset.id}
-                  className="p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                  className="p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-default"
                 >
                   <div className="flex items-center gap-3 mb-2">
                     <FolderOpen className="w-5 h-5 text-green-500" />

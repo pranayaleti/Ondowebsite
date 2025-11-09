@@ -185,7 +185,7 @@ Allow: /
 
 # Disallow admin and private areas
 Disallow: /admin/
-Disallow: /portal/
+Disallow: /dashboard/
 Disallow: /auth/
 Disallow: /sign-in
 Disallow: /sign-up
@@ -244,7 +244,7 @@ Allow: /assets/images/
 Allow: /logo.png
 Allow: /dist/assets/images/
 Disallow: /admin/
-Disallow: /portal/
+Disallow: /dashboard/
 Disallow: /auth/
 
 User-agent: Googlebot-Mobile
@@ -255,7 +255,7 @@ User-agent: Googlebot-News
 Allow: /blogs/
 Allow: /blog/
 Disallow: /admin/
-Disallow: /portal/
+Disallow: /dashboard/
 
 # ============================================
 # BING SPECIFIC RULES

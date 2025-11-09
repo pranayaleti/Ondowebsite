@@ -19,11 +19,11 @@ const SignInPage = () => {
   const registered = searchParams.get('registered');
 
   useEffect(() => {
-    if (isAuthenticated) {
+      if (isAuthenticated) {
       if (isAdmin) {
         navigate('/admin');
       } else {
-        navigate('/portal');
+        navigate('/dashboard');
       }
     }
   }, [isAuthenticated, isAdmin, navigate]);
@@ -72,15 +72,15 @@ const SignInPage = () => {
   return (
     <>
       <SEOHead
-        title="Client Portal - OndoSoft"
-        description="Access your client portal to manage your campaigns"
+        title="Dashboard - OndoSoft"
+        description="Access your dashboard to manage your campaigns"
       />
       <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-gray-700">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-              <p className="text-gray-400">Access your client portal</p>
+              <p className="text-gray-400">Access your dashboard</p>
             </div>
 
             {/* Demo Credentials for Testing */}
@@ -95,7 +95,7 @@ const SignInPage = () => {
             {registered && (
               <div className="mb-6 p-4 bg-green-500/10 border border-green-500/50 rounded-lg text-green-400 text-sm flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" />
-                Account created successfully! Please access your client portal.
+                Account created successfully! Please access your dashboard.
               </div>
             )}
 
@@ -152,11 +152,11 @@ const SignInPage = () => {
                 {loading ? (
                   <>
                     <Loader className="w-5 h-5 animate-spin" />
-                    Accessing Portal...
+                    Accessing Dashboard...
                   </>
                 ) : (
                   <>
-                    Access Client Portal
+                    Access Dashboard
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}

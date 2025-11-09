@@ -119,7 +119,7 @@ const NotificationsPage = () => {
   return (
     <>
       <SEOHead 
-        title="Notifications | Portal"
+        title="Notifications | Dashboard"
         description="View and manage your notifications"
       />
       

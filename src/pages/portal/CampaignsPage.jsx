@@ -27,7 +27,7 @@ const CampaignsPage = () => {
   if (loading) {
     return (
       <>
-        <SEOHead title="Campaigns - Portal" />
+        <SEOHead title="Campaigns - Dashboard" />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader className="w-12 h-12 animate-spin text-orange-500" />
         </div>
@@ -37,7 +37,7 @@ const CampaignsPage = () => {
 
   return (
     <>
-      <SEOHead title="Campaigns - Portal" />
+      <SEOHead title="Campaigns - Dashboard" />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Campaigns</h1>

@@ -12,10 +12,10 @@ const Navbar = () => {
   const location = useLocation();
   const { isAuthenticated, user, signout } = useAuth();
 
-  // Hide navbar on auth pages, portal, and admin pages
+  // Hide navbar on auth pages, dashboard, and admin pages
   const hideNavbar = useMemo(() => 
     location.pathname.startsWith('/auth') || 
-    location.pathname.startsWith('/portal') || 
+    location.pathname.startsWith('/dashboard') || 
     location.pathname.startsWith('/admin'),
     [location.pathname]
   );
@@ -164,10 +164,10 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <>
                   <Link
-                    to={user?.role === 'ADMIN' ? '/admin' : '/portal'}
+                    to={user?.role === 'ADMIN' ? '/admin' : '/dashboard'}
                     className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 px-4 rounded-md font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
                   >
-                    {user?.role === 'ADMIN' ? 'Admin' : 'Portal'}
+                    {user?.role === 'ADMIN' ? 'Admin' : 'Dashboard'}
                   </Link>
                   <button
                     onClick={handleSignOut}
@@ -181,7 +181,7 @@ const Navbar = () => {
                   to="/auth/signin"
                   className="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-2 px-4 rounded-md font-semibold shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
                 >
-                  Client Portal
+                  Dashboard
                 </Link>
               )}
             </div>
@@ -255,11 +255,11 @@ const Navbar = () => {
                   {isAuthenticated ? (
                     <>
                       <Link
-                        to={user?.role === 'ADMIN' ? '/admin' : '/portal'}
+                        to={user?.role === 'ADMIN' ? '/admin' : '/dashboard'}
                         onClick={() => setMobileDrawerOpen(false)}
                         className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
                       >
-                        {user?.role === 'ADMIN' ? 'Admin' : 'Portal'}
+                        {user?.role === 'ADMIN' ? 'Admin' : 'Dashboard'}
                       </Link>
                       <button
                         onClick={handleSignOut}
@@ -274,7 +274,7 @@ const Navbar = () => {
                       onClick={() => setMobileDrawerOpen(false)}
                       className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
                     >
-                      Client Portal
+                      Dashboard
                     </Link>
                   )}
                 </div>

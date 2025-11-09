@@ -123,7 +123,10 @@ const AdminDashboard = () => {
 
         {/* Main Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30">
+          <Link
+            to="/admin/clients"
+            className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30 hover:border-blue-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <Users className="w-8 h-8 text-blue-400" />
               <div className="flex items-center gap-1 text-green-400 text-sm">
@@ -136,9 +139,12 @@ const AdminDashboard = () => {
             </h3>
             <p className="text-sm text-gray-400">Existing Clients</p>
             <p className="text-xs text-gray-500 mt-2">{stats.newUsersLast7Days} new this week</p>
-          </div>
+          </Link>
 
-          <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30">
+          <Link
+            to="/admin/campaigns"
+            className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:border-green-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <Megaphone className="w-8 h-8 text-green-400" />
               <span className="text-xs text-gray-400">{stats.activeCampaigns} active</span>
@@ -147,9 +153,9 @@ const AdminDashboard = () => {
               {stats.totalCampaigns}
             </h3>
             <p className="text-sm text-gray-400">Total Campaigns</p>
-          </div>
+          </Link>
 
-          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30">
+          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 cursor-default">
             <div className="flex items-center justify-between mb-4">
               <CreditCard className="w-8 h-8 text-orange-400" />
               <span className="text-xs text-gray-400">{stats.activeSubscriptions} active</span>
@@ -160,7 +166,10 @@ const AdminDashboard = () => {
             <p className="text-sm text-gray-400">Subscriptions</p>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30">
+          <Link
+            to="/admin/analytics"
+            className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:border-purple-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <DollarSign className="w-8 h-8 text-purple-400" />
               <TrendingUp className="w-5 h-5 text-green-400" />
@@ -174,36 +183,48 @@ const AdminDashboard = () => {
                 {formatCurrency(stats.pendingRevenue)} pending
               </p>
             )}
-          </div>
+          </Link>
         </div>
 
         {/* Secondary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+          <Link
+            to="/admin/assets"
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-green-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center gap-3 mb-2">
               <FolderOpen className="w-6 h-6 text-green-500" />
               <span className="text-sm text-gray-400">Assets</span>
             </div>
             <h3 className="text-2xl font-bold text-white">{stats.totalAssets}</h3>
-          </div>
+          </Link>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+          <Link
+            to="/admin/invoices"
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-blue-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center gap-3 mb-2">
               <FileText className="w-6 h-6 text-blue-500" />
               <span className="text-sm text-gray-400">Invoices</span>
             </div>
             <h3 className="text-2xl font-bold text-white">{stats.totalInvoices}</h3>
-          </div>
+          </Link>
 
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+          <Link
+            to="/admin/campaigns"
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-orange-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center gap-3 mb-2">
               <Activity className="w-6 h-6 text-orange-500" />
               <span className="text-sm text-gray-400">Active Campaigns</span>
             </div>
             <h3 className="text-2xl font-bold text-white">{stats.activeCampaigns}</h3>
-          </div>
+          </Link>
 
-          <div className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30">
+          <Link
+            to="/admin/consultation-leads"
+            className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30 hover:border-cyan-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <MessageSquare className="w-8 h-8 text-cyan-400" />
               <div className="flex items-center gap-1 text-green-400 text-sm">
@@ -216,7 +237,7 @@ const AdminDashboard = () => {
             </h3>
             <p className="text-sm text-gray-400">Prospective Leads</p>
             <p className="text-xs text-gray-500 mt-2">{stats.newConsultationLeadsLast7Days || 0} new this week</p>
-          </div>
+          </Link>
         </div>
 
         {/* Charts and Activity Row */}
@@ -324,7 +345,7 @@ const AdminDashboard = () => {
               {recentConsultationLeads.map((lead) => (
                 <div
                   key={lead.id}
-                  className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                  className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-default"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-white font-bold">
@@ -396,7 +417,7 @@ const AdminDashboard = () => {
               {recentUsers.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                  className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-default"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white font-bold">

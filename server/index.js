@@ -1066,7 +1066,7 @@ app.get('/api/auth/session', authenticateToken, async (req, res) => {
 // Portal routes
 
 // Get dashboard data
-app.get('/api/portal/dashboard', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/dashboard', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
 
@@ -1151,7 +1151,7 @@ app.get('/api/portal/dashboard', authenticateToken, async (req, res) => {
 });
 
 // Get subscriptions
-app.get('/api/portal/subscriptions', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/subscriptions', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM subscriptions WHERE user_id = $1 ORDER BY created_at DESC',
@@ -1258,7 +1258,7 @@ app.get('/api/portal/subscriptions', authenticateToken, async (req, res) => {
 });
 
 // Create or update subscription
-app.post('/api/portal/subscriptions', authenticateToken, async (req, res) => {
+app.post('/api/dashboard/subscriptions', authenticateToken, async (req, res) => {
   try {
     const { plan_name, price, price_display, billing_period, features } = req.body;
     
@@ -1306,7 +1306,7 @@ app.post('/api/portal/subscriptions', authenticateToken, async (req, res) => {
 });
 
 // Update subscription status (cancel or change)
-app.patch('/api/portal/subscriptions/:id', authenticateToken, async (req, res) => {
+app.patch('/api/dashboard/subscriptions/:id', authenticateToken, async (req, res) => {
   try {
     const { status } = req.body;
     const subscriptionId = req.params.id;
@@ -1341,7 +1341,7 @@ app.patch('/api/portal/subscriptions/:id', authenticateToken, async (req, res) =
 });
 
 // Get campaigns
-app.get('/api/portal/campaigns', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/campaigns', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM campaigns WHERE user_id = $1 ORDER BY created_at DESC',
@@ -1355,7 +1355,7 @@ app.get('/api/portal/campaigns', authenticateToken, async (req, res) => {
 });
 
 // Get assets
-app.get('/api/portal/assets', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/assets', authenticateToken, async (req, res) => {
   try {
     // Exclude file_data from SELECT to avoid sending large binary data
     // We'll use the url field (base64) for display, or create an endpoint for binary data if needed
@@ -1374,7 +1374,7 @@ app.get('/api/portal/assets', authenticateToken, async (req, res) => {
 });
 
 // Get asset file data (binary) - optional endpoint if you want to serve binary directly
-app.get('/api/portal/assets/:id/file', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/assets/:id/file', authenticateToken, async (req, res) => {
   try {
     const assetId = req.params.id;
     
@@ -1409,7 +1409,7 @@ app.get('/api/portal/assets/:id/file', authenticateToken, async (req, res) => {
 });
 
 // Upload asset (portal)
-app.post('/api/portal/assets', authenticateToken, async (req, res) => {
+app.post('/api/dashboard/assets', authenticateToken, async (req, res) => {
   try {
     const { name, type, url, file_size, category, description } = req.body;
     
@@ -1447,7 +1447,7 @@ app.post('/api/portal/assets', authenticateToken, async (req, res) => {
 });
 
 // Delete asset (portal)
-app.delete('/api/portal/assets/:id', authenticateToken, async (req, res) => {
+app.delete('/api/dashboard/assets/:id', authenticateToken, async (req, res) => {
   try {
     const assetId = req.params.id;
 
@@ -1471,7 +1471,7 @@ app.delete('/api/portal/assets/:id', authenticateToken, async (req, res) => {
 });
 
 // Get invoices (portal)
-app.get('/api/portal/invoices', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/invoices', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT i.*, u.name as user_name, u.email as user_email, u.company_name
@@ -1489,7 +1489,7 @@ app.get('/api/portal/invoices', authenticateToken, async (req, res) => {
 });
 
 // Get single invoice (portal)
-app.get('/api/portal/invoices/:id', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/invoices/:id', authenticateToken, async (req, res) => {
   try {
     const invoiceId = req.params.id;
     const result = await pool.query(
@@ -1944,7 +1944,7 @@ const generateInvoicePDF = (invoice) => {
 };
 
 // Create invoice (portal - clients create invoices for themselves)
-app.post('/api/portal/invoices', authenticateToken, async (req, res) => {
+app.post('/api/dashboard/invoices', authenticateToken, async (req, res) => {
   try {
     const { amount, tax, total_amount, status, due_date, description, items, notes } = req.body;
     
@@ -1981,7 +1981,7 @@ app.post('/api/portal/invoices', authenticateToken, async (req, res) => {
 });
 
 // Generate invoice PDF (portal)
-app.get('/api/portal/invoices/:id/pdf', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/invoices/:id/pdf', authenticateToken, async (req, res) => {
   try {
     const invoiceId = req.params.id;
     const result = await pool.query(
@@ -3163,7 +3163,7 @@ app.get('/api/admin/user-analytics', authenticateToken, requireAdmin, async (req
 // Ticket system endpoints
 
 // Create ticket (portal)
-app.post('/api/portal/tickets', authenticateToken, async (req, res) => {
+app.post('/api/dashboard/tickets', authenticateToken, async (req, res) => {
   try {
     const { 
       subject, 
@@ -3214,7 +3214,7 @@ app.post('/api/portal/tickets', authenticateToken, async (req, res) => {
 });
 
 // Get user tickets (portal)
-app.get('/api/portal/tickets', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/tickets', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT * FROM tickets WHERE user_id = $1 ORDER BY created_at DESC`,
@@ -3229,7 +3229,7 @@ app.get('/api/portal/tickets', authenticateToken, async (req, res) => {
 });
 
 // Get ticket details (portal)
-app.get('/api/portal/tickets/:id', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/tickets/:id', authenticateToken, async (req, res) => {
   try {
     const ticketResult = await pool.query(
       `SELECT * FROM tickets WHERE id = $1 AND user_id = $2`,
@@ -3266,7 +3266,7 @@ app.get('/api/portal/tickets/:id', authenticateToken, async (req, res) => {
 });
 
 // Add message to ticket (portal)
-app.post('/api/portal/tickets/:id/messages', authenticateToken, async (req, res) => {
+app.post('/api/dashboard/tickets/:id/messages', authenticateToken, async (req, res) => {
   try {
     const { message } = req.body;
     
@@ -3321,7 +3321,7 @@ app.post('/api/portal/tickets/:id/messages', authenticateToken, async (req, res)
 });
 
 // Upload attachment (portal)
-app.post('/api/portal/tickets/:id/attachments', authenticateToken, async (req, res) => {
+app.post('/api/dashboard/tickets/:id/attachments', authenticateToken, async (req, res) => {
   try {
     const { file_name, file_url, file_type, file_size, message_id } = req.body;
     
@@ -3530,7 +3530,7 @@ app.post('/api/admin/tickets/:id/messages', authenticateToken, requireAdmin, asy
 // Notification Endpoints
 
 // Get notifications (portal)
-app.get('/api/portal/notifications', authenticateToken, async (req, res) => {
+app.get('/api/dashboard/notifications', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT * FROM notifications 
@@ -3550,7 +3550,7 @@ app.get('/api/portal/notifications', authenticateToken, async (req, res) => {
 });
 
 // Mark notification as read (portal)
-app.patch('/api/portal/notifications/:id/read', authenticateToken, async (req, res) => {
+app.patch('/api/dashboard/notifications/:id/read', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE notifications 
@@ -3572,7 +3572,7 @@ app.patch('/api/portal/notifications/:id/read', authenticateToken, async (req, r
 });
 
 // Mark all notifications as read (portal)
-app.patch('/api/portal/notifications/read-all', authenticateToken, async (req, res) => {
+app.patch('/api/dashboard/notifications/read-all', authenticateToken, async (req, res) => {
   try {
     await pool.query(
       `UPDATE notifications 
@@ -3589,7 +3589,7 @@ app.patch('/api/portal/notifications/read-all', authenticateToken, async (req, r
 });
 
 // Remind me later (portal)
-app.patch('/api/portal/notifications/:id/remind', authenticateToken, async (req, res) => {
+app.patch('/api/dashboard/notifications/:id/remind', authenticateToken, async (req, res) => {
   try {
     const { remind_at } = req.body;
     
@@ -3617,7 +3617,7 @@ app.patch('/api/portal/notifications/:id/remind', authenticateToken, async (req,
 });
 
 // Dismiss notification (portal)
-app.patch('/api/portal/notifications/:id/dismiss', authenticateToken, async (req, res) => {
+app.patch('/api/dashboard/notifications/:id/dismiss', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE notifications 

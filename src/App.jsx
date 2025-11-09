@@ -153,9 +153,9 @@ const AppRoutes = () => {
           <Route path="/auth/signup" element={<SignUpPage />} />
           <Route path="/auth/signin" element={<SignInPage />} />
           
-          {/* Portal Routes */}
+          {/* Dashboard Routes */}
           <Route
-            path="/portal"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <PortalLayout />

@@ -180,7 +180,7 @@ const TicketsPage = () => {
   if (loading && !ticketDetails) {
     return (
       <>
-        <SEOHead title="Tickets - Portal" />
+        <SEOHead title="Tickets - Dashboard" />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader className="w-12 h-12 animate-spin text-orange-500" />
         </div>
@@ -191,7 +191,7 @@ const TicketsPage = () => {
   if (selectedTicket && ticketDetails) {
     return (
       <>
-        <SEOHead title="Ticket Details - Portal" />
+        <SEOHead title="Ticket Details - Dashboard" />
         <div className="max-w-7xl mx-auto">
           <div className="mb-6">
             <button
@@ -328,7 +328,7 @@ const TicketsPage = () => {
 
   return (
     <>
-      <SEOHead title="Tickets - Portal" />
+      <SEOHead title="Tickets - Dashboard" />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>
