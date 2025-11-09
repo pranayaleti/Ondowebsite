@@ -4,69 +4,184 @@ import { API_URL } from './apiConfig';
 // Auth API functions
 export const authAPI = {
   async signup(email, password, name, additionalData = {}) {
-    const response = await fetch(`${API_URL}/auth/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ 
-        email, 
-        password, 
-        name,
-        ...additionalData
-      }),
-    });
+    try {
+      const response = await fetch(`${API_URL}/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          email, 
+          password, 
+          name,
+          ...additionalData
+        }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Signup failed');
+      if (!response.ok) {
+        let errorMessage = 'Signup failed';
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const error = await response.json();
+            errorMessage = error.error || errorMessage;
+          } else {
+            const text = await response.text();
+            if (text) {
+              errorMessage = text.substring(0, 200);
+            } else if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
+              errorMessage = 'Backend server is not running. Please start the server and try again.';
+            } else {
+              errorMessage = `Server error (${response.status}). Please check if the server is running.`;
+            }
+          }
+        } catch (e) {
+          // If response is not JSON or empty, provide a helpful error message
+          if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
+            errorMessage = 'Backend server is not running. Please start the server and try again.';
+          } else {
+            errorMessage = `Server error (${response.status}). Please check if the server is running.`;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Check content type before parsing JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Invalid response format. Server may not be running properly. ${text.substring(0, 100)}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your connection and ensure the backend server is running on port 5001.');
+      }
+      throw error;
     }
-
-    return response.json();
   },
 
   async signin(email, password) {
-    const response = await fetch(`${API_URL}/auth/signin`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch(`${API_URL}/auth/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Signin failed');
+      if (!response.ok) {
+        let errorMessage = 'Signin failed';
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const error = await response.json();
+            errorMessage = error.error || errorMessage;
+          } else {
+            const text = await response.text();
+            if (text) {
+              errorMessage = text.substring(0, 200);
+            } else if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
+              errorMessage = 'Backend server is not running. Please start the server and try again.';
+            } else {
+              errorMessage = `Server error (${response.status}). Please check if the server is running.`;
+            }
+          }
+        } catch (e) {
+          // If response is not JSON or empty, provide a helpful error message
+          if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
+            errorMessage = 'Backend server is not running. Please start the server and try again.';
+          } else {
+            errorMessage = `Server error (${response.status}). Please check if the server is running.`;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Check content type before parsing JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Invalid response format. Server may not be running properly. ${text.substring(0, 100)}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your connection and ensure the backend server is running on port 5001.');
+      }
+      throw error;
     }
-
-    return response.json();
   },
 
   async signout() {
-    const response = await fetch(`${API_URL}/auth/signout`, {
-      method: 'POST',
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(`${API_URL}/auth/signout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      throw new Error('Signout failed');
+      if (!response.ok) {
+        // Try to get error message, but don't fail if response is not JSON
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const error = await response.json();
+            throw new Error(error.error || 'Signout failed');
+          }
+        } catch (e) {
+          // If we can't parse the error, just throw a generic message
+        }
+        throw new Error('Signout failed');
+      }
+
+      // Check content type before parsing JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        return response.json();
+      }
+      // If not JSON, return empty object
+      return {};
+    } catch (error) {
+      // Handle network errors gracefully for signout
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        console.warn('Network error during signout. User will be signed out locally.');
+        return {};
+      }
+      throw error;
     }
-
-    return response.json();
   },
 
   async getSession() {
-    const response = await fetch(`${API_URL}/auth/session`, {
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(`${API_URL}/auth/session`, {
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
+      if (!response.ok) {
+        return null;
+      }
+
+      // Check content type before parsing JSON
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        // If not JSON, return null (session not valid)
+        return null;
+      }
+
+      return response.json();
+    } catch (error) {
+      // Silently handle network errors for session check
+      // This prevents errors when the server is not running
+      console.debug('Session check failed:', error.message);
       return null;
     }
-
-    return response.json();
   },
 
   async getNotifications() {
