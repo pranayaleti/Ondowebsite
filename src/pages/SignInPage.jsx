@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../utils/apiConfig';
 import SEOHead from '../components/SEOHead';
 import { Mail, Lock, ArrowRight, Loader, CheckCircle } from 'lucide-react';
+import { companyInfo } from '../constants/companyInfo';
 
 const SignInPage = () => {
   const [formData, setFormData] = useState({
@@ -118,7 +119,7 @@ const SignInPage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="john@example.com"
+                    placeholder={companyInfo.placeholders.email}
                     required
                   />
                 </div>

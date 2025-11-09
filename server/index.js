@@ -14,11 +14,28 @@ const { Pool } = pkg;
 
 const app = express();
 const PORT = process.env.PORT || 5001; // Changed from 5000 to avoid AirPlay conflict on macOS
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || (() => {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET environment variable is required in production');
+  }
+  console.warn('⚠️  WARNING: Using default JWT_SECRET. Set JWT_SECRET environment variable in production!');
+  return 'your-secret-key-change-in-production';
+})();
 
 // Initialize PostgreSQL connection with optimized pool settings
+const getDatabaseUrl = () => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('DATABASE_URL environment variable is required in production');
+  }
+  console.warn('⚠️  WARNING: Using default database connection. Set DATABASE_URL environment variable in production!');
+  return 'postgresql://neondb_owner:npg_o0t1YrGAJByC@ep-restless-frost-adafv6il-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+};
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_o0t1YrGAJByC@ep-restless-frost-adafv6il-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  connectionString: getDatabaseUrl(),
   ssl: {
     rejectUnauthorized: false
   },
@@ -224,6 +241,45 @@ const createTables = async () => {
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS consultation_leads (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255),
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        company VARCHAR(255),
+        selected_plan VARCHAR(255),
+        selected_plan_price VARCHAR(50),
+        timeline VARCHAR(100),
+        budget VARCHAR(100),
+        message TEXT,
+        timezone VARCHAR(100),
+        page_url TEXT,
+        user_agent TEXT,
+        utm_medium VARCHAR(100),
+        utm_source VARCHAR(100),
+        utm_campaign VARCHAR(100),
+        utm_content VARCHAR(255),
+        referrer TEXT,
+        ip_address VARCHAR(45),
+        status VARCHAR(50) DEFAULT 'new',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS consultation_drafts (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255),
+        email VARCHAR(255),
+        form_data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_consultation_drafts_session_id ON consultation_drafts(session_id);
+      CREATE INDEX IF NOT EXISTS idx_consultation_drafts_email ON consultation_drafts(email);
+
       CREATE TABLE IF NOT EXISTS tickets (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -294,6 +350,9 @@ const createTables = async () => {
     
     // Add new columns to existing invoices table if they don't exist
     await addInvoiceColumns();
+    
+    // Add new columns to existing consultation_leads table if they don't exist
+    await addConsultationLeadsColumns();
     
     // Create indexes for better query performance
     await createIndexes();
@@ -420,6 +479,12 @@ const createIndexes = async () => {
       CREATE INDEX IF NOT EXISTS idx_analytics_form_interactions_session_id ON analytics_form_interactions(session_id);
       CREATE INDEX IF NOT EXISTS idx_analytics_form_interactions_pathname ON analytics_form_interactions(pathname);
       CREATE INDEX IF NOT EXISTS idx_analytics_form_interactions_timestamp ON analytics_form_interactions(timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_consultation_leads_session_id ON consultation_leads(session_id);
+      CREATE INDEX IF NOT EXISTS idx_consultation_leads_email ON consultation_leads(email);
+      CREATE INDEX IF NOT EXISTS idx_consultation_leads_status ON consultation_leads(status);
+      CREATE INDEX IF NOT EXISTS idx_consultation_leads_created_at ON consultation_leads(created_at);
+      CREATE INDEX IF NOT EXISTS idx_consultation_leads_utm_medium ON consultation_leads(utm_medium);
       
       CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_session_id ON analytics_user_interactions(session_id);
       CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_pathname ON analytics_user_interactions(pathname);
@@ -615,6 +680,35 @@ const addInvoiceColumns = async () => {
     }
   } catch (error) {
     console.error('Error adding invoice columns:', error);
+  }
+};
+
+// Add new columns to consultation_leads table if they don't exist
+const addConsultationLeadsColumns = async () => {
+  try {
+    const columns = [
+      { name: 'qa_responses', type: 'JSONB' }
+    ];
+    
+    for (const column of columns) {
+      // Check if column exists
+      const checkColumn = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name='consultation_leads' AND column_name=$1
+      `, [column.name]);
+      
+      if (checkColumn.rows.length === 0) {
+        try {
+          await pool.query(`ALTER TABLE consultation_leads ADD COLUMN ${column.name} ${column.type}`);
+          console.log(`Added column to consultation_leads: ${column.name}`);
+        } catch (alterError) {
+          console.error(`Error adding column ${column.name}:`, alterError);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error adding consultation_leads columns:', error);
   }
 };
 
@@ -1936,6 +2030,23 @@ app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (req, res
     const totalAssetsResult = await pool.query('SELECT COUNT(*) as count FROM assets');
     const totalInvoicesResult = await pool.query('SELECT COUNT(*) as count FROM invoices');
     
+    // Consultation leads counts
+    let totalConsultationLeadsResult, newConsultationLeadsResult, recentConsultationLeadsResult;
+    try {
+      totalConsultationLeadsResult = await pool.query('SELECT COUNT(*) as count FROM consultation_leads');
+      newConsultationLeadsResult = await pool.query(
+        "SELECT COUNT(*) as count FROM consultation_leads WHERE created_at >= NOW() - INTERVAL '7 days'"
+      );
+      recentConsultationLeadsResult = await pool.query(
+        'SELECT * FROM consultation_leads ORDER BY created_at DESC LIMIT 5'
+      );
+    } catch (err) {
+      console.error('Error querying consultation_leads:', err);
+      totalConsultationLeadsResult = { rows: [{ count: 0 }] };
+      newConsultationLeadsResult = { rows: [{ count: 0 }] };
+      recentConsultationLeadsResult = { rows: [] };
+    }
+    
     // Active counts
     const activeSubscriptionsResult = await pool.query("SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'");
     const activeCampaignsResult = await pool.query("SELECT COUNT(*) as count FROM campaigns WHERE status = 'active'");
@@ -1988,6 +2099,8 @@ app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (req, res
         totalSubscriptions: parseInt(totalSubscriptionsResult.rows[0].count),
         totalAssets: parseInt(totalAssetsResult.rows[0].count),
         totalInvoices: parseInt(totalInvoicesResult.rows[0].count),
+        totalConsultationLeads: parseInt(totalConsultationLeadsResult.rows[0].count),
+        newConsultationLeadsLast7Days: parseInt(newConsultationLeadsResult.rows[0].count),
         activeSubscriptions: parseInt(activeSubscriptionsResult.rows[0].count),
         activeCampaigns: parseInt(activeCampaignsResult.rows[0].count),
         totalRevenue: parseFloat(revenueResult.rows[0].total || 0),
@@ -1997,10 +2110,91 @@ app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (req, res
       recentUsers: recentUsersResult.rows,
       recentCampaigns: recentCampaignsResult.rows,
       recentSubscriptions: recentSubscriptionsResult.rows,
+      recentConsultationLeads: recentConsultationLeadsResult.rows,
       userGrowth: userGrowthResult.rows
     });
   } catch (error) {
     console.error('Admin dashboard error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all consultation leads (admin)
+app.get('/api/admin/consultation-leads', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { status, limit = 100, offset = 0 } = req.query;
+    
+    let query = 'SELECT * FROM consultation_leads';
+    const params = [];
+    
+    if (status) {
+      query += ' WHERE status = $1';
+      params.push(status);
+    }
+    
+    query += ' ORDER BY created_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+    params.push(parseInt(limit), parseInt(offset));
+    
+    const result = await pool.query(query, params);
+    
+    // Get total count
+    let countQuery = 'SELECT COUNT(*) as count FROM consultation_leads';
+    const countParams = [];
+    if (status) {
+      countQuery += ' WHERE status = $1';
+      countParams.push(status);
+    }
+    const countResult = await pool.query(countQuery, countParams);
+    
+    res.json({ 
+      leads: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    });
+  } catch (error) {
+    console.error('Admin consultation leads error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update consultation lead status (admin)
+app.patch('/api/admin/consultation-leads/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, notes } = req.body;
+    
+    const updates = [];
+    const params = [];
+    let paramIndex = 1;
+    
+    if (status !== undefined) {
+      updates.push(`status = $${paramIndex++}`);
+      params.push(status);
+    }
+    
+    if (notes !== undefined) {
+      updates.push(`notes = $${paramIndex++}`);
+      params.push(notes);
+    }
+    
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+    
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    params.push(id);
+    
+    const result = await pool.query(
+      `UPDATE consultation_leads SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
+      params
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Consultation lead not found' });
+    }
+    
+    res.json({ lead: result.rows[0] });
+  } catch (error) {
+    console.error('Update consultation lead error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2491,6 +2685,234 @@ app.post('/api/analytics/track-batch', async (req, res) => {
   } catch (error) {
     console.error('Analytics batch tracking error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Submit consultation form (public endpoint)
+app.post('/api/consultation/submit', async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      company,
+      selectedPlan,
+      selectedPlanPrice,
+      timeline,
+      budget,
+      message,
+      qaResponses,
+      timezone,
+      pageUrl,
+      userAgent,
+      utmMedium,
+      utmSource,
+      utmCampaign,
+      utmContent
+    } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !phone) {
+      return res.status(400).json({ error: 'Name, email, and phone are required' });
+    }
+
+    // Get session ID from analytics tracker if available
+    const sessionId = req.body.sessionId || null;
+    const ipAddress = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for']?.split(',')[0] || null;
+    const referrer = req.get('referer') || req.body.referrer || null;
+
+    // Parse Q&A responses if provided as JSON string
+    let qaResponsesParsed = null;
+    if (qaResponses) {
+      try {
+        qaResponsesParsed = typeof qaResponses === 'string' ? JSON.parse(qaResponses) : qaResponses;
+      } catch (parseError) {
+        console.warn('Failed to parse qaResponses:', parseError);
+        qaResponsesParsed = null;
+      }
+    }
+
+    // Insert consultation lead into database
+    const result = await pool.query(
+      `INSERT INTO consultation_leads 
+       (session_id, name, email, phone, company, selected_plan, selected_plan_price, 
+        timeline, budget, message, qa_responses, timezone, page_url, user_agent, utm_medium, 
+        utm_source, utm_campaign, utm_content, referrer, ip_address)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+       RETURNING id, created_at`,
+      [
+        sessionId, name, email, phone, company || null, selectedPlan || null, selectedPlanPrice || null,
+        timeline || null, budget || null, message || null, qaResponsesParsed ? JSON.stringify(qaResponsesParsed) : null,
+        timezone || null, pageUrl || null, userAgent || null, utmMedium || null, utmSource || null, 
+        utmCampaign || null, utmContent || null, referrer, ipAddress
+      ]
+    );
+
+    res.json({ 
+      success: true, 
+      id: result.rows[0].id,
+      createdAt: result.rows[0].created_at
+    });
+  } catch (error) {
+    console.error('Consultation submission error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack
+    });
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Save consultation draft (public endpoint)
+app.post('/api/consultation/draft', async (req, res) => {
+  try {
+    const { sessionId, email, formData } = req.body;
+
+    if (!formData) {
+      return res.status(400).json({ error: 'Form data is required' });
+    }
+
+    // Use sessionId or email as identifier
+    const identifier = sessionId || email;
+    if (!identifier) {
+      return res.status(400).json({ error: 'Session ID or email is required' });
+    }
+
+    // Check if draft exists
+    let checkResult;
+    if (sessionId && email) {
+      checkResult = await pool.query(
+        'SELECT id FROM consultation_drafts WHERE (session_id = $1 OR email = $2) ORDER BY updated_at DESC LIMIT 1',
+        [sessionId, email]
+      );
+    } else if (sessionId) {
+      checkResult = await pool.query(
+        'SELECT id FROM consultation_drafts WHERE session_id = $1 ORDER BY updated_at DESC LIMIT 1',
+        [sessionId]
+      );
+    } else {
+      checkResult = await pool.query(
+        'SELECT id FROM consultation_drafts WHERE email = $1 ORDER BY updated_at DESC LIMIT 1',
+        [email]
+      );
+    }
+
+    let result;
+    if (checkResult.rows.length > 0) {
+      // Update existing draft
+      result = await pool.query(
+        `UPDATE consultation_drafts 
+         SET form_data = $1, updated_at = CURRENT_TIMESTAMP 
+         WHERE id = $2
+         RETURNING id, created_at, updated_at`,
+        [JSON.stringify(formData), checkResult.rows[0].id]
+      );
+    } else {
+      // Insert new draft
+      result = await pool.query(
+        `INSERT INTO consultation_drafts (session_id, email, form_data, updated_at)
+         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+         RETURNING id, created_at, updated_at`,
+        [sessionId || null, email || null, JSON.stringify(formData)]
+      );
+    }
+
+    res.json({
+      success: true,
+      id: result.rows[0].id,
+      updatedAt: result.rows[0].updated_at
+    });
+  } catch (error) {
+    console.error('Consultation draft save error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Get consultation draft (public endpoint)
+app.get('/api/consultation/draft', async (req, res) => {
+  try {
+    const { sessionId, email } = req.query;
+
+    if (!sessionId && !email) {
+      return res.status(400).json({ error: 'Session ID or email is required' });
+    }
+
+    let result;
+    if (sessionId && email) {
+      result = await pool.query(
+        'SELECT form_data, updated_at FROM consultation_drafts WHERE (session_id = $1 OR email = $2) ORDER BY updated_at DESC LIMIT 1',
+        [sessionId, email]
+      );
+    } else if (sessionId) {
+      result = await pool.query(
+        'SELECT form_data, updated_at FROM consultation_drafts WHERE session_id = $1 ORDER BY updated_at DESC LIMIT 1',
+        [sessionId]
+      );
+    } else {
+      result = await pool.query(
+        'SELECT form_data, updated_at FROM consultation_drafts WHERE email = $1 ORDER BY updated_at DESC LIMIT 1',
+        [email]
+      );
+    }
+
+    if (result.rows.length === 0) {
+      return res.json({ success: true, formData: null });
+    }
+
+    res.json({
+      success: true,
+      formData: result.rows[0].form_data,
+      updatedAt: result.rows[0].updated_at
+    });
+  } catch (error) {
+    console.error('Consultation draft load error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Delete consultation draft (public endpoint)
+app.delete('/api/consultation/draft', async (req, res) => {
+  try {
+    const { sessionId, email } = req.body;
+
+    if (!sessionId && !email) {
+      return res.status(400).json({ error: 'Session ID or email is required' });
+    }
+
+    let result;
+    if (sessionId && email) {
+      result = await pool.query(
+        'DELETE FROM consultation_drafts WHERE (session_id = $1 OR email = $2) RETURNING id',
+        [sessionId, email]
+      );
+    } else if (sessionId) {
+      result = await pool.query(
+        'DELETE FROM consultation_drafts WHERE session_id = $1 RETURNING id',
+        [sessionId]
+      );
+    } else {
+      result = await pool.query(
+        'DELETE FROM consultation_drafts WHERE email = $1 RETURNING id',
+        [email]
+      );
+    }
+
+    res.json({ success: true, deleted: result.rowCount > 0 });
+  } catch (error) {
+    console.error('Consultation draft delete error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

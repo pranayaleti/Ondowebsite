@@ -6,6 +6,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import ContactInfo from '../components/ContactInfo';
+import { getCanonicalUrl } from '../constants/companyInfo';
 
 const PrivacyPolicyPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +17,7 @@ const PrivacyPolicyPage = () => {
         title="Privacy Policy | Ondosoft Software Development"
         description="Ondosoft's Privacy Policy - Learn how we collect, use, and protect your personal information. We are committed to maintaining your privacy and data security."
         keywords="privacy policy, data protection, GDPR, CCPA, personal information, data security, Ondosoft privacy"
-        canonicalUrl="https://ondosoft.com/privacy-policy"
+        canonicalUrl={getCanonicalUrl('/privacy-policy')}
       />
       
       <div>

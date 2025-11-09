@@ -5,7 +5,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 // Lazy load heavy components
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
-import { companyInfo } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const TermsOfUsePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const TermsOfUsePage = () => {
         title="Terms of Use | Ondosoft Software Development"
         description="Ondosoft's Terms of Use - Read our terms and conditions for using our website and services. Understand your rights and obligations when working with Ondosoft."
         keywords="terms of use, terms and conditions, user agreement, service terms, Ondosoft terms"
-        canonicalUrl="https://ondosoft.com/terms-of-use"
+        canonicalUrl={getCanonicalUrl('/terms-of-use')}
       />
       
       <div>
@@ -96,7 +96,7 @@ const TermsOfUsePage = () => {
                     Payment terms will be specified in individual service agreements. Generally:
                   </p>
                   <ul className="list-disc pl-6 space-y-2 mt-4">
-                    <li>Invoices are due within the timeframe specified in the agreement (typically 15-30 days)</li>
+                    <li>Invoices are due within the timeframe specified in the agreement (typically {companyInfo.invoiceTerms.description})</li>
                     <li>Late payments may incur interest charges as specified in the agreement</li>
                     <li>We reserve the right to suspend services for non-payment</li>
                     <li>All fees are non-refundable unless otherwise specified</li>

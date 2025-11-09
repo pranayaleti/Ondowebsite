@@ -569,6 +569,41 @@ export const adminAPI = {
 
     return response.json();
   },
+
+  async getConsultationLeads(status = null, limit = 100, offset = 0) {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    params.append('limit', limit);
+    params.append('offset', offset);
+
+    const response = await fetch(`${API_URL}/admin/consultation-leads?${params.toString()}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch consultation leads');
+    }
+
+    return response.json();
+  },
+
+  async updateConsultationLead(leadId, updates) {
+    const response = await fetch(`${API_URL}/admin/consultation-leads/${leadId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update consultation lead');
+    }
+
+    return response.json();
+  },
 };
 
 // Ticket API functions

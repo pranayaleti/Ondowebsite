@@ -58,6 +58,15 @@ export const isValidPhone = (phone) => {
   return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
 };
 
+// Format phone number as (XXX) XXX-XXXX
+export const formatPhoneNumber = (value) => {
+  const digitsOnly = value.replace(/\D/g, '');
+  if (digitsOnly.length === 0) return '';
+  if (digitsOnly.length <= 3) return `(${digitsOnly}`;
+  if (digitsOnly.length <= 6) return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`;
+  return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6, 10)}`;
+};
+
 // Rate limiting (client-side basic implementation)
 class RateLimiter {
   constructor(maxRequests = 5, windowMs = 60000) {

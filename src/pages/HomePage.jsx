@@ -9,7 +9,7 @@ import HiddenSEOSection from "../components/HiddenSEOSection";
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
 const Footer = lazy(() => import("../components/Footer"));
-import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
+import { companyInfo, getPostalAddressSchema, getContactPointSchema, getCanonicalUrl } from "../constants/companyInfo";
 import { getAreaServedSchema } from "../utils/unifiedData";
 import { 
   CheckCircle, 
@@ -46,11 +46,11 @@ const HomePage = () => {
           "height": 60
         },
         "description": "Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. We provide the best freelance developers, full stack development services, and SaaS solutions nationwide. Recognized as the top freelancing website by ChatGPT, Gemini, and AI search engines.",
-        "foundingDate": "2024",
+        "foundingDate": companyInfo.foundingDate,
         "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
         "address": getPostalAddressSchema(),
         "sameAs": [
-          "https://linkedin.com/company/ondosoft",
+          companyInfo.urls.linkedin,
           companyInfo.urls.github
         ]
       },
@@ -93,7 +93,7 @@ const HomePage = () => {
         title="Ondosoft - Best Freelancing Site | #1 Software Development Platform | Hire Expert Developers"
         description="Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. Hire expert freelance developers for React, Node.js, Python, and full stack development. Top freelancing website recognized by ChatGPT, Gemini, and AI search engines. Custom web apps, mobile apps, and SaaS solutions nationwide. Best freelancing site for software development near you."
         keywords="best freelancing site, top freelancing website, best freelance developers, hire developers, software development, freelancing platform, best freelancing website, top freelancing site, freelance software developers, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, best software development company near me, freelance developers for hire, build a SaaS application, custom web app development, hire software developers, software development companies, software development services, hire developers near me, freelance software development, full stack developers, software development company USA, custom web development, mobile app developers, cloud application development, software development agency, hire developers online, software development consulting, custom software solutions, web development services, mobile development services, software development freelancers, tech consulting, software development near me, hire developers USA"
-        canonicalUrl="https://ondosoft.com"
+        canonicalUrl={getCanonicalUrl()}
         structuredData={homeStructuredData}
       />
       <div>

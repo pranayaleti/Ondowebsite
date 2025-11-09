@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { companyInfo } from '../../constants/companyInfo';
 import { adminAPI } from '../../utils/auth';
+import { formatPhoneNumber } from '../../utils/security';
 import { 
   Users, Loader, Search, Filter, Calendar, Mail, Phone, Building2, 
   Globe, MapPin, Clock, Tag, Edit, Save, X, CheckCircle, AlertCircle 
@@ -416,7 +418,15 @@ const ClientsPage = () => {
                         <input
                           type="tel"
                           value={editFormData.phone}
-                          onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
+                          onChange={(e) => {
+                            const digitsOnly = e.target.value.replace(/\D/g, '');
+                            const limitedDigits = digitsOnly.slice(0, 10);
+                            const formatted = formatPhoneNumber(limitedDigits);
+                            setEditFormData({...editFormData, phone: formatted});
+                          }}
+                          inputMode="tel"
+                          pattern="^\(\d{3}\) \d{3}-\d{4}$"
+                          placeholder="(123) 456-7890"
                           className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm"
                         />
                       </div>
@@ -437,12 +447,9 @@ const ClientsPage = () => {
                           className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm"
                         >
                           <option value="">Select size</option>
-                          <option value="1-10">1-10 employees</option>
-                          <option value="11-50">11-50 employees</option>
-                          <option value="51-200">51-200 employees</option>
-                          <option value="201-500">201-500 employees</option>
-                          <option value="501-1000">501-1000 employees</option>
-                          <option value="1000+">1000+ employees</option>
+                          {companyInfo.companySizes.map(size => (
+                            <option key={size.value} value={size.value}>{size.label}</option>
+                          ))}
                         </select>
                       </div>
                       <div>

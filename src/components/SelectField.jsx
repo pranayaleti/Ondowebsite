@@ -75,18 +75,6 @@ const SelectField = ({ id, name, value, onChange, options, placeholder = 'Select
               : 'border-gray-600 bg-gray-800'
           }`}
         >
-          <li
-            role="option"
-            aria-selected={!value}
-            className={`px-4 py-2 cursor-pointer ${
-              isLight
-                ? `hover:bg-gray-100 ${!value ? 'text-gray-900' : 'text-gray-500'}`
-                : `hover:bg-gray-700 ${!value ? 'text-gray-200' : 'text-gray-400'}`
-            }`}
-            onClick={() => handleSelect('')}
-          >
-            {placeholder}
-          </li>
           {options.map((opt) => {
             const val = opt.value ?? opt;
             const lab = opt.label ?? opt;

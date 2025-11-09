@@ -1,6 +1,7 @@
 import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import ConsultationWidget from "../components/ConsultationWidget";
+import { getCanonicalUrl } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const Testimonials = lazy(() => import("../components/Testimonials"));
@@ -49,7 +50,7 @@ const TestimonialsPage = () => {
         title="Client Testimonials | Ondosoft Software Development Reviews"
         description="Read real client testimonials and reviews for Ondosoft's software development, SaaS solutions, and freelancing services. See why businesses choose us for React, Node.js, and Python projects. 5-star rated development company."
         keywords="ondosoft reviews, software development testimonials, SaaS development reviews, freelancing testimonials, client feedback, developer reviews"
-        canonicalUrl="https://ondosoft.com/testimonials"
+        canonicalUrl={getCanonicalUrl('/testimonials')}
         structuredData={testimonialsStructuredData}
       />
       <div>

@@ -41,8 +41,13 @@ export const getAPIBase = () => {
     return '';
   }
   
-  // In development, default to localhost
-  return 'http://localhost:5001';
+  // In development, use environment variable or default to localhost
+  // This can be overridden with VITE_API_BASE environment variable
+  const devBase = import.meta.env.VITE_API_BASE || 'http://localhost:5001';
+  if (devBase === 'http://localhost:5001') {
+    console.warn('⚠️  Using default API base URL. Set VITE_API_BASE environment variable if needed.');
+  }
+  return devBase;
 };
 
 // Export the API URL as a constant for direct use

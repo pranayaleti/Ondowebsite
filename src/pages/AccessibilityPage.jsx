@@ -5,7 +5,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 // Lazy load heavy components
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
-import { companyInfo } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const AccessibilityPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const AccessibilityPage = () => {
         title="Accessibility Statement | Ondosoft Software Development"
         description="Ondosoft's Accessibility Statement - Our commitment to web accessibility, WCAG compliance, and inclusive design. Learn about our accessibility features and how to report issues."
         keywords="accessibility, WCAG, ADA compliance, inclusive design, web accessibility, accessible website, Ondosoft accessibility"
-        canonicalUrl="https://ondosoft.com/accessibility"
+        canonicalUrl={getCanonicalUrl('/accessibility')}
       />
       
       <div>

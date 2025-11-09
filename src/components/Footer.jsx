@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { memo, useMemo } from "react";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
 
 const Footer = () => {
+  const location = useLocation();
+  const isContactPage = location.pathname === '/contact';
   // Get service areas data from consolidated utility
   const { states, topCities } = SERVICE_AREAS;
   
@@ -32,7 +34,7 @@ const Footer = () => {
     "name": companyInfo.name,
     "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
     "url": companyInfo.urls.website,
-    "logo": "https://ondosoft.com/logo.png",
+    "logo": `${companyInfo.urls.website}/logo.png`,
     "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
     "address": getPostalAddressSchema(),
     "areaServed": {
@@ -59,7 +61,7 @@ const Footer = () => {
           __html: JSON.stringify(structuredData)
         }}
       />
-      <footer className="text-gray-200 py-6 md:py-0" role="contentinfo">
+      <footer className={`text-gray-200 ${isContactPage ? 'py-12 md:py-16' : 'py-6 md:py-0'}`} role="contentinfo">
         <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
           {/* Company Description */}
           <div className="pr-8">
@@ -99,8 +101,9 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-3">Contact Us</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                📍 <a 
+              <li className="flex items-start">
+                <span className="mr-2">📍</span>
+                <a 
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -109,11 +112,13 @@ const Footer = () => {
                   {`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}
                 </a>
               </li>
-              <li>
-                📧 <a href={`mailto:${companyInfo.email}`} className="hover:underline">{companyInfo.email}</a>
+              <li className="flex items-start">
+                <span className="mr-2">📧</span>
+                <a href={`mailto:${companyInfo.email}`} className="hover:underline">{companyInfo.email}</a>
               </li>
-              <li>
-                📞 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a>
+              <li className="flex items-start">
+                <span className="mr-2">📞</span>
+                <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a>
               </li>
             </ul>
           </div>
