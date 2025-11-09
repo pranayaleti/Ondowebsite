@@ -44,7 +44,7 @@ const NotificationCenter = () => {
   };
 
   const unreadCount = notifications.filter(n => !n.is_read).length;
-  const notificationsPath = isAdmin ? '/admin/notifications' : '/portal/notifications';
+  const notificationsPath = isAdmin ? '/admin/notifications' : '/dashboard/notifications';
   const isActive = location.pathname === notificationsPath;
 
   return (

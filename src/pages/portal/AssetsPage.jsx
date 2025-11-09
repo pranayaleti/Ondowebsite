@@ -965,7 +965,7 @@ const AssetsPage = () => {
   if (loading) {
     return (
       <>
-        <SEOHead title="Assets - Portal" />
+        <SEOHead title="Assets - Dashboard" />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader className="w-12 h-12 animate-spin text-orange-500" />
         </div>
@@ -975,7 +975,7 @@ const AssetsPage = () => {
 
   return (
     <>
-      <SEOHead title="Assets - Portal" />
+      <SEOHead title="Assets - Dashboard" />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
           <div>

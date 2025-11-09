@@ -32,6 +32,8 @@ export const authAPI = {
               errorMessage = text.substring(0, 200);
             } else if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
               errorMessage = 'Backend server is not running. Please start the server and try again.';
+            } else if (response.status === 405) {
+              errorMessage = 'API endpoint not configured. Please set VITE_API_URL environment variable to your production backend URL.';
             } else {
               errorMessage = `Server error (${response.status}). Please check if the server is running.`;
             }
@@ -40,6 +42,8 @@ export const authAPI = {
           // If response is not JSON or empty, provide a helpful error message
           if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
             errorMessage = 'Backend server is not running. Please start the server and try again.';
+          } else if (response.status === 405) {
+            errorMessage = 'API endpoint not configured. Please set VITE_API_URL environment variable to your production backend URL.';
           } else {
             errorMessage = `Server error (${response.status}). Please check if the server is running.`;
           }
@@ -65,6 +69,11 @@ export const authAPI = {
   },
 
   async signin(email, password) {
+    // Check if API_URL is configured
+    if (!API_URL) {
+      throw new Error('Backend API is not configured. Please contact support or check your configuration.');
+    }
+    
     try {
       const response = await fetch(`${API_URL}/auth/signin`, {
         method: 'POST',
@@ -88,6 +97,8 @@ export const authAPI = {
               errorMessage = text.substring(0, 200);
             } else if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
               errorMessage = 'Backend server is not running. Please start the server and try again.';
+            } else if (response.status === 405) {
+              errorMessage = 'API endpoint not configured. Please set VITE_API_URL environment variable to your production backend URL.';
             } else {
               errorMessage = `Server error (${response.status}). Please check if the server is running.`;
             }
@@ -96,6 +107,8 @@ export const authAPI = {
           // If response is not JSON or empty, provide a helpful error message
           if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
             errorMessage = 'Backend server is not running. Please start the server and try again.';
+          } else if (response.status === 405) {
+            errorMessage = 'API endpoint not configured. Please set VITE_API_URL environment variable to your production backend URL.';
           } else {
             errorMessage = `Server error (${response.status}). Please check if the server is running.`;
           }
@@ -226,19 +239,53 @@ export const authAPI = {
 // Portal API functions
 export const portalAPI = {
   async getDashboard() {
-    const response = await fetch(`${API_URL}/portal/dashboard`, {
-      credentials: 'include',
-    });
+    try {
+      const response = await fetch(`${API_URL}/dashboard/dashboard`, {
+        credentials: 'include',
+      });
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch dashboard data');
+      if (!response.ok) {
+        let errorMessage = 'Failed to fetch dashboard data';
+        try {
+          const contentType = response.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const error = await response.json();
+            errorMessage = error.error || errorMessage;
+          } else {
+            const text = await response.text();
+            if (text) {
+              errorMessage = text.substring(0, 200);
+            } else if (response.status === 401) {
+              errorMessage = 'Authentication required. Please sign in again.';
+            } else if (response.status === 403) {
+              errorMessage = 'Access denied. Please check your permissions.';
+            } else {
+              errorMessage = `Server error (${response.status}). Please try again.`;
+            }
+          }
+        } catch (e) {
+          if (response.status === 401) {
+            errorMessage = 'Authentication required. Please sign in again.';
+          } else if (response.status === 403) {
+            errorMessage = 'Access denied. Please check your permissions.';
+          } else {
+            errorMessage = `Server error (${response.status}). Please try again.`;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your connection and ensure the backend server is running on port 5001.');
+      }
+      throw error;
     }
-
-    return response.json();
   },
 
   async getSubscriptions() {
-    const response = await fetch(`${API_URL}/portal/subscriptions`, {
+    const response = await fetch(`${API_URL}/dashboard/subscriptions`, {
       credentials: 'include',
     });
 
@@ -250,7 +297,7 @@ export const portalAPI = {
   },
 
   async createSubscription(planData) {
-    const response = await fetch(`${API_URL}/portal/subscriptions`, {
+    const response = await fetch(`${API_URL}/dashboard/subscriptions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -280,7 +327,7 @@ export const portalAPI = {
   },
 
   async updateSubscription(subscriptionId, updates) {
-    const response = await fetch(`${API_URL}/portal/subscriptions/${subscriptionId}`, {
+    const response = await fetch(`${API_URL}/dashboard/subscriptions/${subscriptionId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -298,7 +345,7 @@ export const portalAPI = {
   },
 
   async getCampaigns() {
-    const response = await fetch(`${API_URL}/portal/campaigns`, {
+    const response = await fetch(`${API_URL}/dashboard/campaigns`, {
       credentials: 'include',
     });
 
@@ -310,7 +357,7 @@ export const portalAPI = {
   },
 
   async getAssets() {
-    const response = await fetch(`${API_URL}/portal/assets`, {
+    const response = await fetch(`${API_URL}/dashboard/assets`, {
       credentials: 'include',
     });
 
@@ -322,7 +369,7 @@ export const portalAPI = {
   },
 
   async getInvoices() {
-    const response = await fetch(`${API_URL}/portal/invoices`, {
+    const response = await fetch(`${API_URL}/dashboard/invoices`, {
       credentials: 'include',
     });
 
@@ -334,7 +381,7 @@ export const portalAPI = {
   },
 
   async getInvoice(invoiceId) {
-    const response = await fetch(`${API_URL}/portal/invoices/${invoiceId}`, {
+    const response = await fetch(`${API_URL}/dashboard/invoices/${invoiceId}`, {
       credentials: 'include',
     });
 
@@ -346,7 +393,7 @@ export const portalAPI = {
   },
 
   async uploadAsset(assetData) {
-    const response = await fetch(`${API_URL}/portal/assets`, {
+    const response = await fetch(`${API_URL}/dashboard/assets`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -364,7 +411,7 @@ export const portalAPI = {
   },
 
   async deleteAsset(assetId) {
-    const response = await fetch(`${API_URL}/portal/assets/${assetId}`, {
+    const response = await fetch(`${API_URL}/dashboard/assets/${assetId}`, {
       method: 'DELETE',
       credentials: 'include',
     });
@@ -379,7 +426,7 @@ export const portalAPI = {
 
   async createInvoice(invoiceData) {
     try {
-      const response = await fetch(`${API_URL}/portal/invoices`, {
+      const response = await fetch(`${API_URL}/dashboard/invoices`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -415,7 +462,7 @@ export const portalAPI = {
   },
 
   async getNotifications() {
-    const response = await fetch(`${API_URL}/portal/notifications`, {
+    const response = await fetch(`${API_URL}/dashboard/notifications`, {
       credentials: 'include',
     });
 
@@ -427,7 +474,7 @@ export const portalAPI = {
   },
 
   async markNotificationRead(notificationId) {
-    const response = await fetch(`${API_URL}/portal/notifications/${notificationId}/read`, {
+    const response = await fetch(`${API_URL}/dashboard/notifications/${notificationId}/read`, {
       method: 'PATCH',
       credentials: 'include',
     });
@@ -440,7 +487,7 @@ export const portalAPI = {
   },
 
   async markAllNotificationsRead() {
-    const response = await fetch(`${API_URL}/portal/notifications/read-all`, {
+    const response = await fetch(`${API_URL}/dashboard/notifications/read-all`, {
       method: 'PATCH',
       credentials: 'include',
     });
@@ -453,7 +500,7 @@ export const portalAPI = {
   },
 
   async remindMeLater(notificationId, remindAt) {
-    const response = await fetch(`${API_URL}/portal/notifications/${notificationId}/remind`, {
+    const response = await fetch(`${API_URL}/dashboard/notifications/${notificationId}/remind`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -470,7 +517,7 @@ export const portalAPI = {
   },
 
   async dismissNotification(notificationId) {
-    const response = await fetch(`${API_URL}/portal/notifications/${notificationId}/dismiss`, {
+    const response = await fetch(`${API_URL}/dashboard/notifications/${notificationId}/dismiss`, {
       method: 'PATCH',
       credentials: 'include',
     });
@@ -724,7 +771,7 @@ export const adminAPI = {
 // Ticket API functions
 export const ticketAPI = {
   async createTicket(subject, description, type, priority, additionalData = {}) {
-    const response = await fetch(`${API_URL}/portal/tickets`, {
+    const response = await fetch(`${API_URL}/dashboard/tickets`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -748,7 +795,7 @@ export const ticketAPI = {
   },
 
   async getTickets() {
-    const response = await fetch(`${API_URL}/portal/tickets`, {
+    const response = await fetch(`${API_URL}/dashboard/tickets`, {
       credentials: 'include',
     });
 
@@ -761,7 +808,7 @@ export const ticketAPI = {
   },
 
   async getTicket(id) {
-    const response = await fetch(`${API_URL}/portal/tickets/${id}`, {
+    const response = await fetch(`${API_URL}/dashboard/tickets/${id}`, {
       credentials: 'include',
     });
 
@@ -773,7 +820,7 @@ export const ticketAPI = {
   },
 
   async addMessage(ticketId, message) {
-    const response = await fetch(`${API_URL}/portal/tickets/${ticketId}/messages`, {
+    const response = await fetch(`${API_URL}/dashboard/tickets/${ticketId}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -791,7 +838,7 @@ export const ticketAPI = {
   },
 
   async uploadAttachment(ticketId, fileData, messageId = null) {
-    const response = await fetch(`${API_URL}/portal/tickets/${ticketId}/attachments`, {
+    const response = await fetch(`${API_URL}/dashboard/tickets/${ticketId}/attachments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

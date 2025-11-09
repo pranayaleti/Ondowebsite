@@ -14,10 +14,10 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/portal" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
-  // If user is authenticated and admin, redirect to admin if trying to access portal
+  // If user is authenticated and admin, redirect to admin if trying to access dashboard
   if (!requireAdmin && isAdmin) {
     return <Navigate to="/admin" replace />;
   }

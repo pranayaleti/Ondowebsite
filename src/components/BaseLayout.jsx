@@ -7,7 +7,7 @@ import { LogOut, Home, Menu, X } from 'lucide-react';
  * BaseLayout - Shared layout component for Admin and Portal layouts
  * Single source of truth for sidebar navigation logic
  * @param {Object} props
- * @param {string} props.title - Layout title (e.g., "Admin Panel" or "Portal")
+ * @param {string} props.title - Layout title (e.g., "Admin Panel" or "Dashboard")
  * @param {Array} props.navItems - Array of navigation items with { path, label, icon }
  */
 const BaseLayout = ({ title, navItems }) => {
@@ -22,7 +22,7 @@ const BaseLayout = ({ title, navItems }) => {
   };
 
   const isActive = (path) => {
-    const basePath = path.split('/').slice(0, 2).join('/'); // Get /admin or /portal
+    const basePath = path.split('/').slice(0, 2).join('/'); // Get /admin or /dashboard
     if (path === basePath) {
       return location.pathname === basePath;
     }

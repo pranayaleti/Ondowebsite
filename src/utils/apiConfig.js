@@ -13,9 +13,19 @@ export const getAPIUrl = () => {
     return import.meta.env.VITE_API_URL;
   }
   
-  // In production, use the same origin (relative URL)
+  // In production, we need an external backend URL
+  // GitHub Pages doesn't support API routes, so we can't use relative URLs
   if (import.meta.env.PROD) {
-    return '/api';
+    // VITE_API_URL should be set during build time via environment variable
+    // If not set, we'll show an error and prevent requests
+    if (!import.meta.env.VITE_API_URL) {
+      console.error('⚠️  VITE_API_URL environment variable is required in production!');
+      console.error('Please set VITE_API_URL to your production backend URL (e.g., https://api.ondosoft.com/api)');
+      console.error('Set it in GitHub Actions secrets or as an environment variable during build');
+      // Return empty string to prevent requests to GitHub Pages
+      return '';
+    }
+    return import.meta.env.VITE_API_URL;
   }
   
   // In development, use relative URL so Vite proxy can handle it
@@ -36,9 +46,15 @@ export const getAPIBase = () => {
     return url.endsWith('/api') ? url.slice(0, -4) : url;
   }
   
-  // In production, use empty string (same origin)
+  // In production, we need an external backend URL
   if (import.meta.env.PROD) {
-    return '';
+    if (!import.meta.env.VITE_API_URL) {
+      console.error('⚠️  VITE_API_URL environment variable is required in production!');
+      return '';
+    }
+    const url = import.meta.env.VITE_API_URL;
+    // Remove /api suffix if present
+    return url.endsWith('/api') ? url.slice(0, -4) : url;
   }
   
   // In development, use environment variable or default to localhost

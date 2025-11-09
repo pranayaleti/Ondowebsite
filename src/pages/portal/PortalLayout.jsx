@@ -11,16 +11,16 @@ import {
 
 const PortalLayout = () => {
   const navItems = [
-    { path: '/portal', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/portal/subscriptions', label: 'Subscriptions', icon: CreditCard },
-    { path: '/portal/campaigns', label: 'Campaigns', icon: Megaphone },
-    { path: '/portal/assets', label: 'Assets', icon: FolderOpen },
-    { path: '/portal/invoices', label: 'Invoices', icon: FileText },
-    { path: '/portal/tickets', label: 'Tickets', icon: MessageSquare },
-    { path: '/portal/notifications', label: 'Notifications', icon: Bell },
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/dashboard/subscriptions', label: 'Subscriptions', icon: CreditCard },
+    { path: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone },
+    { path: '/dashboard/assets', label: 'Assets', icon: FolderOpen },
+    { path: '/dashboard/invoices', label: 'Invoices', icon: FileText },
+    { path: '/dashboard/tickets', label: 'Tickets', icon: MessageSquare },
+    { path: '/dashboard/notifications', label: 'Notifications', icon: Bell },
   ];
 
-  return <BaseLayout title="Portal" navItems={navItems} />;
+  return <BaseLayout title="Dashboard" navItems={navItems} />;
 };
 
 export default PortalLayout;
