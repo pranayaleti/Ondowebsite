@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { ArrowRight, CheckCircle, Star, Zap } from "lucide-react";
 
 const HeroSection = ({ onOpenConsultation }) => {
@@ -8,6 +8,12 @@ const HeroSection = ({ onOpenConsultation }) => {
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleConsultationClick = useCallback(() => {
+    if (onOpenConsultation) {
+      onOpenConsultation();
+    }
+  }, [onOpenConsultation]);
 
   return (
     <div className="max-w-7xl mx-auto px-4">
@@ -60,7 +66,7 @@ const HeroSection = ({ onOpenConsultation }) => {
             {onOpenConsultation ? (
               <button
                 type="button"
-                onClick={onOpenConsultation}
+                onClick={handleConsultationClick}
                 className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
                 aria-label="Start free consultation for your software development project"
               >
@@ -156,4 +162,4 @@ const HeroSection = ({ onOpenConsultation }) => {
   );
 };
 
-export default HeroSection;
+export default memo(HeroSection);

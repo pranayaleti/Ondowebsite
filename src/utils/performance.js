@@ -6,12 +6,17 @@ export const preloadCriticalResources = () => {
   // Preload hero image
   const heroImage = new Image();
   heroImage.src = '/logo.png';
+  heroImage.fetchPriority = 'high';
   
-  // Load critical fonts (use stylesheet instead of preload to avoid warnings)
+  // Load critical fonts with font-display: swap
   const fontLink = document.createElement('link');
   fontLink.rel = 'stylesheet';
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
   fontLink.crossOrigin = 'anonymous';
+  fontLink.media = 'print';
+  fontLink.onload = function() {
+    this.media = 'all';
+  };
   document.head.appendChild(fontLink);
 };
 

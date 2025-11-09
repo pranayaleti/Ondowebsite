@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { memo, useMemo } from "react";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
@@ -7,24 +8,47 @@ const Footer = () => {
   // Get service areas data from consolidated utility
   const { states, topCities } = SERVICE_AREAS;
   
-  // All available links
-  const allLinks = [
-    { label: "Home", href: "/" },
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Services", href: "/services" },
-    { label: "Blogs", href: "/blogs" },
-    { label: "Pricing", href: "/pricing" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "FAQ", href: "/faq" },
-    { label: "Testimonials", href: "/testimonials" },
-  ];
-  
-  // Get navbar hrefs to filter them out
-  const navbarHrefs = navItems.map(item => item.href);
-  
-  // Filter to show only links NOT in navbar
-  const quickLinks = allLinks.filter(link => !navbarHrefs.includes(link.href));
+  // Memoize links to prevent recalculation on every render
+  const quickLinks = useMemo(() => {
+    const allLinks = [
+      { label: "Home", href: "/" },
+      { label: "Portfolio", href: "/portfolio" },
+      { label: "Services", href: "/services" },
+      { label: "Blogs", href: "/blogs" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Testimonials", href: "/testimonials" },
+    ];
+    const navbarHrefs = navItems.map(item => item.href);
+    return allLinks.filter(link => !navbarHrefs.includes(link.href));
+  }, []);
+
+  // Memoize structured data
+  const structuredData = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": companyInfo.name,
+    "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
+    "url": companyInfo.urls.website,
+    "logo": "https://ondosoft.com/logo.png",
+    "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
+    "address": getPostalAddressSchema(),
+    "areaServed": {
+      "@type": "Country",
+      "name": "United States"
+    },
+    "serviceType": [
+      "Freelancing Services",
+      "Full Stack Development", 
+      "SaaS Applications",
+      "Web Development",
+      "Mobile App Development",
+      "Cloud Deployment",
+      "E-commerce Solutions"
+    ]
+  }), []);
 
   return (
     <>
@@ -32,29 +56,7 @@ const Footer = () => {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": companyInfo.name,
-            "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
-            "url": companyInfo.urls.website,
-            "logo": "https://ondosoft.com/logo.png",
-            "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
-            "address": getPostalAddressSchema(),
-            "areaServed": {
-              "@type": "Country",
-              "name": "United States"
-            },
-            "serviceType": [
-              "Freelancing Services",
-              "Full Stack Development", 
-              "SaaS Applications",
-              "Web Development",
-              "Mobile App Development",
-              "Cloud Deployment",
-              "E-commerce Solutions"
-            ]
-          })
+          __html: JSON.stringify(structuredData)
         }}
       />
       <footer className="text-gray-200 py-6 md:py-0" role="contentinfo">
@@ -179,4 +181,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default memo(Footer);

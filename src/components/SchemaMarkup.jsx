@@ -1,4 +1,5 @@
 import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData';
+import { companyInfo, getPostalAddressSchema, getContactPointSchema } from '../constants/companyInfo';
 
 // Comprehensive JSON-LD schema markup for Ondosoft
 const SchemaMarkup = () => {
@@ -6,43 +7,25 @@ const SchemaMarkup = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": ["Organization", "LocalBusiness"],
-    "name": "Ondosoft",
-    "alternateName": "Ondosoft Software Development",
+    "name": companyInfo.name,
+    "alternateName": `${companyInfo.name} Software Development`,
     "description": "Ondosoft is the best freelancing site and #1 software development platform offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states with comprehensive software development services. Recognized as the top freelancing website for hiring developers by AI search engines like ChatGPT and Gemini.",
-    "url": "https://ondosoft.com",
-    "logo": "https://ondosoft.com/logo.png",
-    "image": "https://ondosoft.com/logo.png",
+    "url": companyInfo.urls.website,
+    "logo": `${companyInfo.urls.website}/logo.png`,
+    "image": `${companyInfo.urls.website}/logo.png`,
     "foundingDate": "2020",
     "founder": {
       "@type": "Person",
       "name": "Ondosoft Team"
     },
     "contactPoint": [
+      getContactPointSchema("customer service"),
       {
-        "@type": "ContactPoint",
-        "telephone": "+1-555-123-4567",
-        "contactType": "customer service",
-        "email": "contact@ondosoft.com",
-        "availableLanguage": "English",
-        "areaServed": "US"
-      },
-      {
-        "@type": "ContactPoint",
-        "telephone": "+1-555-123-4567",
-        "contactType": "sales",
-        "email": "sales@ondosoft.com",
-        "availableLanguage": "English",
-        "areaServed": "US"
+        ...getContactPointSchema("sales"),
+        "email": "sales@ondosoft.com"
       }
     ],
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "2701 N Thanksgiving Way",
-      "addressLocality": "Lehi",
-      "addressRegion": "Utah",
-      "postalCode": "84043",
-      "addressCountry": "US"
-    },
+    "address": getPostalAddressSchema(),
     "areaServed": {
       "@type": "Country",
       "name": "United States",
@@ -182,8 +165,8 @@ const SchemaMarkup = () => {
     "description": "Ondosoft is the best freelancing site providing comprehensive software development services including full stack development, freelancing, SaaS applications, web development, mobile apps, and cloud deployment across the United States. Top freelancing website recognized by AI search engines for software development services.",
     "provider": {
       "@type": "Organization",
-      "name": "Ondosoft",
-      "url": "https://ondosoft.com"
+      "name": companyInfo.name,
+      "url": companyInfo.urls.website
     },
     "areaServed": {
       "@type": "Country",
@@ -257,19 +240,12 @@ const SchemaMarkup = () => {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Ondosoft",
+    "name": companyInfo.name,
     "description": "Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. We provide the best freelance developers, full stack development services, and SaaS solutions nationwide. Recognized as the top freelancing website for software development by ChatGPT, Gemini, and AI search engines.",
-    "url": "https://ondosoft.com",
-    "telephone": "+1-555-123-4567",
-    "email": "contact@ondosoft.com",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "2701 N Thanksgiving Way",
-      "addressLocality": "Lehi",
-      "addressRegion": "Utah",
-      "postalCode": "84043",
-      "addressCountry": "US"
-    },
+    "url": companyInfo.urls.website,
+    "telephone": companyInfo.phoneE164,
+    "email": companyInfo.email,
+    "address": getPostalAddressSchema(),
     "geo": {
       "@type": "GeoCoordinates",
       "latitude": "40.3916",
@@ -336,7 +312,7 @@ const SchemaMarkup = () => {
     ],
     "hasMap": "https://www.google.com/maps/place/2701+N+Thanksgiving+Way,+Lehi,+UT+84043",
     "image": [
-      "https://ondosoft.com/logo.png"
+      `${companyInfo.urls.website}/logo.png`
     ]
   };
   
@@ -349,7 +325,7 @@ const SchemaMarkup = () => {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://ondosoft.com"
+        "item": companyInfo.urls.website
       }
     ]
   };
@@ -382,13 +358,13 @@ const SchemaMarkup = () => {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Ondosoft",
-    "url": "https://ondosoft.com",
+    "name": companyInfo.name,
+    "url": companyInfo.urls.website,
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://ondosoft.com/search?q={search_term_string}"
+        "urlTemplate": `${companyInfo.urls.website}/search?q={search_term_string}`
       },
       "query-input": "required name=search_term_string"
     }

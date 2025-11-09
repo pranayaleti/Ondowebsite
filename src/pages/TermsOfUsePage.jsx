@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
-import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
-import ConsultationModal from '../components/ConsultationModal';
+
+// Lazy load heavy components
+const Footer = lazy(() => import('../components/Footer'));
+const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { companyInfo } from '../constants/companyInfo';
 
 const TermsOfUsePage = () => {
@@ -175,9 +177,15 @@ const TermsOfUsePage = () => {
         </section>
       </div>
       
-      <Footer />
+      <Suspense fallback={<div className="h-32" />}>
+        <Footer />
+      </Suspense>
       <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };

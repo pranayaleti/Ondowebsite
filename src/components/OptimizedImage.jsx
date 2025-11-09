@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 
-const OptimizedImage = ({ 
+const OptimizedImage = memo(({ 
   src, 
   alt, 
   width, 
@@ -109,6 +109,7 @@ const OptimizedImage = ({
             onError={handleError}
             loading={priority ? 'eager' : 'lazy'}
             decoding="async"
+            fetchPriority={priority ? 'high' : 'auto'}
           />
         ) : (
           <picture>
@@ -131,6 +132,7 @@ const OptimizedImage = ({
               onError={handleError}
               loading={priority ? 'eager' : 'lazy'}
               decoding="async"
+              fetchPriority={priority ? 'high' : 'auto'}
             />
           </picture>
         )
@@ -144,6 +146,8 @@ const OptimizedImage = ({
       )}
     </div>
   );
-};
+});
+
+OptimizedImage.displayName = 'OptimizedImage';
 
 export default OptimizedImage;

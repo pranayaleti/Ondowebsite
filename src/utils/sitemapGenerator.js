@@ -19,7 +19,6 @@ export const generateSitemap = () => {
     { url: '/pricing', priority: '0.8', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/contact', priority: '0.7', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/about', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
-    { url: '/workflow', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/testimonials', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/faq', priority: '0.6', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
     { url: '/legal', priority: '0.5', changefreq: 'monthly', lastmod: new Date().toISOString().split('T')[0] },
@@ -121,7 +120,6 @@ Allow: /products/
 Allow: /pricing/
 Allow: /contact/
 Allow: /about/
-Allow: /workflow/
 Allow: /testimonials/
 Allow: /faq/
 Allow: /legal/

@@ -8,15 +8,49 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
           // Core React libraries
-          vendor: ['react', 'react-dom'],
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
+          }
           // Routing
-          router: ['react-router-dom'],
+          if (id.includes('node_modules/react-router-dom')) {
+            return 'vendor-router';
+          }
           // UI components
-          ui: ['lucide-react'],
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-ui';
+          }
           // SEO and meta
-          seo: ['react-helmet-async']
+          if (id.includes('node_modules/react-helmet-async')) {
+            return 'vendor-seo';
+          }
+          // Other node_modules
+          if (id.includes('node_modules')) {
+            return 'vendor-other';
+          }
+          // Admin pages
+          if (id.includes('/pages/admin/')) {
+            return 'admin';
+          }
+          // Portal pages
+          if (id.includes('/pages/portal/')) {
+            return 'portal';
+          }
+        },
+        // Optimize chunk file names
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.');
+          const ext = info[info.length - 1];
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(ext)) {
+            return `assets/images/[name]-[hash][extname]`;
+          }
+          if (/woff2?|eot|ttf|otf/i.test(ext)) {
+            return `assets/fonts/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
         }
       }
     },
@@ -24,14 +58,23 @@ export default defineConfig({
     minify: 'esbuild',
     esbuild: {
       drop: ['console', 'debugger'],
-      legalComments: 'none'
+      legalComments: 'none',
+      treeShaking: true
     },
     // Enable compression
     reportCompressedSize: true,
     // Optimize dependencies
     commonjsOptions: {
       include: [/node_modules/]
-    }
+    },
+    // Enable source maps for production debugging (optional, can disable for smaller builds)
+    sourcemap: false,
+    // Target modern browsers for smaller bundles
+    target: 'esnext',
+    // CSS code splitting
+    cssCodeSplit: true,
+    // Minify CSS
+    cssMinify: true
   },
   // Performance optimizations
   optimizeDeps: {
@@ -50,7 +93,8 @@ export default defineConfig({
   },
   // CSS optimization
   css: {
-    devSourcemap: true
+    devSourcemap: true,
+    postcss: './postcss.config.js'
   },
   server: {
     port: 3000,

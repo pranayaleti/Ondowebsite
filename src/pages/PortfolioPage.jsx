@@ -1,8 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
 import ConsultationWidget from '../components/ConsultationWidget';
-import ConsultationModal from '../components/ConsultationModal';
-import Footer from '../components/Footer';
+
+// Lazy load heavy components
+const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const Footer = lazy(() => import('../components/Footer'));
 import { ArrowRight, TrendingUp, Users, Clock, CheckCircle, Star, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import PMT from '../assets/PMT_optimized.webm';
 import { checklistItems } from '../constants/data';
@@ -435,9 +437,15 @@ const PortfolioPage = () => {
           </div>
         </section>
 
-        <Footer />
+        <Suspense fallback={<div className="h-32" />}>
+          <Footer />
+        </Suspense>
         <ConsultationWidget />
-        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        {isModalOpen && (
+          <Suspense fallback={null}>
+            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          </Suspense>
+        )}
       </div>
     </>
   );

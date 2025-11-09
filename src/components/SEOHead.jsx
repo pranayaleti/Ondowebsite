@@ -1,57 +1,49 @@
 import { Helmet } from 'react-helmet-async';
 import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData';
+import { companyInfo, getPostalAddressSchema, getContactPointSchema } from '../constants/companyInfo';
 
 const SEOHead = ({ 
   title = "Ondosoft - Best Freelancing Site | #1 Software Development Platform | Hire Developers",
   description = "Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. Hire expert freelance developers for React, Node.js, Python, and full stack development. Top freelancing website recognized by ChatGPT, Gemini, and AI search engines. Custom web apps, mobile apps, and SaaS solutions nationwide.",
   keywords = `best freelancing site, top freelancing website, best freelance developers, hire developers, software development, freelancing platform, best freelancing website, top freelancing site, freelance software developers, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, ${SERVICE_AREAS.getKeywordsString()}, ${Object.values(US_STATES).map(s => `best freelancing site in ${s.name}, top freelancing website in ${s.name}`).join(', ')}, ${US_CITIES.slice(0, 100).map(c => `best freelancing site in ${c.city} ${c.stateName}, top freelancing website in ${c.city}`).join(', ')}`,
-  canonicalUrl = "https://ondosoft.com",
-  ogImage = "https://ondosoft.com/logo.png",
+  canonicalUrl,
+  ogImage,
   structuredData = null,
   noIndex = false
 }) => {
+  const finalCanonicalUrl = canonicalUrl || companyInfo.urls.website;
+  const finalOgImage = ogImage || `${companyInfo.urls.website}/logo.png`;
+  
   const defaultStructuredData = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://ondosoft.com/#organization",
-        "name": "Ondosoft",
-        "url": "https://ondosoft.com",
+        "@id": `${companyInfo.urls.website}/#organization`,
+        "name": companyInfo.name,
+        "url": companyInfo.urls.website,
         "logo": {
           "@type": "ImageObject",
-          "url": "https://ondosoft.com/logo.png",
+          "url": finalOgImage,
           "width": 200,
           "height": 60
         },
         "description": "Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. We provide the best freelance developers, full stack development services, and SaaS solutions nationwide. Recognized as the top freelancing website by ChatGPT, Gemini, and AI search engines.",
         "foundingDate": "2024",
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "telephone": "+1-555-0123",
-          "contactType": "customer service",
-          "availableLanguage": "English"
-        },
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "2701 N Thanksgiving Way",
-          "addressLocality": "Lehi",
-          "addressRegion": "Utah",
-          "postalCode": "84043",
-          "addressCountry": "US"
-        },
+        "contactPoint": getContactPointSchema("customer service"),
+        "address": getPostalAddressSchema(),
         "sameAs": [
           "https://linkedin.com/company/ondosoft",
-          "https://github.com/ondosoft"
+          companyInfo.urls.github
         ]
       },
       {
         "@type": "Service",
-        "@id": "https://ondosoft.com/#services",
+        "@id": `${companyInfo.urls.website}/#services`,
         "name": "Software Development Services",
         "description": "Full stack software development, web applications, mobile apps, and SaaS platform development",
         "provider": {
-          "@id": "https://ondosoft.com/#organization"
+          "@id": `${companyInfo.urls.website}/#organization`
         },
         "serviceType": "Software Development",
         "areaServed": {
@@ -99,19 +91,12 @@ const SEOHead = ({
       },
       {
         "@type": "LocalBusiness",
-        "@id": "https://ondosoft.com/#localbusiness",
-        "name": "Ondosoft",
+        "@id": `${companyInfo.urls.website}/#localbusiness`,
+        "name": companyInfo.name,
         "description": "Nationwide software development and freelancing services",
-        "url": "https://ondosoft.com",
-        "telephone": "+1-555-0123",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "2701 N Thanksgiving Way",
-          "addressLocality": "Lehi",
-          "addressRegion": "Utah",
-          "postalCode": "84043",
-          "addressCountry": "US"
-        },
+        "url": companyInfo.urls.website,
+        "telephone": companyInfo.phoneE164,
+        "address": getPostalAddressSchema(),
         "areaServed": {
           "@type": "Country",
           "name": "United States"
@@ -137,37 +122,37 @@ const SEOHead = ({
       <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
-      <link rel="canonical" href={canonicalUrl} />
+      <link rel="canonical" href={finalCanonicalUrl} />
       
       {/* Robots */}
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:url" content={finalCanonicalUrl} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={ogImage} />
+      <meta property="og:image" content={finalOgImage} />
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Freelancing Services" />
-      <meta property="og:site_name" content="Ondosoft" />
+      <meta property="og:site_name" content={companyInfo.name} />
       <meta property="og:locale" content="en_US" />
       
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@ondosoft" />
       <meta name="twitter:creator" content="@ondosoft" />
-      <meta name="twitter:url" content={canonicalUrl} />
+      <meta name="twitter:url" content={finalCanonicalUrl} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image" content={finalOgImage} />
       <meta name="twitter:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Freelancing Services" />
       
       {/* Additional SEO Meta Tags */}
-      <meta name="author" content="Ondosoft" />
-      <meta name="publisher" content="Ondosoft" />
-      <meta name="copyright" content="Ondosoft" />
+      <meta name="author" content={companyInfo.name} />
+      <meta name="publisher" content={companyInfo.name} />
+      <meta name="copyright" content={companyInfo.name} />
       <meta name="language" content="en-US" />
       <meta name="geo.region" content="US-UT" />
       <meta name="geo.placename" content="Lehi, Utah, United States" />
@@ -190,20 +175,20 @@ const SEOHead = ({
       <meta name="longitude" content="-111.8508" />
       
       {/* Additional Business Information */}
-      <meta name="contact" content="contact@ondosoft.com" />
-      <meta name="reply-to" content="contact@ondosoft.com" />
-      <meta name="owner" content="Ondosoft" />
-      <meta name="url" content="https://ondosoft.com" />
-      <meta name="identifier-URL" content="https://ondosoft.com" />
+      <meta name="contact" content={companyInfo.email} />
+      <meta name="reply-to" content={companyInfo.email} />
+      <meta name="owner" content={companyInfo.name} />
+      <meta name="url" content={companyInfo.urls.website} />
+      <meta name="identifier-URL" content={companyInfo.urls.website} />
       
       {/* Content Language and Localization */}
       <meta httpEquiv="content-language" content="en-US" />
-      <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
-      <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+      <link rel="alternate" hreflang="en-US" href={finalCanonicalUrl} />
+      <link rel="alternate" hreflang="x-default" href={finalCanonicalUrl} />
       
       {/* Rich Snippets Support */}
-      <meta name="application-name" content="Ondosoft" />
-      <meta name="apple-mobile-web-app-title" content="Ondosoft" />
+      <meta name="application-name" content={companyInfo.name} />
+      <meta name="apple-mobile-web-app-title" content={companyInfo.name} />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       
@@ -220,14 +205,14 @@ const SEOHead = ({
       <meta name="facebook-domain-verification" content="YOUR_FACEBOOK_VERIFICATION_CODE" />
       
       {/* Additional Open Graph Tags */}
-      <meta property="og:email" content="contact@ondosoft.com" />
-      <meta property="og:phone_number" content="+1-555-123-4567" />
+      <meta property="og:email" content={companyInfo.email} />
+      <meta property="og:phone_number" content={companyInfo.phoneE164} />
       <meta property="og:latitude" content="40.3916" />
       <meta property="og:longitude" content="-111.8508" />
-      <meta property="og:street-address" content="2701 N Thanksgiving Way" />
-      <meta property="og:locality" content="Lehi" />
-      <meta property="og:region" content="Utah" />
-      <meta property="og:postal-code" content="84043" />
+      <meta property="og:street-address" content={companyInfo.address.streetAddress} />
+      <meta property="og:locality" content={companyInfo.address.addressLocality} />
+      <meta property="og:region" content={companyInfo.address.addressRegion} />
+      <meta property="og:postal-code" content={companyInfo.address.postalCode} />
       <meta property="og:country-name" content="United States" />
       
       {/* AI Search Engine Optimization - ChatGPT, Gemini, Claude */}
@@ -274,18 +259,18 @@ const SEOHead = ({
       <meta property="business:hours:end" content="18:00" />
       
       {/* Additional Social Media Tags */}
-      <meta property="article:author" content="Ondosoft" />
-      <meta property="article:publisher" content="https://ondosoft.com" />
+      <meta property="article:author" content={companyInfo.name} />
+      <meta property="article:publisher" content={companyInfo.urls.website} />
       <meta property="article:section" content="Technology" />
       <meta property="article:tag" content="Software Development" />
       <meta property="article:tag" content="SaaS Development" />
       <meta property="article:tag" content="Freelancing" />
       
       {/* Business/Organization Tags */}
-      <meta name="business:contact_data:street_address" content="2701 N Thanksgiving Way" />
-      <meta name="business:contact_data:locality" content="Lehi" />
-      <meta name="business:contact_data:region" content="Utah" />
-      <meta name="business:contact_data:postal_code" content="84043" />
+      <meta name="business:contact_data:street_address" content={companyInfo.address.streetAddress} />
+      <meta name="business:contact_data:locality" content={companyInfo.address.addressLocality} />
+      <meta name="business:contact_data:region" content={companyInfo.address.addressRegion} />
+      <meta name="business:contact_data:postal_code" content={companyInfo.address.postalCode} />
       <meta name="business:contact_data:country_name" content="United States" />
       
       {/* Mobile Optimization */}

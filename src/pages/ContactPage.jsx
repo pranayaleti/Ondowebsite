@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import Contact from "../components/Contact";
-import ConsultationModal from "../components/ConsultationModal";
-import Footer from "../components/Footer";
+
+// Lazy load heavy components
+const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const Footer = lazy(() => import("../components/Footer"));
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 
 const ContactPage = () => {
@@ -36,8 +38,14 @@ const ContactPage = () => {
             <Contact onOpenConsultation={() => setIsModalOpen(true)} />
           </div>
         </div>
-        <Footer />
-        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <Suspense fallback={<div className="h-32" />}>
+          <Footer />
+        </Suspense>
+        {isModalOpen && (
+          <Suspense fallback={null}>
+            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          </Suspense>
+        )}
       </div>
     </>
   );
