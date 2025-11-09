@@ -131,33 +131,92 @@ export const extractCriticalCSS = () => {
 
 // Performance monitoring
 export const initPerformanceMonitoring = () => {
-  // Web Vitals monitoring - only log in development
-  if (typeof window !== 'undefined' && 'PerformanceObserver' in window && process.env.NODE_ENV === 'development') {
+  // Web Vitals monitoring - only send to analytics, no console logging
+  if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
     // LCP monitoring
     const lcpObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
-      console.log('LCP:', lastEntry.startTime);
+      
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('LCP:', lastEntry.startTime);
+      }
+      
+      // Send to analytics
+      if (window.gtag) {
+        window.gtag('event', 'web_vitals', {
+          name: 'LCP',
+          value: Math.round(lastEntry.startTime),
+          event_category: 'Performance'
+        });
+      }
     });
-    lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+    
+    try {
+      lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+    } catch (e) {
+      // LCP observer not supported
+    }
     
     // FID monitoring
     const fidObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        console.log('FID:', entry.processingStart - entry.startTime);
+        const fid = entry.processingStart - entry.startTime;
+        
+        // Only log in development
+        if (process.env.NODE_ENV === 'development') {
+          console.log('FID:', fid);
+        }
+        
+        // Send to analytics
+        if (window.gtag) {
+          window.gtag('event', 'web_vitals', {
+            name: 'FID',
+            value: Math.round(fid),
+            event_category: 'Performance'
+          });
+        }
       });
     });
-    fidObserver.observe({ entryTypes: ['first-input'] });
+    
+    try {
+      fidObserver.observe({ entryTypes: ['first-input'] });
+    } catch (e) {
+      // FID observer not supported
+    }
     
     // CLS monitoring
+    let clsValue = 0;
     const clsObserver = new PerformanceObserver((list) => {
       const entries = list.getEntries();
       entries.forEach((entry) => {
-        console.log('CLS:', entry.value);
+        if (!entry.hadRecentInput) {
+          clsValue += entry.value;
+          
+          // Only log in development
+          if (process.env.NODE_ENV === 'development') {
+            console.log('CLS:', entry.value);
+          }
+        }
       });
+      
+      // Send final CLS to analytics
+      if (window.gtag && clsValue > 0) {
+        window.gtag('event', 'web_vitals', {
+          name: 'CLS',
+          value: Math.round(clsValue * 1000),
+          event_category: 'Performance'
+        });
+      }
     });
-    clsObserver.observe({ entryTypes: ['layout-shift'] });
+    
+    try {
+      clsObserver.observe({ entryTypes: ['layout-shift'] });
+    } catch (e) {
+      // CLS observer not supported
+    }
   }
 };
 

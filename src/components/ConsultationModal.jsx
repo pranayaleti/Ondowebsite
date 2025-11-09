@@ -3,7 +3,7 @@ import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, Clock, User, Mail, Phone, MessageCircle, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import SelectField from './SelectField';
 
-const ConsultationModal = ({ isOpen, onClose, preset }) => {
+const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -116,9 +116,9 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
       // Build Calendly URL with helpful context
       const params = new URLSearchParams({
         utm_source: 'website',
-        utm_medium: 'pricing',
+        utm_medium: utmMedium,
         utm_campaign: 'consultation',
-        utm_content: payload.selectedPlan || 'unknown',
+        utm_content: payload.selectedPlan || payload.budget || 'general',
         a1: payload.selectedPlan || '',
         a2: payload.email || '',
         a3: payload.company || ''
@@ -165,17 +165,12 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
+      <div className="bg-gradient-to-b from-black to-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-orange-500">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
-          <div className="flex items-center">
-            <div className="bg-orange-500 p-3 rounded-lg mr-4">
-              <Calendar className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">Book Your Free Consultation</h2>
-              <p className="text-gray-300">30-minute expert consultation</p>
-            </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white">Book Your Free Consultation</h2>
+            <p className="text-gray-300 mt-1">Get expert advice on your project in 30 minutes</p>
           </div>
           <button
             onClick={onClose}
@@ -191,10 +186,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
           {submitStatus === 'success' && (
             <div className="mb-6 p-4 bg-green-900/30 border border-green-500 rounded-lg flex items-center">
               <CheckCircle className="text-green-400 mr-3" />
-              <div>
-                <p className="text-green-300 font-semibold">Consultation Booked Successfully!</p>
-                <p className="text-green-400 text-sm">We'll send you a calendar invite and confirmation email shortly.</p>
-              </div>
+              <p className="text-green-300">Thank you! We'll contact you within 24 hours to schedule your consultation.</p>
             </div>
           )}
           
@@ -218,7 +210,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="Your full name"
               />
             </div>
@@ -233,10 +225,10 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 id="email"
                 name="email"
                 value={formData.email}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
+                onChange={handleInputChange}
+                onBlur={handleBlur}
                 required
-                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="your@email.com"
               />
                 {fieldErrors.email && <p className="text-sm text-red-400 mt-2">{fieldErrors.email}</p>}
@@ -245,19 +237,19 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
             {/* Phone */}
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
-                Phone Number
+                Phone Number *
               </label>
               <input
-                  type="tel"
+                type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
-                  onChange={handleInputChange}
-                  onBlur={handleBlur}
-                  required
-                  inputMode="numeric"
-                  pattern="\\d*"
-                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                required
+                inputMode="numeric"
+                pattern="\\d*"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="(555) 123-4567"
               />
                 {fieldErrors.phone && <p className="text-sm text-red-400 mt-2">{fieldErrors.phone}</p>}
@@ -274,7 +266,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 name="company"
                 value={formData.company}
                 onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
                 placeholder="Your company name"
               />
             </div>
@@ -290,6 +282,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 value={formData.timeline}
                 onChange={handleInputChange}
                 placeholder="Select timeline"
+                variant="light"
                 options={timelineOptions.map(t => ({ value: t, label: t }))}
               />
             </div>
@@ -305,6 +298,7 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
                 value={formData.budget}
                 onChange={handleInputChange}
                 placeholder="Select budget range"
+                variant="light"
                 options={budgetRanges.map(b => ({ value: b, label: b }))}
               />
             </div>
@@ -324,13 +318,13 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
               onChange={handleInputChange}
               required
               rows={4}
-              className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-800 text-white placeholder-gray-400"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-400"
               placeholder="Tell us about your project goals, requirements, and any specific challenges you're facing..."
             />
           </div>
 
           {/* Benefits */}
-          <div className="mt-6 p-4 bg-orange-900/20 rounded-lg border border-orange-500/30">
+          <div className="mt-6 p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
             <h3 className="font-semibold text-white mb-3">What you'll get from this free consultation:</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-300">
               <div className="flex items-center">
@@ -387,8 +381,8 @@ const ConsultationModal = ({ isOpen, onClose, preset }) => {
         input:-webkit-autofill:focus,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:active {
-          box-shadow: 0 0 0px 1000px #1f2937 inset !important;
-          -webkit-text-fill-color: #ffffff !important;
+          box-shadow: 0 0 0px 1000px #fff inset !important;
+          -webkit-text-fill-color: #1f2937 !important; /* text-gray-900 */
           transition: background-color 5000s ease-in-out 0s;
         }
       `}</style>

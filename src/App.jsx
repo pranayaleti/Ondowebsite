@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
+  useLocation,
 } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { Suspense, lazy } from "react";
 import Navbar from "./components/Navbar";
+import NavigationLoader from "./components/NavigationLoader";
 import SchemaMarkup from "./components/SchemaMarkup";
 import PerformanceMonitor from "./components/PerformanceMonitor";
 import ScriptOptimizer from "./components/ScriptOptimizer";
@@ -14,6 +16,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import { initPerformanceOptimizations } from "./utils/performance";
+import analyticsTracker from "./utils/analytics";
 
 // Lazy load page components for better performance
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -45,6 +48,7 @@ const CampaignsPage = lazy(() => import("./pages/portal/CampaignsPage"));
 const AssetsPage = lazy(() => import("./pages/portal/AssetsPage"));
 const InvoicesPage = lazy(() => import("./pages/portal/InvoicesPage"));
 const TicketsPage = lazy(() => import("./pages/portal/TicketsPage"));
+const NotificationsPage = lazy(() => import("./pages/portal/NotificationsPage"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AnalyticsPage = lazy(() => import("./pages/admin/AnalyticsPage"));
@@ -53,21 +57,49 @@ const AdminCampaignsPage = lazy(() => import("./pages/admin/CampaignsPage"));
 const AdminAssetsPage = lazy(() => import("./pages/admin/AssetsPage"));
 const AdminTicketsPage = lazy(() => import("./pages/admin/TicketsPage"));
 const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
+const AdminNotificationsPage = lazy(() => import("./pages/admin/NotificationsPage"));
 
-// Loading component
+// Loading component - Enhanced with better visibility
 const PageLoader = () => (
-  <div className="min-h-screen bg-gradient-to-b from-black to-gray-900 flex items-center justify-center">
+  <div className="fixed inset-0 z-50 bg-gradient-to-b from-black to-gray-900 flex items-center justify-center backdrop-blur-sm">
     <div className="text-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-      <p className="text-white">Loading...</p>
+      <div className="relative inline-block">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-700 border-t-orange-500 mx-auto mb-6"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full bg-orange-500/30 animate-pulse"></div>
+        </div>
+      </div>
+      <p className="text-white text-lg font-medium">Loading page...</p>
+      <p className="text-gray-400 text-sm mt-2">Please wait</p>
     </div>
   </div>
 );
+
+// Scroll to top component for route changes
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  const prevPathnameRef = useRef(pathname);
+
+  useEffect(() => {
+    // Track navigation if pathname changed
+    if (prevPathnameRef.current !== pathname) {
+      analyticsTracker.trackNavigation(prevPathnameRef.current, pathname, 'programmatic');
+      analyticsTracker.trackPageView(pathname);
+      prevPathnameRef.current = pathname;
+    }
+    
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+
+  return null;
+};
 
 const AppRoutes = () => {
   // Initialize performance optimizations
   useEffect(() => {
     initPerformanceOptimizations();
+    // Initialize analytics tracking
+    analyticsTracker.init();
   }, []);
 
   return (
@@ -77,6 +109,8 @@ const AppRoutes = () => {
         <ScriptOptimizer />
         <SchemaMarkup />
         <Navbar />
+        <NavigationLoader />
+        <ScrollToTop />
         <Suspense fallback={<PageLoader />}>
           <Routes>
           {/* Public Routes */}
@@ -122,6 +156,7 @@ const AppRoutes = () => {
             <Route path="assets" element={<AssetsPage />} />
             <Route path="invoices" element={<InvoicesPage />} />
             <Route path="tickets" element={<TicketsPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
           </Route>
           
           {/* Admin Routes */}
@@ -140,6 +175,7 @@ const AppRoutes = () => {
             <Route path="assets" element={<AdminAssetsPage />} />
             <Route path="tickets" element={<AdminTicketsPage />} />
             <Route path="invoices" element={<AdminInvoicesPage />} />
+            <Route path="notifications" element={<AdminNotificationsPage />} />
           </Route>
           
           <Route path="*" element={<NotFoundPage />} />

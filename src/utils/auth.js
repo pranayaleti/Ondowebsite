@@ -83,6 +83,44 @@ export const authAPI = {
 
     return response.json();
   },
+
+  async getNotifications() {
+    const response = await fetch(`${API_URL}/admin/notifications`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch notifications');
+    }
+
+    return response.json();
+  },
+
+  async markNotificationRead(notificationId) {
+    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark notification as read');
+    }
+
+    return response.json();
+  },
+
+  async markAllNotificationsRead() {
+    const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark all notifications as read');
+    }
+
+    return response.json();
+  },
 };
 
 // Portal API functions
@@ -299,6 +337,74 @@ export const portalAPI = {
       throw new Error('Network error. Please check your connection and ensure the server is running.');
     }
   },
+
+  async getNotifications() {
+    const response = await fetch(`${API_URL}/portal/notifications`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch notifications');
+    }
+
+    return response.json();
+  },
+
+  async markNotificationRead(notificationId) {
+    const response = await fetch(`${API_URL}/portal/notifications/${notificationId}/read`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark notification as read');
+    }
+
+    return response.json();
+  },
+
+  async markAllNotificationsRead() {
+    const response = await fetch(`${API_URL}/portal/notifications/read-all`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark all notifications as read');
+    }
+
+    return response.json();
+  },
+
+  async remindMeLater(notificationId, remindAt) {
+    const response = await fetch(`${API_URL}/portal/notifications/${notificationId}/remind`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ remind_at: remindAt }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to set reminder');
+    }
+
+    return response.json();
+  },
+
+  async dismissNotification(notificationId) {
+    const response = await fetch(`${API_URL}/portal/notifications/${notificationId}/dismiss`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to dismiss notification');
+    }
+
+    return response.json();
+  },
 };
 
 // Admin API functions
@@ -358,6 +464,18 @@ export const adminAPI = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch request analytics');
+    }
+
+    return response.json();
+  },
+
+  async getUserAnalytics() {
+    const response = await fetch(`${API_URL}/admin/user-analytics`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user analytics');
     }
 
     return response.json();
@@ -452,6 +570,44 @@ export const adminAPI = {
 
     return response.json();
   },
+
+  async getNotifications() {
+    const response = await fetch(`${API_URL}/admin/notifications`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch notifications');
+    }
+
+    return response.json();
+  },
+
+  async markNotificationRead(notificationId) {
+    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark notification as read');
+    }
+
+    return response.json();
+  },
+
+  async markAllNotificationsRead() {
+    const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark all notifications as read');
+    }
+
+    return response.json();
+  },
 };
 
 // Ticket API functions
@@ -542,6 +698,74 @@ export const ticketAPI = {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'Failed to upload attachment');
+    }
+
+    return response.json();
+  },
+
+  async getNotifications() {
+    const response = await fetch(`${API_URL}/admin/notifications`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch notifications');
+    }
+
+    return response.json();
+  },
+
+  async markNotificationRead(notificationId) {
+    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark notification as read');
+    }
+
+    return response.json();
+  },
+
+  async markAllNotificationsRead() {
+    const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to mark all notifications as read');
+    }
+
+    return response.json();
+  },
+
+  async remindMeLater(notificationId, remindAt) {
+    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/remind`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ remind_at: remindAt }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to set reminder');
+    }
+
+    return response.json();
+  },
+
+  async dismissNotification(notificationId) {
+    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/dismiss`, {
+      method: 'PATCH',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to dismiss notification');
     }
 
     return response.json();

@@ -1,16 +1,9 @@
+# Comprehensive robots.txt for Ondosoft.com
+# Global SEO and Local SEO Optimization
+
+# Allow all search engines
 User-agent: *
 Allow: /
-
-# Sitemaps
-Sitemap: https://ondosoft.com/sitemap.xml
-
-# Disallow admin areas (if any)
-Disallow: /admin/
-Disallow: /private/
-Disallow: /_next/
-Disallow: /api/
-
-# Allow all important pages
 Allow: /services/
 Allow: /products/
 Allow: /pricing/
@@ -19,9 +12,56 @@ Allow: /about/
 Allow: /workflow/
 Allow: /testimonials/
 Allow: /faq/
+Allow: /blogs/
+Allow: /portfolio/
 
-# Crawl delay for better server performance
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /portal/
+Disallow: /auth/
+Disallow: /private/
+Disallow: /_next/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*?*utm_*
+Disallow: /*?*ref=*
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /assets/
+Allow: /logo.png
+Disallow: /
+
+User-agent: Bingbot
+Allow: /
 Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+User-agent: Yandex
+Allow: /
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://ondosoft.com/sitemap.xml
+Sitemap: https://ondosoft.com/sitemap-blogs.xml
 
 # Host directive
 Host: https://ondosoft.com
+
+# Crawl delay for better server performance
+Crawl-delay: 1

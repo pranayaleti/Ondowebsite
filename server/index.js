@@ -135,6 +135,96 @@ const createTables = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS analytics_events (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        event_type VARCHAR(50) NOT NULL,
+        pathname VARCHAR(500),
+        referrer TEXT,
+        user_agent TEXT,
+        screen_width INTEGER,
+        screen_height INTEGER,
+        viewport_width INTEGER,
+        viewport_height INTEGER,
+        language VARCHAR(10),
+        timezone VARCHAR(100),
+        event_data JSONB,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS analytics_clicks (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        pathname VARCHAR(500),
+        element_type VARCHAR(50),
+        element_id VARCHAR(255),
+        element_class TEXT,
+        element_text TEXT,
+        href TEXT,
+        click_x INTEGER,
+        click_y INTEGER,
+        button INTEGER,
+        ctrl_key BOOLEAN,
+        shift_key BOOLEAN,
+        alt_key BOOLEAN,
+        meta_key BOOLEAN,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS analytics_navigation (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        from_path VARCHAR(500),
+        to_path VARCHAR(500),
+        navigation_method VARCHAR(50),
+        time_on_page INTEGER,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS analytics_page_views (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        pathname VARCHAR(500),
+        referrer TEXT,
+        user_agent TEXT,
+        screen_width INTEGER,
+        screen_height INTEGER,
+        viewport_width INTEGER,
+        viewport_height INTEGER,
+        language VARCHAR(10),
+        timezone VARCHAR(100),
+        page_load_time INTEGER,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS analytics_scrolls (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        pathname VARCHAR(500),
+        scroll_depth INTEGER,
+        time_on_page INTEGER,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS analytics_form_interactions (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        pathname VARCHAR(500),
+        form_id VARCHAR(255),
+        action VARCHAR(50),
+        field_name VARCHAR(255),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS analytics_user_interactions (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        pathname VARCHAR(500),
+        interaction_type VARCHAR(100),
+        interaction_details JSONB,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS tickets (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -173,6 +263,19 @@ const createTables = async () => {
         file_url TEXT NOT NULL,
         file_type VARCHAR(100),
         file_size INTEGER,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        type VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        link VARCHAR(500),
+        is_read BOOLEAN DEFAULT FALSE,
+        is_dismissed BOOLEAN DEFAULT FALSE,
+        remind_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -280,6 +383,49 @@ const createIndexes = async () => {
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_ticket_attachments_ticket_id ON ticket_attachments(ticket_id);
       CREATE INDEX IF NOT EXISTS idx_ticket_attachments_message_id ON ticket_attachments(message_id);
+    `);
+
+    // Indexes for notifications table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+      CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
+      CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
+      CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, is_read);
+    `);
+
+    // Indexes for analytics tables
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_analytics_events_session_id ON analytics_events(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_events_event_type ON analytics_events(event_type);
+      CREATE INDEX IF NOT EXISTS idx_analytics_events_pathname ON analytics_events(pathname);
+      CREATE INDEX IF NOT EXISTS idx_analytics_events_timestamp ON analytics_events(timestamp);
+      CREATE INDEX IF NOT EXISTS idx_analytics_events_session_timestamp ON analytics_events(session_id, timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_analytics_clicks_session_id ON analytics_clicks(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_clicks_pathname ON analytics_clicks(pathname);
+      CREATE INDEX IF NOT EXISTS idx_analytics_clicks_element_type ON analytics_clicks(element_type);
+      CREATE INDEX IF NOT EXISTS idx_analytics_clicks_timestamp ON analytics_clicks(timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_analytics_navigation_session_id ON analytics_navigation(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_navigation_to_path ON analytics_navigation(to_path);
+      CREATE INDEX IF NOT EXISTS idx_analytics_navigation_timestamp ON analytics_navigation(timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_analytics_page_views_session_id ON analytics_page_views(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_page_views_pathname ON analytics_page_views(pathname);
+      CREATE INDEX IF NOT EXISTS idx_analytics_page_views_timestamp ON analytics_page_views(timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_analytics_scrolls_session_id ON analytics_scrolls(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_scrolls_pathname ON analytics_scrolls(pathname);
+      CREATE INDEX IF NOT EXISTS idx_analytics_scrolls_timestamp ON analytics_scrolls(timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_analytics_form_interactions_session_id ON analytics_form_interactions(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_form_interactions_pathname ON analytics_form_interactions(pathname);
+      CREATE INDEX IF NOT EXISTS idx_analytics_form_interactions_timestamp ON analytics_form_interactions(timestamp);
+      
+      CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_session_id ON analytics_user_interactions(session_id);
+      CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_pathname ON analytics_user_interactions(pathname);
+      CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_interaction_type ON analytics_user_interactions(interaction_type);
+      CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_timestamp ON analytics_user_interactions(timestamp);
     `);
 
     console.log('Database indexes created/verified successfully');
@@ -473,7 +619,10 @@ const addInvoiceColumns = async () => {
   }
 };
 
-createTables();
+// Initialize tables on startup
+createTables().catch(err => {
+  console.error('Error creating tables on startup:', err);
+});
 
 // Middleware
 // CORS configuration - must be before other middleware
@@ -544,6 +693,57 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
+
+// Comprehensive Caching Headers Middleware
+const setCacheHeaders = (req, res, next) => {
+  const url = req.path;
+  
+  // Static assets - long cache
+  if (url.match(/\.(jpg|jpeg|png|gif|ico|svg|webp|woff|woff2|ttf|eot|otf)$/i)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.setHeader('Expires', new Date(Date.now() + 31536000000).toUTCString());
+    res.setHeader('ETag', `"${Date.now()}"`);
+  }
+  // CSS and JS files - medium cache
+  else if (url.match(/\.(css|js)$/i)) {
+    res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+    res.setHeader('Expires', new Date(Date.now() + 86400000).toUTCString());
+    res.setHeader('ETag', `"${Date.now()}"`);
+  }
+  // HTML files - short cache with revalidation
+  else if (url.match(/\.(html|htm)$/i) || url === '/' || !url.includes('.')) {
+    res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    res.setHeader('Expires', new Date(Date.now() + 3600000).toUTCString());
+    res.setHeader('ETag', `"${Date.now()}"`);
+    res.setHeader('Last-Modified', new Date().toUTCString());
+  }
+  // API responses - no cache or short cache
+  else if (url.startsWith('/api/')) {
+    if (req.method === 'GET') {
+      res.setHeader('Cache-Control', 'private, max-age=300, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+  // Default - short cache
+  else {
+    res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+    res.setHeader('Expires', new Date(Date.now() + 3600000).toUTCString());
+  }
+  
+  // Additional caching headers
+  res.setHeader('Vary', 'Accept-Encoding');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  next();
+};
+
+// Apply caching headers to all routes
+app.use(setCacheHeaders);
 
 // Request tracking middleware (after auth middleware sets req.user)
 const trackRequest = async (req, res, next) => {
@@ -752,7 +952,18 @@ app.get('/api/auth/session', authenticateToken, async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({ user: result.rows[0] });
+    
+    const user = result.rows[0];
+    
+    // Log role mismatch between token and database for debugging
+    if (req.user.role !== user.role) {
+      console.warn(`Role mismatch for user ${user.email}: Token has ${req.user.role}, Database has ${user.role}. Using database role.`);
+    }
+    
+    // Log current role for debugging
+    console.log(`Session check for ${user.email}: Role = ${user.role}`);
+    
+    res.json({ user });
   } catch (error) {
     console.error('Session error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -854,6 +1065,11 @@ app.get('/api/portal/subscriptions', authenticateToken, async (req, res) => {
       [req.user.id]
     );
     
+    // Log subscription statuses for debugging
+    console.log(`Fetched ${result.rows.length} subscriptions for user ${req.user.id}:`, 
+      result.rows.map(s => ({ id: s.id, plan: s.plan_name, status: s.status }))
+    );
+    
     // Always return available plans from pricing
     const availablePlans = [
       {
@@ -893,7 +1109,7 @@ app.get('/api/portal/subscriptions', authenticateToken, async (req, res) => {
           'Content Management System (CMS)',
           'API Development & Integration',
           'Security & Data Protection',
-          '6 Months Technical Support'
+          '3 Months Technical Support'
         ])
       },
       {
@@ -913,7 +1129,7 @@ app.get('/api/portal/subscriptions', authenticateToken, async (req, res) => {
           'Advanced Security & Compliance',
           'Analytics & Business Intelligence',
           'Third-Party Integrations',
-          '12 Months Comprehensive Support'
+          '6 Months Comprehensive Support'
         ])
       },
       {
@@ -1002,6 +1218,9 @@ app.patch('/api/portal/subscriptions/:id', authenticateToken, async (req, res) =
     const { status } = req.body;
     const subscriptionId = req.params.id;
 
+    // Normalize status to lowercase for consistency
+    const normalizedStatus = status?.toLowerCase();
+
     // Verify subscription belongs to user
     const verifyResult = await pool.query(
       'SELECT * FROM subscriptions WHERE id = $1 AND user_id = $2',
@@ -1012,10 +1231,14 @@ app.patch('/api/portal/subscriptions/:id', authenticateToken, async (req, res) =
       return res.status(404).json({ error: 'Subscription not found' });
     }
 
+    console.log(`Updating subscription ${subscriptionId} status from "${verifyResult.rows[0].status}" to "${normalizedStatus}"`);
+
     const result = await pool.query(
       `UPDATE subscriptions SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
-      [status, subscriptionId]
+      [normalizedStatus, subscriptionId]
     );
+
+    console.log(`Subscription ${subscriptionId} updated successfully. New status: "${result.rows[0].status}"`);
 
     res.json({ subscription: result.rows[0], message: 'Subscription updated successfully' });
   } catch (error) {
@@ -2082,6 +2305,440 @@ app.get('/api/admin/request-analytics', authenticateToken, requireAdmin, async (
   }
 });
 
+// Track analytics event (public endpoint)
+app.post('/api/analytics/track', async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    
+    if (!type || !data) {
+      return res.status(400).json({ error: 'Type and data are required' });
+    }
+
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    const userAgent = req.get('user-agent');
+
+    // Store in appropriate table based on event type
+    switch (type) {
+      case 'page_view':
+        await pool.query(
+          `INSERT INTO analytics_page_views 
+           (session_id, pathname, referrer, user_agent, screen_width, screen_height, 
+            viewport_width, viewport_height, language, timezone, page_load_time)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [
+            data.sessionId || null, data.pathname || null, data.referrer || null, userAgent || null,
+            data.screenWidth || null, data.screenHeight || null, data.viewportWidth || null, data.viewportHeight || null,
+            data.language || null, data.timezone || null, data.pageLoadTime || null
+          ]
+        );
+        break;
+
+      case 'click':
+        await pool.query(
+          `INSERT INTO analytics_clicks 
+           (session_id, pathname, element_type, element_id, element_class, element_text, 
+            href, click_x, click_y, button, ctrl_key, shift_key, alt_key, meta_key)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+          [
+            data.sessionId || null, data.pathname || null, data.elementType || null, data.elementId || null,
+            data.elementClass || null, data.elementText || null, data.href || null, data.x || null, data.y || null,
+            data.button || null, data.ctrlKey || false, data.shiftKey || false, data.altKey || false, data.metaKey || false
+          ]
+        );
+        break;
+
+      case 'navigation':
+        await pool.query(
+          `INSERT INTO analytics_navigation 
+           (session_id, from_path, to_path, navigation_method, time_on_page)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [data.sessionId || null, data.from || null, data.to || null, data.method || null, data.timeOnPage || null]
+        );
+        break;
+
+      case 'scroll':
+        await pool.query(
+          `INSERT INTO analytics_scrolls 
+           (session_id, pathname, scroll_depth, time_on_page)
+           VALUES ($1, $2, $3, $4)`,
+          [data.sessionId || null, data.pathname || null, data.scrollDepth || null, data.timeOnPage || null]
+        );
+        break;
+
+      case 'form_interaction':
+        await pool.query(
+          `INSERT INTO analytics_form_interactions 
+           (session_id, pathname, form_id, action, field_name)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [data.sessionId || null, data.pathname || null, data.formId || null, data.action || null, data.fieldName || null]
+        );
+        break;
+
+      case 'user_interaction':
+        await pool.query(
+          `INSERT INTO analytics_user_interactions 
+           (session_id, pathname, interaction_type, interaction_details)
+           VALUES ($1, $2, $3, $4)`,
+          [data.sessionId || null, data.pathname || null, data.interactionType || null, data.details ? JSON.stringify(data.details) : null]
+        );
+        break;
+
+      case 'page_exit':
+        // Store as navigation event
+        await pool.query(
+          `INSERT INTO analytics_navigation 
+           (session_id, from_path, to_path, navigation_method, time_on_page)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [data.sessionId || null, data.pathname || null, 'exit', 'exit', data.timeOnPage || null]
+        );
+        break;
+
+      default:
+        // Store generic event
+        await pool.query(
+          `INSERT INTO analytics_events 
+           (session_id, event_type, pathname, referrer, user_agent, screen_width, 
+            screen_height, viewport_width, viewport_height, language, timezone, event_data)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [
+            data.sessionId || null, type || null, data.pathname || null, data.referrer || null, userAgent || null,
+            data.screenWidth || null, data.screenHeight || null, data.viewportWidth || null, data.viewportHeight || null,
+            data.language || null, data.timezone || null, JSON.stringify(data || {})
+          ]
+        );
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Analytics tracking error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      type: error.type,
+      code: error.code
+    });
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Track analytics events in batch (public endpoint)
+app.post('/api/analytics/track-batch', async (req, res) => {
+  try {
+    const { events } = req.body;
+    
+    if (!events || !Array.isArray(events)) {
+      return res.status(400).json({ error: 'Events array is required' });
+    }
+
+    const userAgent = req.get('user-agent');
+
+    // Process each event in the batch
+    for (const event of events) {
+      const { type, data } = event;
+      
+      try {
+        switch (type) {
+          case 'click':
+            await pool.query(
+              `INSERT INTO analytics_clicks 
+               (session_id, pathname, element_type, element_id, element_class, element_text, 
+                href, click_x, click_y, button, ctrl_key, shift_key, alt_key, meta_key)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+              [
+                data.sessionId, data.pathname, data.elementType, data.elementId,
+                data.elementClass, data.elementText, data.href, data.x, data.y,
+                data.button, data.ctrlKey, data.shiftKey, data.altKey, data.metaKey
+              ]
+            );
+            break;
+
+          case 'scroll':
+            await pool.query(
+              `INSERT INTO analytics_scrolls 
+               (session_id, pathname, scroll_depth, time_on_page)
+               VALUES ($1, $2, $3, $4)`,
+              [data.sessionId, data.pathname, data.scrollDepth, data.timeOnPage]
+            );
+            break;
+
+          case 'form_interaction':
+            await pool.query(
+              `INSERT INTO analytics_form_interactions 
+               (session_id, pathname, form_id, action, field_name)
+               VALUES ($1, $2, $3, $4, $5)`,
+              [data.sessionId, data.pathname, data.formId, data.action, data.fieldName]
+            );
+            break;
+
+          case 'user_interaction':
+            await pool.query(
+              `INSERT INTO analytics_user_interactions 
+               (session_id, pathname, interaction_type, interaction_details)
+               VALUES ($1, $2, $3, $4)`,
+              [data.sessionId, data.pathname, data.interactionType, JSON.stringify(data.details)]
+            );
+            break;
+        }
+      } catch (err) {
+        console.error(`Error processing event ${type}:`, err);
+        // Continue processing other events
+      }
+    }
+
+    res.json({ success: true, processed: events.length });
+  } catch (error) {
+    console.error('Analytics batch tracking error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get user analytics (admin)
+app.get('/api/admin/user-analytics', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    // Total clicks - handle case where table might not exist
+    let totalClicksResult;
+    try {
+      totalClicksResult = await pool.query(
+        'SELECT COUNT(*)::int as total FROM analytics_clicks'
+      );
+    } catch (err) {
+      console.error('Error querying analytics_clicks:', err);
+      totalClicksResult = { rows: [{ total: 0 }] };
+    }
+
+    // Clicks over time (last 30 days)
+    let clicksOverTimeResult;
+    try {
+      clicksOverTimeResult = await pool.query(
+        `SELECT DATE(timestamp)::text as date, COUNT(*)::int as count 
+         FROM analytics_clicks 
+         WHERE timestamp >= NOW() - INTERVAL '30 days'
+         GROUP BY DATE(timestamp) 
+         ORDER BY date ASC`
+      );
+    } catch (err) {
+      console.error('Error querying clicks over time:', err);
+      clicksOverTimeResult = { rows: [] };
+    }
+
+    // Clicks by element type
+    let clicksByElementTypeResult;
+    try {
+      clicksByElementTypeResult = await pool.query(
+        `SELECT element_type, COUNT(*)::int as count 
+         FROM analytics_clicks 
+         GROUP BY element_type 
+         ORDER BY count DESC 
+         LIMIT 20`
+      );
+    } catch (err) {
+      console.error('Error querying clicks by element type:', err);
+      clicksByElementTypeResult = { rows: [] };
+    }
+
+    // Top clicked links
+    let topClickedLinksResult;
+    try {
+      topClickedLinksResult = await pool.query(
+        `SELECT href, COUNT(*)::int as count, 
+                COUNT(DISTINCT session_id)::int as unique_sessions
+         FROM analytics_clicks 
+         WHERE href IS NOT NULL 
+         GROUP BY href 
+         ORDER BY count DESC 
+         LIMIT 20`
+      );
+    } catch (err) {
+      console.error('Error querying top clicked links:', err);
+      topClickedLinksResult = { rows: [] };
+    }
+
+    // Total page views
+    let totalPageViewsResult;
+    try {
+      totalPageViewsResult = await pool.query(
+        'SELECT COUNT(*)::int as total FROM analytics_page_views'
+      );
+    } catch (err) {
+      console.error('Error querying total page views:', err);
+      totalPageViewsResult = { rows: [{ total: 0 }] };
+    }
+
+    // Page views over time (last 30 days)
+    let pageViewsOverTimeResult;
+    try {
+      pageViewsOverTimeResult = await pool.query(
+        `SELECT DATE(timestamp)::text as date, COUNT(*)::int as count 
+         FROM analytics_page_views 
+         WHERE timestamp >= NOW() - INTERVAL '30 days'
+         GROUP BY DATE(timestamp) 
+         ORDER BY date ASC`
+      );
+    } catch (err) {
+      console.error('Error querying page views over time:', err);
+      pageViewsOverTimeResult = { rows: [] };
+    }
+
+    // Most viewed pages
+    let mostViewedPagesResult;
+    try {
+      mostViewedPagesResult = await pool.query(
+        `SELECT pathname, COUNT(*)::int as views, 
+                COUNT(DISTINCT session_id)::int as unique_sessions,
+                AVG(page_load_time)::numeric as avg_load_time
+         FROM analytics_page_views 
+         GROUP BY pathname 
+         ORDER BY views DESC 
+         LIMIT 20`
+      );
+    } catch (err) {
+      console.error('Error querying most viewed pages:', err);
+      mostViewedPagesResult = { rows: [] };
+    }
+
+    // Navigation flow
+    let navigationFlowResult;
+    try {
+      navigationFlowResult = await pool.query(
+        `SELECT from_path, to_path, COUNT(*)::int as count 
+         FROM analytics_navigation 
+         WHERE from_path IS NOT NULL AND to_path IS NOT NULL
+         GROUP BY from_path, to_path 
+         ORDER BY count DESC 
+         LIMIT 50`
+      );
+    } catch (err) {
+      console.error('Error querying navigation flow:', err);
+      navigationFlowResult = { rows: [] };
+    }
+
+    // Average time on page
+    let avgTimeOnPageResult;
+    try {
+      avgTimeOnPageResult = await pool.query(
+        `SELECT pathname, 
+                AVG(time_on_page)::numeric as avg_time,
+                COUNT(*)::int as count
+         FROM analytics_navigation 
+         WHERE time_on_page IS NOT NULL AND time_on_page > 0
+         GROUP BY pathname 
+         ORDER BY avg_time DESC 
+         LIMIT 20`
+      );
+    } catch (err) {
+      console.error('Error querying average time on page:', err);
+      avgTimeOnPageResult = { rows: [] };
+    }
+
+    // Scroll depth statistics
+    let scrollDepthStatsResult;
+    try {
+      scrollDepthStatsResult = await pool.query(
+        `SELECT 
+           COUNT(*) FILTER (WHERE scroll_depth >= 25)::int as reached_25,
+           COUNT(*) FILTER (WHERE scroll_depth >= 50)::int as reached_50,
+           COUNT(*) FILTER (WHERE scroll_depth >= 75)::int as reached_75,
+           COUNT(*) FILTER (WHERE scroll_depth >= 100)::int as reached_100,
+           AVG(scroll_depth)::numeric as avg_depth
+         FROM analytics_scrolls`
+      );
+    } catch (err) {
+      console.error('Error querying scroll depth stats:', err);
+      scrollDepthStatsResult = { rows: [{}] };
+    }
+
+    // Form interactions
+    let formInteractionsResult;
+    try {
+      formInteractionsResult = await pool.query(
+        `SELECT form_id, action, COUNT(*)::int as count 
+         FROM analytics_form_interactions 
+         GROUP BY form_id, action 
+         ORDER BY count DESC 
+         LIMIT 30`
+      );
+    } catch (err) {
+      console.error('Error querying form interactions:', err);
+      formInteractionsResult = { rows: [] };
+    }
+
+    // User interaction types
+    let userInteractionTypesResult;
+    try {
+      userInteractionTypesResult = await pool.query(
+        `SELECT interaction_type, COUNT(*)::int as count 
+         FROM analytics_user_interactions 
+         GROUP BY interaction_type 
+         ORDER BY count DESC`
+      );
+    } catch (err) {
+      console.error('Error querying user interaction types:', err);
+      userInteractionTypesResult = { rows: [] };
+    }
+
+    // Unique sessions
+    let uniqueSessionsResult;
+    try {
+      uniqueSessionsResult = await pool.query(
+        `SELECT COUNT(DISTINCT session_id)::int as total 
+         FROM analytics_page_views 
+         WHERE timestamp >= NOW() - INTERVAL '30 days'`
+      );
+    } catch (err) {
+      console.error('Error querying unique sessions:', err);
+      uniqueSessionsResult = { rows: [{ total: 0 }] };
+    }
+
+    // Sessions by hour
+    let sessionsByHourResult;
+    try {
+      sessionsByHourResult = await pool.query(
+        `SELECT EXTRACT(HOUR FROM timestamp)::int as hour, 
+                COUNT(DISTINCT session_id)::int as sessions
+         FROM analytics_page_views 
+         WHERE timestamp >= NOW() - INTERVAL '7 days'
+         GROUP BY EXTRACT(HOUR FROM timestamp)
+         ORDER BY hour`
+      );
+    } catch (err) {
+      console.error('Error querying sessions by hour:', err);
+      sessionsByHourResult = { rows: [] };
+    }
+
+    res.json({
+      totalClicks: totalClicksResult.rows[0]?.total || 0,
+      clicksOverTime: clicksOverTimeResult.rows,
+      clicksByElementType: clicksByElementTypeResult.rows,
+      topClickedLinks: topClickedLinksResult.rows,
+      totalPageViews: totalPageViewsResult.rows[0]?.total || 0,
+      pageViewsOverTime: pageViewsOverTimeResult.rows,
+      mostViewedPages: mostViewedPagesResult.rows,
+      navigationFlow: navigationFlowResult.rows,
+      avgTimeOnPage: avgTimeOnPageResult.rows,
+      scrollDepthStats: scrollDepthStatsResult.rows[0] || {},
+      formInteractions: formInteractionsResult.rows,
+      userInteractionTypes: userInteractionTypesResult.rows,
+      uniqueSessions: uniqueSessionsResult.rows[0]?.total || 0,
+      sessionsByHour: sessionsByHourResult.rows
+    });
+  } catch (error) {
+    console.error('User analytics error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      type: error.type,
+      code: error.code
+    });
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
 // Ticket system endpoints
 
 // Create ticket (portal)
@@ -2218,6 +2875,22 @@ app.post('/api/portal/tickets/:id/messages', authenticateToken, async (req, res)
       `UPDATE tickets SET updated_at = CURRENT_TIMESTAMP WHERE id = $1`,
       [req.params.id]
     );
+
+    // Get ticket info to create notification for admins
+    const ticket = ticketResult.rows[0];
+    // Create notification for all admins when client responds
+    const adminUsers = await pool.query("SELECT id FROM users WHERE role = 'ADMIN'");
+    for (const admin of adminUsers.rows) {
+      await pool.query(
+        `INSERT INTO notifications (user_id, type, title, message, link)
+         VALUES ($1, 'ticket_message', 'New Message on Ticket', $2, $3)`,
+        [
+          admin.id,
+          `Client responded to ticket: "${ticket.subject}"`,
+          `/admin/tickets/${req.params.id}`
+        ]
+      );
+    }
 
     res.status(201).json({ message: result.rows[0] });
   } catch (error) {
@@ -2356,6 +3029,29 @@ app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req,
       return res.status(404).json({ error: 'Ticket not found' });
     }
 
+    const ticket = result.rows[0];
+    
+    // Create notification for ticket owner when admin updates ticket
+    if (ticket.user_id) {
+      let notificationTitle = 'Ticket Updated';
+      let notificationMessage = `Your ticket "${ticket.subject}" has been updated`;
+      
+      if (status) {
+        notificationMessage = `Your ticket "${ticket.subject}" status changed to ${status}`;
+      }
+      
+      await pool.query(
+        `INSERT INTO notifications (user_id, type, title, message, link)
+         VALUES ($1, 'ticket_update', $2, $3, $4)`,
+        [
+          ticket.user_id,
+          notificationTitle,
+          notificationMessage,
+          `/portal/tickets/${req.params.id}`
+        ]
+      );
+    }
+
     res.json({ ticket: result.rows[0] });
   } catch (error) {
     console.error('Update ticket error:', error);
@@ -2385,9 +3081,247 @@ app.post('/api/admin/tickets/:id/messages', authenticateToken, requireAdmin, asy
       [req.params.id]
     );
 
+    // Get ticket info to create notification for client
+    const ticketResult = await pool.query('SELECT * FROM tickets WHERE id = $1', [req.params.id]);
+    if (ticketResult.rows.length > 0) {
+      const ticket = ticketResult.rows[0];
+      // Create notification for ticket owner (client) when admin responds
+      if (ticket.user_id) {
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, link)
+           VALUES ($1, 'ticket_message', 'New Message on Ticket', $2, $3)`,
+          [
+            ticket.user_id,
+            `Admin responded to your ticket: "${ticket.subject}"`,
+            `/portal/tickets/${req.params.id}`
+          ]
+        );
+      }
+    }
+
     res.status(201).json({ message: result.rows[0] });
   } catch (error) {
     console.error('Add message error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Notification Endpoints
+
+// Get notifications (portal)
+app.get('/api/portal/notifications', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM notifications 
+       WHERE user_id = $1 
+       AND (is_dismissed = false OR is_dismissed IS NULL)
+       AND (remind_at IS NULL OR remind_at <= CURRENT_TIMESTAMP)
+       ORDER BY created_at DESC 
+       LIMIT 50`,
+      [req.user.id]
+    );
+    
+    res.json({ notifications: result.rows });
+  } catch (error) {
+    console.error('Get notifications error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Mark notification as read (portal)
+app.patch('/api/portal/notifications/:id/read', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE notifications 
+       SET is_read = true 
+       WHERE id = $1 AND user_id = $2 
+       RETURNING *`,
+      [req.params.id, req.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+    
+    res.json({ notification: result.rows[0] });
+  } catch (error) {
+    console.error('Mark notification read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Mark all notifications as read (portal)
+app.patch('/api/portal/notifications/read-all', authenticateToken, async (req, res) => {
+  try {
+    await pool.query(
+      `UPDATE notifications 
+       SET is_read = true 
+       WHERE user_id = $1 AND is_read = false`,
+      [req.user.id]
+    );
+    
+    res.json({ message: 'All notifications marked as read' });
+  } catch (error) {
+    console.error('Mark all notifications read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Remind me later (portal)
+app.patch('/api/portal/notifications/:id/remind', authenticateToken, async (req, res) => {
+  try {
+    const { remind_at } = req.body;
+    
+    if (!remind_at) {
+      return res.status(400).json({ error: 'remind_at is required' });
+    }
+    
+    const result = await pool.query(
+      `UPDATE notifications 
+       SET remind_at = $1 
+       WHERE id = $2 AND user_id = $3 
+       RETURNING *`,
+      [remind_at, req.params.id, req.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+    
+    res.json({ notification: result.rows[0] });
+  } catch (error) {
+    console.error('Remind me later error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Dismiss notification (portal)
+app.patch('/api/portal/notifications/:id/dismiss', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE notifications 
+       SET is_dismissed = true 
+       WHERE id = $1 AND user_id = $2 
+       RETURNING *`,
+      [req.params.id, req.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+    
+    res.json({ notification: result.rows[0] });
+  } catch (error) {
+    console.error('Dismiss notification error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get notifications (admin)
+app.get('/api/admin/notifications', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM notifications 
+       WHERE user_id = $1 
+       AND (is_dismissed = false OR is_dismissed IS NULL)
+       AND (remind_at IS NULL OR remind_at <= CURRENT_TIMESTAMP)
+       ORDER BY created_at DESC 
+       LIMIT 50`,
+      [req.user.id]
+    );
+    
+    res.json({ notifications: result.rows });
+  } catch (error) {
+    console.error('Get notifications error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Mark notification as read (admin)
+app.patch('/api/admin/notifications/:id/read', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE notifications 
+       SET is_read = true 
+       WHERE id = $1 AND user_id = $2 
+       RETURNING *`,
+      [req.params.id, req.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+    
+    res.json({ notification: result.rows[0] });
+  } catch (error) {
+    console.error('Mark notification read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Mark all notifications as read (admin)
+app.patch('/api/admin/notifications/read-all', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    await pool.query(
+      `UPDATE notifications 
+       SET is_read = true 
+       WHERE user_id = $1 AND is_read = false`,
+      [req.user.id]
+    );
+    
+    res.json({ message: 'All notifications marked as read' });
+  } catch (error) {
+    console.error('Mark all notifications read error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Remind me later (admin)
+app.patch('/api/admin/notifications/:id/remind', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { remind_at } = req.body;
+    
+    if (!remind_at) {
+      return res.status(400).json({ error: 'remind_at is required' });
+    }
+    
+    const result = await pool.query(
+      `UPDATE notifications 
+       SET remind_at = $1 
+       WHERE id = $2 AND user_id = $3 
+       RETURNING *`,
+      [remind_at, req.params.id, req.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+    
+    res.json({ notification: result.rows[0] });
+  } catch (error) {
+    console.error('Remind me later error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Dismiss notification (admin)
+app.patch('/api/admin/notifications/:id/dismiss', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `UPDATE notifications 
+       SET is_dismissed = true 
+       WHERE id = $1 AND user_id = $2 
+       RETURNING *`,
+      [req.params.id, req.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+    
+    res.json({ notification: result.rows[0] });
+  } catch (error) {
+    console.error('Dismiss notification error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

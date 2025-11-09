@@ -1,9 +1,12 @@
-// Service Worker for Ondosoft.com
-const CACHE_NAME = 'ondosoft-v1.0.0';
-const STATIC_CACHE = 'ondosoft-static-v1.0.0';
-const DYNAMIC_CACHE = 'ondosoft-dynamic-v1.0.0';
+// Service Worker for Ondosoft.com - Enhanced Caching Strategy
+const CACHE_VERSION = 'v2.0.0';
+const CACHE_NAME = `ondosoft-${CACHE_VERSION}`;
+const STATIC_CACHE = `ondosoft-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `ondosoft-dynamic-${CACHE_VERSION}`;
+const IMAGE_CACHE = `ondosoft-images-${CACHE_VERSION}`;
+const API_CACHE = `ondosoft-api-${CACHE_VERSION}`;
 
-// Assets to cache immediately
+// Assets to cache immediately on install
 const STATIC_ASSETS = [
   '/',
   '/logo.png',
@@ -16,8 +19,23 @@ const STATIC_ASSETS = [
   '/assets/user6.jpg',
   '/manifest.json',
   '/robots.txt',
-  '/sitemap.xml'
+  '/sitemap.xml',
+  '/index.html'
 ];
+
+// Critical CSS and JS files
+const CRITICAL_ASSETS = [
+  '/index.css',
+  '/src/index.css'
+];
+
+// Cache duration settings (in milliseconds)
+const CACHE_DURATIONS = {
+  static: 31536000000, // 1 year
+  dynamic: 86400000,    // 1 day
+  images: 2592000000,   // 30 days
+  api: 300000          // 5 minutes
+};
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -46,7 +64,8 @@ self.addEventListener('activate', (event) => {
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+            // Delete old caches that don't match current version
+            if (!cacheName.includes(CACHE_VERSION)) {
               console.log('Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
@@ -60,7 +79,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - serve from cache with network fallback
+// Enhanced Fetch event with intelligent caching strategies
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -70,52 +89,129 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip external requests
-  if (url.origin !== location.origin) {
+  // Skip external requests (except for specific CDNs)
+  if (url.origin !== location.origin && !url.origin.includes('fonts.googleapis.com')) {
     return;
   }
 
-  event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          console.log('Serving from cache:', request.url);
-          return cachedResponse;
-        }
-
-        // Otherwise fetch from network
-        return fetch(request)
-          .then((networkResponse) => {
-            // Don't cache non-successful responses
-            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-              return networkResponse;
-            }
-
-            // Clone the response
-            const responseToCache = networkResponse.clone();
-
-            // Cache the response
-            caches.open(DYNAMIC_CACHE)
-              .then((cache) => {
-                cache.put(request, responseToCache);
-              });
-
-            return networkResponse;
-          })
-          .catch((error) => {
-            console.error('Fetch failed:', error);
-            
-            // Return offline page for navigation requests
-            if (request.mode === 'navigate') {
-              return caches.match('/');
-            }
-            
-            throw error;
-          });
-      })
-  );
+  // Skip caching for authenticated API endpoints
+  if (url.pathname.startsWith('/api/auth/')) {
+    return; // Let browser handle these requests normally
+  }
+  
+  // Determine cache strategy based on request type
+  if (url.pathname.match(/\.(jpg|jpeg|png|gif|ico|svg|webp)$/i)) {
+    // Images: Cache First with Network Fallback
+    event.respondWith(cacheFirst(request, IMAGE_CACHE));
+  } else if (url.pathname.match(/\.(css|js|woff|woff2|ttf|eot|otf)$/i)) {
+    // Static assets: Cache First
+    event.respondWith(cacheFirst(request, STATIC_CACHE));
+  } else if (url.pathname.startsWith('/api/')) {
+    // API: Network First with Cache Fallback (but skip auth endpoints)
+    event.respondWith(networkFirst(request, API_CACHE));
+  } else if (url.pathname === '/' || url.pathname.match(/\.(html|htm)$/i)) {
+    // HTML: Network First with Cache Fallback
+    event.respondWith(networkFirst(request, DYNAMIC_CACHE));
+  } else {
+    // Default: Stale While Revalidate
+    event.respondWith(staleWhileRevalidate(request, DYNAMIC_CACHE));
+  }
 });
+
+// Cache First Strategy - for static assets
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cachedResponse = await cache.match(request);
+  
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+  
+  try {
+    const networkResponse = await fetch(request);
+    // Only cache successful, complete responses (not partial 206)
+    if (networkResponse.ok && 
+        networkResponse.status !== 206 && 
+        networkResponse.type === 'basic') {
+      const responseToCache = networkResponse.clone();
+      cache.put(request, responseToCache).catch((err) => {
+        console.warn('Failed to cache response:', err);
+      });
+    }
+    return networkResponse;
+  } catch (error) {
+    console.error('Cache First fetch failed:', error);
+    // Return offline fallback for images
+    if (request.destination === 'image') {
+      return new Response('', { status: 404 });
+    }
+    throw error;
+  }
+}
+
+// Network First Strategy - for dynamic content
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  
+  // Skip caching for authenticated API endpoints
+  if (request.url.includes('/api/auth/')) {
+    return fetch(request);
+  }
+  
+  try {
+    const networkResponse = await fetch(request);
+    // Only cache successful, complete responses (not partial 206)
+    if (networkResponse.ok && 
+        networkResponse.status !== 206 && 
+        networkResponse.type === 'basic' &&
+        !request.url.includes('/api/auth/')) {
+      const responseToCache = networkResponse.clone();
+      cache.put(request, responseToCache).catch((err) => {
+        console.warn('Failed to cache response:', err);
+      });
+    }
+    return networkResponse;
+  } catch (error) {
+    console.error('Network First fetch failed:', error);
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Return offline page for navigation requests
+    if (request.mode === 'navigate') {
+      return cache.match('/') || new Response('Offline', { status: 503 });
+    }
+    
+    throw error;
+  }
+}
+
+// Stale While Revalidate Strategy - for best performance
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cachedResponse = await cache.match(request);
+  
+  const fetchPromise = fetch(request).then((networkResponse) => {
+    // Only cache successful, complete responses (not partial 206, not auth endpoints)
+    if (networkResponse.ok && 
+        networkResponse.status !== 206 && 
+        !request.url.includes('/api/auth/') &&
+        networkResponse.type === 'basic') {
+      // Clone the response before caching
+      const responseToCache = networkResponse.clone();
+      cache.put(request, responseToCache).catch((err) => {
+        console.warn('Failed to cache response:', err);
+      });
+    }
+    return networkResponse;
+  }).catch(() => {
+    // Ignore network errors in background
+    return null;
+  });
+  
+  return cachedResponse || await fetchPromise || new Response('Offline', { status: 503 });
+}
 
 // Background sync for form submissions
 self.addEventListener('sync', (event) => {

@@ -1,4 +1,4 @@
-import { generateAllCityServiceCombinations, US_CITIES, SERVICE_AREAS } from './unifiedData';
+import { generateAllCityServiceCombinations, US_CITIES, SERVICE_AREAS, US_STATES } from './unifiedData';
 
 // Generate XML sitemap for all city-service pages
 export const generateSitemap = () => {
@@ -55,6 +55,30 @@ export const generateSitemap = () => {
     <lastmod>${area.lastmod}</lastmod>
     <changefreq>${area.changefreq}</changefreq>
     <priority>${area.priority}</priority>
+  </url>`;
+  });
+
+  // Add all state pages for location-based SEO
+  Object.entries(US_STATES).forEach(([code, data]) => {
+    sitemap += `
+  <url>
+    <loc>${baseUrl}/services/${data.slug}</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+  });
+
+  // Add all city pages for location-based SEO
+  US_CITIES.forEach(city => {
+    const citySlug = city.city.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+    const stateSlug = city.state.toLowerCase();
+    sitemap += `
+  <url>
+    <loc>${baseUrl}/services/${citySlug}-${stateSlug}</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>`;
   });
 
