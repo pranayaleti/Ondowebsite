@@ -6,7 +6,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { Link } from 'react-router-dom';
-import { companyInfo } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import ContactInfo from '../components/ContactInfo';
 
 const LegalPage = () => {
@@ -18,7 +18,7 @@ const LegalPage = () => {
         title="Legal Information | Ondosoft Software Development"
         description="Ondosoft's Legal Information - Access our legal documents including privacy policy, terms of use, licensing, NDA information, and accessibility statement."
         keywords="legal information, legal documents, compliance, Ondosoft legal, business legal"
-        canonicalUrl="https://ondosoft.com/legal"
+        canonicalUrl={getCanonicalUrl('/legal')}
       />
       
       <div>

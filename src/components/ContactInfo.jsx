@@ -64,14 +64,6 @@ const ContactInfo = ({
                 {companyInfo.phoneDisplay}
               </a>
             </p>
-            {companyInfo.urgentPhoneE164 && (
-              <p>
-                <strong>Urgent Line:</strong>{' '}
-                <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-500 hover:underline">
-                  {companyInfo.urgentPhoneDisplay}
-                </a>
-              </p>
-            )}
             <p>
               <strong>Address:</strong> {addressString}
             </p>

@@ -1,6 +1,8 @@
 // Comprehensive FAQ data for Ondosoft website
 // Optimized for SEO and AI search with natural language questions and keyword-rich answers
 
+import { companyInfo } from './companyInfo';
+
 export const faqData = [
   // Freelancing Services
   {
@@ -47,7 +49,7 @@ export const faqData = [
   // Hiring Ondosoft
   {
     question: "How to hire Ondosoft for software development?",
-    answer: "Hiring Ondosoft is simple! Contact us through our website, call us directly at (555) 123-4567, or email contact@ondosoft.com. We offer flexible engagement options including project-based work, ongoing development partnerships, and dedicated team services. Our software development process includes discovery, planning, development, and ongoing support."
+    answer: `Hiring Ondosoft is simple! Contact us through our website, call us directly at ${companyInfo.phoneDisplay}, or email ${companyInfo.email}. We offer flexible engagement options including project-based work, ongoing development partnerships, and dedicated team services. Our software development process includes discovery, planning, development, and ongoing support.`
   },
   {
     question: "What makes Ondosoft different from other software development companies?",

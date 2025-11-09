@@ -13,7 +13,9 @@ import {
   ArrowUp,
   ArrowRight,
   Calendar,
-  Activity
+  Activity,
+  MessageSquare,
+  Phone
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
@@ -60,7 +62,7 @@ const AdminDashboard = () => {
     );
   }
 
-  const { stats, recentUsers, recentCampaigns, recentSubscriptions, userGrowth } = dashboardData;
+  const { stats, recentUsers, recentCampaigns, recentSubscriptions, recentConsultationLeads, userGrowth } = dashboardData;
 
   // Calculate growth percentage
   const userGrowthPercentage = stats.totalUsers > 0 
@@ -132,7 +134,7 @@ const AdminDashboard = () => {
             <h3 className="text-3xl font-bold text-white mb-1">
               {stats.totalUsers}
             </h3>
-            <p className="text-sm text-gray-400">Total Users</p>
+            <p className="text-sm text-gray-400">Existing Clients</p>
             <p className="text-xs text-gray-500 mt-2">{stats.newUsersLast7Days} new this week</p>
           </div>
 
@@ -176,7 +178,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Secondary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
             <div className="flex items-center gap-3 mb-2">
               <FolderOpen className="w-6 h-6 text-green-500" />
@@ -199,6 +201,21 @@ const AdminDashboard = () => {
               <span className="text-sm text-gray-400">Active Campaigns</span>
             </div>
             <h3 className="text-2xl font-bold text-white">{stats.activeCampaigns}</h3>
+          </div>
+
+          <div className="bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/30">
+            <div className="flex items-center justify-between mb-4">
+              <MessageSquare className="w-8 h-8 text-cyan-400" />
+              <div className="flex items-center gap-1 text-green-400 text-sm">
+                <ArrowUp className="w-4 h-4" />
+                <span>{stats.newConsultationLeadsLast7Days || 0}</span>
+              </div>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-1">
+              {stats.totalConsultationLeads || 0}
+            </h3>
+            <p className="text-sm text-gray-400">Prospective Leads</p>
+            <p className="text-xs text-gray-500 mt-2">{stats.newConsultationLeadsLast7Days || 0} new this week</p>
           </div>
         </div>
 
@@ -255,7 +272,7 @@ const AdminDashboard = () => {
                 <div className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg">
                   <Users className="w-5 h-5 text-blue-500" />
                   <div className="flex-1">
-                    <p className="text-sm text-white">New user registered</p>
+                    <p className="text-sm text-white">New client registered</p>
                     <p className="text-xs text-gray-400">{recentUsers[0].name}</p>
                   </div>
                   <span className="text-xs text-gray-500">
@@ -263,22 +280,114 @@ const AdminDashboard = () => {
                   </span>
                 </div>
               )}
+              {recentConsultationLeads && recentConsultationLeads.length > 0 && (
+                <div className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg">
+                  <MessageSquare className="w-5 h-5 text-cyan-500" />
+                  <div className="flex-1">
+                    <p className="text-sm text-white">New prospective lead</p>
+                    <p className="text-xs text-gray-400">{recentConsultationLeads[0].name}</p>
+                    {recentConsultationLeads[0].selected_plan && (
+                      <p className="text-xs text-cyan-400 mt-1">
+                        Plan: {recentConsultationLeads[0].selected_plan}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {new Date(recentConsultationLeads[0].created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Recent Users */}
+        {/* Recent Consultation Leads - Prospective Customers */}
+        {recentConsultationLeads && recentConsultationLeads.length > 0 && (
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-cyan-500" />
+                  Recent Consultation Leads
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">Prospective customers who submitted consultation requests</p>
+              </div>
+              <Link
+                to="/admin/consultation-leads"
+                className="text-orange-500 hover:text-orange-400 flex items-center gap-2 text-sm"
+              >
+                View All Leads
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="space-y-4">
+              {recentConsultationLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-white font-bold">
+                      {lead.name?.charAt(0).toUpperCase() || '?'}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-white font-medium">{lead.name}</h3>
+                      <p className="text-sm text-gray-400">{lead.email}</p>
+                      <div className="flex items-center gap-4 mt-1">
+                        {lead.phone && (
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <Phone className="w-3 h-3" />
+                            {lead.phone}
+                          </p>
+                        )}
+                        {lead.company && (
+                          <p className="text-xs text-gray-500">{lead.company}</p>
+                        )}
+                        {lead.selected_plan && (
+                          <p className="text-xs text-cyan-400">Plan: {lead.selected_plan}</p>
+                        )}
+                      </div>
+                      {lead.budget && (
+                        <p className="text-xs text-orange-400 mt-1">Budget: {lead.budget}</p>
+                      )}
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(lead.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      lead.status === 'new'
+                        ? 'bg-cyan-500/20 text-cyan-400'
+                        : lead.status === 'contacted'
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-gray-500/20 text-gray-400'
+                    }`}
+                  >
+                    {lead.status || 'new'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent Users - Existing Clients */}
         <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Users className="w-5 h-5 text-blue-500" />
-              Recent Users
-            </h2>
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-500" />
+                Recent Clients
+              </h2>
+              <p className="text-sm text-gray-400 mt-1">Existing customers who have signed up and are using the service</p>
+            </div>
             <Link
               to="/admin/clients"
               className="text-orange-500 hover:text-orange-400 flex items-center gap-2 text-sm"
             >
-              View All
+              View All Clients
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

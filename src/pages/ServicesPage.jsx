@@ -3,6 +3,7 @@ import SEOHead from "../components/SEOHead";
 import ServiceSchema from "../components/ServiceSchema";
 import HeroCTA from "../components/HeroCTA";
 import ConsultationWidget from "../components/ConsultationWidget";
+import { companyInfo } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const Services = lazy(() => import("../components/Services"));
@@ -17,11 +18,11 @@ const ServicesPage = () => {
     "@graph": [
       {
         "@type": "Service",
-        "@id": "https://ondosoft.com/services#services",
+        "@id": `${companyInfo.urls.website}/services#services`,
         "name": "Software Development Services",
         "description": "Full stack software development, web applications, mobile apps, and SaaS platform development",
         "provider": {
-          "@id": "https://ondosoft.com/#organization"
+          "@id": `${companyInfo.urls.website}/#organization`
         },
         "serviceType": "Software Development",
         "areaServed": {
@@ -76,14 +77,14 @@ const ServicesPage = () => {
         title="Software Development Services | Full Stack, SaaS & Freelancing | Ondosoft"
         description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies. Start your free consultation today!"
         keywords="software development services, full stack development, SaaS development, freelancing services, web app development, mobile app development, React, Node.js, Python, Java, cloud deployment, hire developers"
-        canonicalUrl="https://ondosoft.com/services"
+        canonicalUrl={`${companyInfo.urls.website}/services`}
         structuredData={servicesStructuredData}
       />
       <ServiceSchema
         serviceName="Software Development Services"
         serviceDescription="Comprehensive software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions across the United States."
         serviceType="Software Development"
-        pageUrl="https://ondosoft.com/services"
+        pageUrl={`${companyInfo.urls.website}/services`}
       />
       <div>
         <div className="mx-auto pt-20">

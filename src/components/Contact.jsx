@@ -210,7 +210,6 @@ const Contact = ({ onOpenConsultation }) => {
           >
             <Send className="mr-2 h-5 w-5" /> Start Free Consultation
           </button>
-          <p className="text-xs text-neutral-500 text-center">Prefer email? Reach us at <a className="text-orange-400" href={`mailto:${companyInfo.email}`}>{companyInfo.email}</a></p>
         </div>
       </div>
       <style>{`

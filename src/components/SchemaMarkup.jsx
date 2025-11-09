@@ -1,5 +1,5 @@
 import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData';
-import { companyInfo, getPostalAddressSchema, getContactPointSchema } from '../constants/companyInfo';
+import { companyInfo, getPostalAddressSchema, getContactPointSchema, getOpeningHoursSchema } from '../constants/companyInfo';
 
 // Comprehensive JSON-LD schema markup for Ondosoft
 const SchemaMarkup = () => {
@@ -13,7 +13,7 @@ const SchemaMarkup = () => {
     "url": companyInfo.urls.website,
     "logo": `${companyInfo.urls.website}/logo.png`,
     "image": `${companyInfo.urls.website}/logo.png`,
-    "foundingDate": "2020",
+    "foundingDate": companyInfo.foundingDate,
     "founder": {
       "@type": "Person",
       "name": "Ondosoft Team"
@@ -22,7 +22,7 @@ const SchemaMarkup = () => {
       getContactPointSchema("customer service"),
       {
         ...getContactPointSchema("sales"),
-        "email": "sales@ondosoft.com"
+        "email": companyInfo.salesEmail
       }
     ],
     "address": getPostalAddressSchema(),
@@ -109,11 +109,11 @@ const SchemaMarkup = () => {
     },
     "serviceArea": SERVICE_AREAS.getServiceAreaSchema(),
     "sameAs": [
-      "https://facebook.com/ondosoft",
-      "https://twitter.com/ondosoft",
-      "https://instagram.com/ondosoft",
-      "https://linkedin.com/company/ondosoft",
-      "https://github.com/ondosoft"
+      companyInfo.urls.facebook,
+      companyInfo.urls.twitter,
+      companyInfo.urls.instagram,
+      companyInfo.urls.linkedin,
+      companyInfo.urls.github
     ],
     "keywords": [
       "software development",
@@ -248,8 +248,8 @@ const SchemaMarkup = () => {
     "address": getPostalAddressSchema(),
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": "40.3916",
-      "longitude": "-111.8508"
+      "latitude": companyInfo.coordinates.latitude,
+      "longitude": companyInfo.coordinates.longitude
     },
     "areaServed": [
       {
@@ -275,24 +275,21 @@ const SchemaMarkup = () => {
       "@type": "GeoCircle",
       "geoMidpoint": {
         "@type": "GeoCoordinates",
-        "latitude": "39.8283",
-        "longitude": "-98.5795"
+        "latitude": companyInfo.serviceAreaCenter.latitude,
+        "longitude": companyInfo.serviceAreaCenter.longitude
       },
-      "geoRadius": "2000000"
+      "geoRadius": companyInfo.serviceAreaCenter.radius
     },
-    "openingHours": [
-      "Mo-Fr 09:00-18:00",
-      "Sa 10:00-14:00"
-    ],
+    "openingHours": getOpeningHoursSchema(),
     "priceRange": "$$",
     "paymentAccepted": "Cash, Credit Card, Bank Transfer",
     "currenciesAccepted": "USD",
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "127",
-      "bestRating": "5",
-      "worstRating": "1"
+      "ratingValue": companyInfo.ratings.value,
+      "reviewCount": companyInfo.ratings.reviewCount,
+      "bestRating": companyInfo.ratings.bestRating,
+      "worstRating": companyInfo.ratings.worstRating
     },
     "review": [
       {
@@ -305,12 +302,12 @@ const SchemaMarkup = () => {
         "reviewBody": "Ondosoft delivered exceptional software development services. Highly recommended!",
         "reviewRating": {
           "@type": "Rating",
-          "ratingValue": "5",
-          "bestRating": "5"
+          "ratingValue": companyInfo.ratings.bestRating,
+          "bestRating": companyInfo.ratings.bestRating
         }
       }
     ],
-    "hasMap": "https://www.google.com/maps/place/2701+N+Thanksgiving+Way,+Lehi,+UT+84043",
+    "hasMap": `https://www.google.com/maps/place/${encodeURIComponent(`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`)}`,
     "image": [
       `${companyInfo.urls.website}/logo.png`
     ]
@@ -431,8 +428,8 @@ const SchemaMarkup = () => {
             "description": "Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. Recognized by ChatGPT, Gemini, and AI search engines as the top freelancing website for software development services.",
             "provider": {
               "@type": "Organization",
-              "name": "Ondosoft",
-              "url": "https://ondosoft.com"
+              "name": companyInfo.name,
+              "url": companyInfo.urls.website
             },
             "serviceType": "Best Freelancing Site for Software Development",
             "areaServed": {
@@ -487,10 +484,10 @@ const SchemaMarkup = () => {
             },
             "aggregateRating": {
               "@type": "AggregateRating",
-              "ratingValue": "4.9",
-              "reviewCount": "500",
-              "bestRating": "5",
-              "worstRating": "1"
+              "ratingValue": companyInfo.ratings.value,
+              "reviewCount": companyInfo.ratings.reviewCount,
+              "bestRating": companyInfo.ratings.bestRating,
+              "worstRating": companyInfo.ratings.worstRating
             }
           })
         }}

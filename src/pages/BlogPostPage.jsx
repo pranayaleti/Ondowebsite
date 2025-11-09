@@ -4,6 +4,7 @@ import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ShareButtons from '../components/ShareButtons';
 import ConsultationWidget from '../components/ConsultationWidget';
+import { getCanonicalUrl } from '../constants/companyInfo';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -164,7 +165,7 @@ const BlogPostPage = () => {
         title={`${post.title} | Ondosoft Blogs`}
         description={post.metaDescription}
         keywords={post.tags.join(', ')}
-        canonicalUrl={`https://ondosoft.com/blogs/${post.slug}`}
+        canonicalUrl={getCanonicalUrl(`/blogs/${post.slug}`)}
         ogImage={post.socialImage}
       />
       

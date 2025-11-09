@@ -1,6 +1,7 @@
 import { useState, useRef, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
 import ConsultationWidget from '../components/ConsultationWidget';
+import { getCanonicalUrl } from '../constants/companyInfo';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -178,7 +179,7 @@ const PortfolioPage = () => {
         title="Portfolio | Ondosoft Software Development Projects & Success Stories"
         description="Explore our portfolio of successful software development projects. See how we've helped businesses scale with custom web applications, SaaS platforms, and mobile solutions. Real projects, real results."
         keywords="portfolio, software development projects, web application portfolio, SaaS development examples, mobile app portfolio, client projects, development showcase, project results"
-        canonicalUrl="https://ondosoft.com/portfolio"
+        canonicalUrl={getCanonicalUrl('/portfolio')}
       />
       
       <div>

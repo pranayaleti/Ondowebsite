@@ -7,6 +7,7 @@ const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { Link } from 'react-router-dom';
 import { SERVICE_AREAS } from '../utils/unifiedData';
+import { getCanonicalUrl } from '../constants/companyInfo';
 
 const SitemapPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +18,7 @@ const SitemapPage = () => {
         title="Site Map | Ondosoft Software Development"
         description="Complete site map of Ondosoft website. Find all pages, services, and resources in one place. Navigate our website easily with our comprehensive site map."
         keywords="sitemap, site map, navigation, website structure, Ondosoft pages, all pages"
-        canonicalUrl="https://ondosoft.com/sitemap"
+        canonicalUrl={getCanonicalUrl('/sitemap')}
       />
       
       <div>
@@ -55,10 +56,6 @@ const SitemapPage = () => {
                     <Link to="/services" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
                       <h3 className="text-lg font-semibold text-white mb-1">Services</h3>
                       <p className="text-sm text-gray-400">Our service offerings</p>
-                    </Link>
-                    <Link to="/products" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                      <h3 className="text-lg font-semibold text-white mb-1">Products</h3>
-                      <p className="text-sm text-gray-400">Our products and solutions</p>
                     </Link>
                     <Link to="/portfolio" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
                       <h3 className="text-lg font-semibold text-white mb-1">Portfolio</h3>

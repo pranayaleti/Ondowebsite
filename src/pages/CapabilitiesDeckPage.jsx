@@ -5,7 +5,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 // Lazy load heavy components
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
-import { companyInfo } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import ContactInfo from '../components/ContactInfo';
 import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award, Clock, Target, TrendingUp } from 'lucide-react';
 
@@ -22,7 +22,7 @@ const CapabilitiesDeckPage = () => {
         title="Capabilities Deck | Ondosoft Software Development"
         description="Download Ondosoft's comprehensive capabilities deck. Learn about our software development services, technology expertise, team capabilities, and how we can help transform your business."
         keywords="capabilities deck, company capabilities, software development services, technology expertise, Ondosoft capabilities"
-        canonicalUrl="https://ondosoft.com/capabilities-deck"
+        canonicalUrl={getCanonicalUrl('/capabilities-deck')}
       />
       
       <div className="print:bg-white">

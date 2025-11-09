@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ConsultationWidget from '../components/ConsultationWidget';
+import { getCanonicalUrl } from '../constants/companyInfo';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -69,7 +70,7 @@ const BlogPage = () => {
           title="Business Technology Blogs | Ondosoft"
           description="Get expert insights on small business technology, automation, SaaS solutions, and web development. Learn how to grow your business with smart software."
           keywords="small business technology, business automation, SaaS solutions, web development, business software, technology tips"
-          canonicalUrl="https://ondosoft.com/blogs"
+          canonicalUrl={getCanonicalUrl('/blogs')}
         />
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
@@ -84,7 +85,7 @@ const BlogPage = () => {
         title="Business Technology Blogs | Ondosoft"
         description="Get expert insights on small business technology, automation, SaaS solutions, and web development. Learn how to grow your business with smart software."
         keywords="small business technology, business automation, SaaS solutions, web development, business software, technology tips"
-        canonicalUrl="https://ondosoft.com/blogs"
+        canonicalUrl={getCanonicalUrl('/blogs')}
       />
       
       <div>

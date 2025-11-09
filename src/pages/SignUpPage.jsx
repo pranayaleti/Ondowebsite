@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import SEOHead from '../components/SEOHead';
 import { Mail, Lock, User, ArrowRight, Loader, ChevronDown, ChevronUp, Building2, Phone, Globe, MapPin } from 'lucide-react';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
+import { isValidEmail, formatPhoneNumber } from '../utils/security';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -32,23 +34,24 @@ const SignUpPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // Phone number: only allow numbers
+    // Phone number: format as (XXX) XXX-XXXX
     if (name === 'phone') {
-      const numericValue = value.replace(/\D/g, '');
+      const digitsOnly = value.replace(/\D/g, '');
+      const limitedDigits = digitsOnly.slice(0, 10);
+      const formatted = formatPhoneNumber(limitedDigits);
       setFormData({
         ...formData,
-        [name]: numericValue,
+        [name]: formatted,
       });
     } 
-    // Email: validate with regex
+    // Email: validate using centralized function
     else if (name === 'email') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       setFormData({
         ...formData,
         [name]: value,
       });
       // Show error if email is invalid and not empty
-      if (value && !emailRegex.test(value)) {
+      if (value && !isValidEmail(value)) {
         setError('Please enter a valid email address');
       } else {
         setError('');
@@ -169,7 +172,7 @@ const SignUpPage = () => {
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="john@example.com"
+                    placeholder={companyInfo.placeholders.email}
                     required
                   />
                 </div>
@@ -243,8 +246,10 @@ const SignUpPage = () => {
                             name="phone"
                             value={formData.phone}
                             onChange={handleChange}
+                            inputMode="tel"
+                            pattern="^\(\d{3}\) \d{3}-\d{4}$"
                             className="w-full pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
-                            placeholder="+1 (555) 123-4567"
+                            placeholder="(123) 456-7890"
                           />
                         </div>
                       </div>
@@ -279,9 +284,9 @@ const SignUpPage = () => {
                           className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                         >
                           <option value="">Select size</option>
-                          <option value="1">1 employee</option>
-                          <option value="11-50">11-50 employees</option>
-                          <option value="51-200">51-200 employees</option>
+                          {companyInfo.companySizes.map(size => (
+                            <option key={size.value} value={size.value}>{size.label}</option>
+                          ))}
                         </select>
                       </div>
 
@@ -314,7 +319,7 @@ const SignUpPage = () => {
                           value={formData.website}
                           onChange={handleChange}
                           className="w-full pl-11 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm transition-all"
-                          placeholder="https://example.com"
+                          placeholder={companyInfo.placeholders.url}
                         />
                       </div>
                     </div>

@@ -4,6 +4,7 @@ import { Fingerprint } from "lucide-react";
 import { ShieldHalf } from "lucide-react";
 import { PlugZap } from "lucide-react";
 import { GlobeLock } from "lucide-react";
+import { pricingOptions } from './pricing';
 
 import user1 from "../assets/profile-pictures/user1.jpg";
 import user2 from "../assets/profile-pictures/user2.jpg";
@@ -152,93 +153,9 @@ export const workflowItems = [
   },
 ];
 
-
-
-
-// export const checklistItems = [
-//   {
-//     title: "Property Manager",
-//     description:
-//       "Oversees all properties, owners, and tenants. Can manage tenant applications, lease agreements, maintenance requests, and payment records, with full access to platform analytics and reports.",
-//   },
-//   {
-//     title: "Property Owner",
-//     description:
-//       "Lists and monitors their properties on the platform. Delegates management tasks to the property manager, tracks verified tenants, and views detailed earnings reports and property performance.",
-//   },
-//   {
-//     title: "Tenant",
-//     description:
-//       "Easily searches and applies for properties. Submits maintenance requests, communicates with the property manager, and accesses lease details and payment history with responsive support.",
-//   },
-// ];
-
-export const pricingOptions = [
-  {
-    title: "UI/UX Master Suite",
-    price: "$1,200",
-    features: [
-      "Professional Website Design (5-8 Pages)",
-      "Mobile-First Responsive Design",
-      "Advanced UI/UX Design System",
-      "Custom Brand Identity Integration",
-      "SEO-Optimized Content Structure",
-      "Interactive Contact Forms",
-      "Social Media Integration",
-      "Google Analytics & Search Console Setup",
-      "Basic Security Implementation",
-      "1 Month Post-Launch Support"
-    ],
-  },
-  {
-    title: "Full Stack Development",
-    price: "$3,000",
-    features: [
-      "Comprehensive Website (12-20 Pages)",
-      "Custom Web Application Development",
-      "User Authentication & Authorization",
-      "Advanced SEO & Performance Optimization",
-      "Admin Dashboard & Management Panel",
-      "Database Design & Integration",
-      "Content Management System (CMS)",
-      "API Development & Integration",
-      "Security & Data Protection",
-      "3 Months Technical Support"
-    ],
-  },
-  {
-    title: "Complete SaaS Ecosystem",
-    price: "$8,500",
-    features: [
-      "Enterprise-Grade SaaS Platform",
-      "Multi-Tenant Architecture",
-      "Payment Processing & Billing System",
-      "User Management & Role-Based Access",
-      "Cloud Infrastructure & Scalability",
-      "RESTful API Development",
-      "Advanced Security & Compliance",
-      "Analytics & Business Intelligence",
-      "Third-Party Integrations",
-      "6 Months Comprehensive Support"
-    ],
-  },
-  {
-    title: "Upfront & Subscription",
-    price: "Custom",
-    features: [
-      "Constant Contact Updates & Upgrades",
-      "Subscription Model Implementation",
-      "Continuous Maintenance & Support",
-      "Regular Feature Enhancements & Upgrades",
-      "Constant Security Updates & Patches",
-      "Ongoing Performance Optimization",
-      "Regular Content Updates & Upgrades",
-      "Frequent Technical Support",
-      "Flexible Pricing Plans",
-      "Scalable Subscription Tiers"
-    ],
-  },
-];
+// Re-export pricing for backward compatibility
+// In new code, import directly from './pricing'
+export { pricingOptions };
 
 export const resourcesLinks = [
   { href: "#", text: "Getting Started" },

@@ -5,7 +5,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 // Lazy load heavy components
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
-import { companyInfo } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const NDAPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const NDAPage = () => {
         title="NDA & Confidentiality | Ondosoft Software Development"
         description="Ondosoft's Non-Disclosure Agreement and confidentiality practices. Learn how we protect your sensitive information and maintain trust with our clients."
         keywords="NDA, non-disclosure agreement, confidentiality, data protection, trust, secure development, Ondosoft NDA"
-        canonicalUrl="https://ondosoft.com/nda"
+        canonicalUrl={getCanonicalUrl('/nda')}
       />
       
       <div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ticketAPI } from '../../utils/auth';
+import { companyInfo } from '../../constants/companyInfo';
 import { 
   MessageSquare, 
   Plus, 
@@ -509,7 +510,7 @@ const TicketsPage = () => {
                       value={formData.email_request}
                       onChange={(e) => setFormData({ ...formData, email_request: e.target.value })}
                       className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      placeholder="email@example.com"
+                      placeholder={companyInfo.placeholders.email}
                     />
                   </div>
 

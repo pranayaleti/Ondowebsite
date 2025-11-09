@@ -5,7 +5,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 // Lazy load heavy components
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
-import { companyInfo } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const LicensingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +16,7 @@ const LicensingPage = () => {
         title="Licensing & Intellectual Property | Ondosoft Software Development"
         description="Ondosoft's Licensing Information - Learn about software licensing, intellectual property rights, open source usage, and licensing terms for our services and deliverables."
         keywords="licensing, intellectual property, software license, IP rights, open source, proprietary software, Ondosoft licensing"
-        canonicalUrl="https://ondosoft.com/licensing"
+        canonicalUrl={getCanonicalUrl('/licensing')}
       />
       
       <div>

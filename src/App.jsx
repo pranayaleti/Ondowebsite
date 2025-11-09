@@ -31,6 +31,7 @@ const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const SitemapPage = lazy(() => import("./pages/SitemapPage"));
+const SitemapXMLPage = lazy(() => import("./pages/SitemapXMLPage"));
 const RobotsPage = lazy(() => import("./pages/RobotsPage"));
 const FAQPage = lazy(() => import("./pages/FAQPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
@@ -59,6 +60,7 @@ const AdminAssetsPage = lazy(() => import("./pages/admin/AssetsPage"));
 const AdminTicketsPage = lazy(() => import("./pages/admin/TicketsPage"));
 const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
 const AdminNotificationsPage = lazy(() => import("./pages/admin/NotificationsPage"));
+const ConsultationLeadsPage = lazy(() => import("./pages/admin/ConsultationLeadsPage"));
 
 // Scroll to top component for route changes
 const ScrollToTop = () => {
@@ -127,7 +129,6 @@ const AppRoutes = () => {
           <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/products" element={<PortfolioPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
@@ -145,7 +146,7 @@ const AppRoutes = () => {
           <Route path="/accessibility" element={<AccessibilityPage />} />
           <Route path="/capabilities-deck" element={<CapabilitiesDeckPage />} />
           <Route path="/sitemap" element={<SitemapPage />} />
-          <Route path="/sitemap.xml" element={<SitemapPage />} />
+          <Route path="/sitemap.xml" element={<SitemapXMLPage />} />
           <Route path="/robots.txt" element={<RobotsPage />} />
           
           {/* Auth Routes */}
@@ -187,6 +188,7 @@ const AppRoutes = () => {
             <Route path="tickets" element={<AdminTicketsPage />} />
             <Route path="invoices" element={<AdminInvoicesPage />} />
             <Route path="notifications" element={<AdminNotificationsPage />} />
+            <Route path="consultation-leads" element={<ConsultationLeadsPage />} />
           </Route>
           
           <Route path="*" element={<NotFoundPage />} />

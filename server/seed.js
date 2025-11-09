@@ -3,22 +3,30 @@ import bcrypt from 'bcryptjs';
 
 const { Pool } = pkg;
 
+const getDatabaseUrl = () => {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  console.warn('⚠️  WARNING: Using default database connection. Set DATABASE_URL environment variable!');
+  return 'postgresql://neondb_owner:npg_o0t1YrGAJByC@ep-restless-frost-adafv6il-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+};
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_o0t1YrGAJByC@ep-restless-frost-adafv6il-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
+  connectionString: getDatabaseUrl(),
   ssl: {
     rejectUnauthorized: false
   }
 });
 
-// Default admin credentials
-const adminEmail = 'admin@ondosoft.com';
-const adminPassword = 'admin123';
-const adminName = 'Admin User';
+// Default admin credentials - use environment variables in production
+const adminEmail = process.env.ADMIN_EMAIL || 'admin@ondosoft.com';
+const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+const adminName = process.env.ADMIN_NAME || 'Admin User';
 
-// Default client credentials
-const clientEmail = 'client@ondosoft.com';
-const clientPassword = 'client123';
-const clientName = 'Test Client';
+// Default client credentials - use environment variables in production
+const clientEmail = process.env.CLIENT_EMAIL || 'client@ondosoft.com';
+const clientPassword = process.env.CLIENT_PASSWORD || 'client123';
+const clientName = process.env.CLIENT_NAME || 'Test Client';
 
 async function seedUsers() {
   try {

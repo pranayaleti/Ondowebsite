@@ -1,6 +1,7 @@
 import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import ConsultationWidget from "../components/ConsultationWidget";
+import { companyInfo, getCanonicalUrl } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const About = lazy(() => import("../components/About"));
@@ -18,7 +19,7 @@ const AboutPage = () => {
       "@type": "Organization",
       "name": "Ondosoft",
       "description": "Full stack software development, freelancing, and SaaS solutions company",
-      "foundingDate": "2024",
+      "foundingDate": companyInfo.foundingDate,
       "numberOfEmployees": "10-50",
       "industry": "Software Development",
       "knowsAbout": [
@@ -39,7 +40,7 @@ const AboutPage = () => {
         title="About Ondosoft | Full Stack Software Development Team & Company"
         description="Learn about Ondosoft's mission to deliver exceptional software development, SaaS solutions, and freelancing services. Our team of React, Node.js, and Python developers serves businesses across the USA. Founded by Pranay Reddy Aleti, MS Computer Science."
         keywords="about ondosoft, software development company, full stack developers, SaaS development team, freelancing company, React developers, Node.js team, Python developers"
-        canonicalUrl="https://ondosoft.com/about"
+        canonicalUrl={getCanonicalUrl('/about')}
         structuredData={aboutStructuredData}
       />
       <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>}>
