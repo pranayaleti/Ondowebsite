@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
-import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
-import ConsultationModal from '../components/ConsultationModal';
-import { companyInfo } from '../constants/companyInfo';
+
+// Lazy load heavy components
+const Footer = lazy(() => import('../components/Footer'));
+const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+import ContactInfo from '../components/ContactInfo';
 
 const PrivacyPolicyPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -175,10 +177,8 @@ const PrivacyPolicyPage = () => {
                   <p className="leading-relaxed">
                     If you have any questions about this Privacy Policy, please contact us:
                   </p>
-                  <div className="mt-4 space-y-2">
-                    <p><strong>Email:</strong> <a href={`mailto:${companyInfo.email}`} className="text-orange-500 hover:underline">{companyInfo.email}</a></p>
-                    <p><strong>Phone:</strong> <a href={`tel:${companyInfo.phoneE164}`} className="text-orange-500 hover:underline">{companyInfo.phoneDisplay}</a></p>
-                    <p><strong>Address:</strong> {companyInfo.address.streetAddress}, {companyInfo.address.addressLocality}, {companyInfo.address.addressRegion} {companyInfo.address.postalCode}</p>
+                  <div className="mt-4">
+                    <ContactInfo variant="detailed" />
                   </div>
                 </div>
               </div>
@@ -187,9 +187,15 @@ const PrivacyPolicyPage = () => {
         </section>
       </div>
       
-      <Footer />
+      <Suspense fallback={<div className="h-32" />}>
+        <Footer />
+      </Suspense>
       <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };

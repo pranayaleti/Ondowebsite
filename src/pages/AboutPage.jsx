@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
-import About from "../components/About";
 import ConsultationWidget from "../components/ConsultationWidget";
-import ConsultationModal from "../components/ConsultationModal";
+
+// Lazy load heavy components
+const About = lazy(() => import("../components/About"));
+const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
 
 const AboutPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,9 +42,15 @@ const AboutPage = () => {
         canonicalUrl="https://ondosoft.com/about"
         structuredData={aboutStructuredData}
       />
-      <About />
+      <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>}>
+        <About />
+      </Suspense>
       <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };

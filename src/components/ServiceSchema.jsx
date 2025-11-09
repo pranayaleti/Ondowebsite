@@ -1,3 +1,4 @@
+import { companyInfo, getPostalAddressSchema, getContactPointSchema } from '../constants/companyInfo';
 
 // Service-specific schema markup for individual service pages
 const ServiceSchema = ({ serviceName, serviceDescription, serviceType, pageUrl }) => {
@@ -8,15 +9,10 @@ const ServiceSchema = ({ serviceName, serviceDescription, serviceType, pageUrl }
     "description": serviceDescription,
     "provider": {
       "@type": "Organization",
-      "name": "Ondosoft",
-      "url": "https://ondosoft.com",
-      "logo": "https://ondosoft.com/logo.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+1-555-123-4567",
-        "contactType": "customer service",
-        "email": "contact@ondosoft.com"
-      }
+      "name": companyInfo.name,
+      "url": companyInfo.urls.website,
+      "logo": `${companyInfo.urls.website}/logo.png`,
+      "contactPoint": getContactPointSchema("customer service")
     },
     "areaServed": {
       "@type": "Country",
@@ -63,11 +59,11 @@ const CityServiceSchema = ({ city, state, serviceName, serviceDescription }) => 
   const cityServiceSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": `Ondosoft - ${serviceName} in ${city}, ${state}`,
+    "name": `${companyInfo.name} - ${serviceName} in ${city}, ${state}`,
     "description": `${serviceDescription} services in ${city}, ${state}. Professional software development, freelancing, and SaaS solutions.`,
-    "url": `https://ondosoft.com/services/${serviceName.toLowerCase().replace(/\s+/g, '-')}/${city.toLowerCase().replace(/\s+/g, '-')}-${state.toLowerCase()}`,
-    "telephone": "+1-555-123-4567",
-    "email": "contact@ondosoft.com",
+    "url": `${companyInfo.urls.website}/services/${serviceName.toLowerCase().replace(/\s+/g, '-')}/${city.toLowerCase().replace(/\s+/g, '-')}-${state.toLowerCase()}`,
+    "telephone": companyInfo.phoneE164,
+    "email": companyInfo.email,
     "address": {
       "@type": "PostalAddress",
       "addressLocality": city,
@@ -106,8 +102,8 @@ const CityServiceSchema = ({ city, state, serviceName, serviceDescription }) => 
     },
     "parentOrganization": {
       "@type": "Organization",
-      "name": "Ondosoft",
-      "url": "https://ondosoft.com"
+      "name": companyInfo.name,
+      "url": companyInfo.urls.website
     }
   };
 
@@ -138,13 +134,13 @@ const SoftwareApplicationSchema = ({ appName, appDescription, category }) => {
     },
     "creator": {
       "@type": "Organization",
-      "name": "Ondosoft",
-      "url": "https://ondosoft.com"
+      "name": companyInfo.name,
+      "url": companyInfo.urls.website
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Ondosoft",
-      "url": "https://ondosoft.com"
+      "name": companyInfo.name,
+      "url": companyInfo.urls.website
     },
     "softwareVersion": "1.0",
     "datePublished": "2024-01-01",

@@ -595,6 +595,87 @@ export const generateAllCityServiceCombinations = () => {
   return combinations;
 };
 
+// Generate comprehensive areaServed schema format for structured data
+// Includes all states, all cities, and optionally all zip codes from unifiedData
+// Options:
+//   - includeAllStates: include all 50 US states (default: true)
+//   - includeAllCities: include all cities from US_CITIES (default: true)
+//   - includeZipCodes: include zip codes for each city (default: false, as it creates very large schemas)
+//   - cityNames: optional array of specific city names to include (if provided, only these cities are included)
+export const getAreaServedSchema = (options = {}) => {
+  const {
+    includeAllStates = true,
+    includeAllCities = true,
+    includeZipCodes = false,
+    cityNames = null
+  } = options;
+
+  const areaServed = [
+    {
+      "@type": "Country",
+      "name": "United States"
+    }
+  ];
+
+  // Add all 50 US States
+  if (includeAllStates) {
+    Object.entries(US_STATES).forEach(([code, state]) => {
+      areaServed.push({
+        "@type": "State",
+        "name": state.name,
+        "alternateName": code
+      });
+    });
+  }
+
+  // Determine which cities to include
+  let citiesToInclude = [];
+  if (cityNames && Array.isArray(cityNames) && cityNames.length > 0) {
+    // Use specific city names provided
+    citiesToInclude = cityNames.map(cityName => {
+      // Handle "New York" vs "New York City" variations
+      const normalizedName = cityName === "New York" ? "New York City" : cityName;
+      return US_CITIES.find(city => 
+        city.city === normalizedName || city.city === cityName
+      );
+    }).filter(Boolean);
+  } else if (includeAllCities) {
+    // Include ALL cities from US_CITIES
+    citiesToInclude = US_CITIES;
+  }
+
+  // Add city entries to areaServed
+  citiesToInclude.forEach(city => {
+    if (city) {
+      // Add city entry
+      areaServed.push({
+        "@type": "City",
+        "name": city.city === "New York City" ? "New York" : city.city,
+        "containedInPlace": {
+          "@type": "State",
+          "name": city.stateName
+        }
+      });
+
+      // Optionally add zip codes as separate PostalCode entries
+      if (includeZipCodes && city.zipCodes && city.zipCodes.length > 0) {
+        // Limit to first 10 zip codes per city to keep schema manageable
+        city.zipCodes.slice(0, 10).forEach(zipCode => {
+          areaServed.push({
+            "@type": "PostalCode",
+            "postalCode": zipCode,
+            "addressLocality": city.city === "New York City" ? "New York" : city.city,
+            "addressRegion": city.stateName,
+            "addressCountry": "US"
+          });
+        });
+      }
+    }
+  });
+
+  return areaServed;
+};
+
 // Individual exports are already defined above for backward compatibility
 
 export default SERVICE_AREAS;

@@ -1,10 +1,11 @@
 // Service Worker for Ondosoft.com - Enhanced Caching Strategy
-const CACHE_VERSION = 'v2.0.0';
+const CACHE_VERSION = 'v2.1.0';
 const CACHE_NAME = `ondosoft-${CACHE_VERSION}`;
 const STATIC_CACHE = `ondosoft-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `ondosoft-dynamic-${CACHE_VERSION}`;
 const IMAGE_CACHE = `ondosoft-images-${CACHE_VERSION}`;
 const API_CACHE = `ondosoft-api-${CACHE_VERSION}`;
+const FONT_CACHE = `ondosoft-fonts-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
 const STATIC_ASSETS = [
@@ -103,7 +104,10 @@ self.addEventListener('fetch', (event) => {
   if (url.pathname.match(/\.(jpg|jpeg|png|gif|ico|svg|webp)$/i)) {
     // Images: Cache First with Network Fallback
     event.respondWith(cacheFirst(request, IMAGE_CACHE));
-  } else if (url.pathname.match(/\.(css|js|woff|woff2|ttf|eot|otf)$/i)) {
+  } else if (url.pathname.match(/\.(woff|woff2|ttf|eot|otf)$/i)) {
+    // Fonts: Cache First with long cache
+    event.respondWith(cacheFirst(request, FONT_CACHE));
+  } else if (url.pathname.match(/\.(css|js)$/i)) {
     // Static assets: Cache First
     event.respondWith(cacheFirst(request, STATIC_CACHE));
   } else if (url.pathname.startsWith('/api/')) {

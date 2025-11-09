@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo, memo } from "react";
 import { Menu, X } from "lucide-react";
 import OptimizedImage from "./OptimizedImage";
 import { navItems } from "../constants/data";
@@ -13,27 +13,38 @@ const Navbar = () => {
   const { isAuthenticated, user, signout } = useAuth();
 
   // Hide navbar on auth pages, portal, and admin pages
-  const hideNavbar = location.pathname.startsWith('/auth') || 
-                     location.pathname.startsWith('/portal') || 
-                     location.pathname.startsWith('/admin');
+  const hideNavbar = useMemo(() => 
+    location.pathname.startsWith('/auth') || 
+    location.pathname.startsWith('/portal') || 
+    location.pathname.startsWith('/admin'),
+    [location.pathname]
+  );
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await signout();
     navigate('/');
     setMobileDrawerOpen(false);
-  };
+  }, [signout, navigate]);
 
+  // Throttled scroll handler for better performance
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 10);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleNavbar = () => {
-    setMobileDrawerOpen(!mobileDrawerOpen);
-  };
+  const toggleNavbar = useCallback(() => {
+    setMobileDrawerOpen(prev => !prev);
+  }, []);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -47,15 +58,15 @@ const Navbar = () => {
     };
   }, [mobileDrawerOpen]);
 
-  const handleLogoClick = (e) => {
+  const handleLogoClick = useCallback((e) => {
     e.preventDefault();
     navigate("/");
     window.scrollTo({ top: 0, behavior: "smooth" });
     setScrolled(false);
     setMobileDrawerOpen(false);
-  };
+  }, [navigate]);
 
-  const handleMobileNavClick = (e, item) => {
+  const handleMobileNavClick = useCallback((e, item) => {
     e.preventDefault();
     if (item.label === "Home") {
       handleLogoClick(e);
@@ -63,34 +74,34 @@ const Navbar = () => {
       navigate(item.href);
     }
     setMobileDrawerOpen(false);
-  };
+  }, [navigate, handleLogoClick]);
 
-  // Prefetch pages on hover for faster navigation
-  const handleNavHover = (href) => {
+  // Prefetch pages on hover for faster navigation - memoized
+  const handleNavHover = useCallback((href) => {
     // Prefetch the route component - using absolute paths from src/
-    if (href === '/') {
-      import('../pages/HomePage');
-    } else if (href === '/portfolio' || href === '/products') {
-      import('../pages/PortfolioPage');
-    } else if (href === '/services' || href === '/workflow') {
-      import('../pages/ServicesPage');
-    } else if (href === '/pricing') {
-      import('../pages/PricingPage');
-    } else if (href === '/about') {
-      import('../pages/AboutPage');
-    } else if (href === '/blogs') {
-      import('../pages/BlogPage');
-    } else if (href === '/contact') {
-      import('../pages/ContactPage');
+    const routeMap = {
+      '/': () => import('../pages/HomePage'),
+      '/portfolio': () => import('../pages/PortfolioPage'),
+      '/services': () => import('../pages/ServicesPage'),
+      '/pricing': () => import('../pages/PricingPage'),
+      '/about': () => import('../pages/AboutPage'),
+      '/blogs': () => import('../pages/BlogPage'),
+      '/contact': () => import('../pages/ContactPage'),
+    };
+    const prefetchFn = routeMap[href];
+    if (prefetchFn) {
+      prefetchFn();
     }
-  };
+  }, []);
 
-
-  // Helper to determine if nav item is active
-  const isActive = (href) => {
+  // Helper to determine if nav item is active - memoized
+  const isActive = useCallback((href) => {
     if (href === "/" && location.pathname === "/") return true;
     return location.pathname === href;
-  };
+  }, [location.pathname]);
+
+  // Memoize nav items to prevent unnecessary re-renders
+  const navItemsList = useMemo(() => navItems, []);
 
   if (hideNavbar) {
     return null;
@@ -132,8 +143,8 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
             <ul className="flex items-center space-x-6">
-              {navItems.map((item, index) => (
-                <li key={index}>
+              {navItemsList.map((item, index) => (
+                <li key={item.href || index}>
                   <Link
                     to={item.href}
                     onClick={item.label === "Home" ? handleLogoClick : undefined}
@@ -222,8 +233,8 @@ const Navbar = () => {
                 </div>
                 
                 <ul className="space-y-2">
-                  {navItems.map((item, index) => (
-                    <li key={index}>
+                  {navItemsList.map((item, index) => (
+                    <li key={item.href || index}>
                       <Link
                         to={item.href}
                         onClick={e => handleMobileNavClick(e, item)}
@@ -276,4 +287,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

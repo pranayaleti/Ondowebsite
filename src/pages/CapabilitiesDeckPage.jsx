@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
-import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
-import ConsultationModal from '../components/ConsultationModal';
+
+// Lazy load heavy components
+const Footer = lazy(() => import('../components/Footer'));
+const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { companyInfo } from '../constants/companyInfo';
+import ContactInfo from '../components/ContactInfo';
 import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award, Clock, Target, TrendingUp } from 'lucide-react';
 
 const CapabilitiesDeckPage = () => {
@@ -321,26 +324,7 @@ const CapabilitiesDeckPage = () => {
                   Ready to transform your business with custom software solutions? Contact us today.
                 </p>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-4 print:text-black">Contact Information</h3>
-                    <div className="space-y-3 text-gray-300 print:text-gray-700">
-                      <p><strong>Email:</strong> <a href={`mailto:${companyInfo.email}`} className="text-orange-500 hover:underline print:text-orange-600">{companyInfo.email}</a></p>
-                      <p><strong>Phone:</strong> <a href={`tel:${companyInfo.phoneE164}`} className="text-orange-500 hover:underline print:text-orange-600">{companyInfo.phoneDisplay}</a></p>
-                      <p><strong>Urgent Line:</strong> <a href={`tel:${companyInfo.urgentPhoneE164}`} className="text-orange-500 hover:underline print:text-orange-600">{companyInfo.urgentPhoneDisplay}</a></p>
-                      <p><strong>Address:</strong> {companyInfo.address.streetAddress}, {companyInfo.address.addressLocality}, {companyInfo.address.addressRegion} {companyInfo.address.postalCode}</p>
-                      <p><strong>Website:</strong> <a href={companyInfo.urls.website} className="text-orange-500 hover:underline print:text-orange-600">{companyInfo.urls.website}</a></p>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-4 print:text-black">Business Hours</h3>
-                    <div className="space-y-2 text-gray-300 print:text-gray-700">
-                      {companyInfo.hours.map((schedule, index) => (
-                        <p key={index}>
-                          {schedule.day}: {schedule.closed ? 'Closed' : `${schedule.opens} - ${schedule.closes} ${schedule.timeZone}`}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
+                  <ContactInfo variant="detailed" className="print:text-gray-700" />
                 </div>
                 <div className="mt-6 print:hidden">
                   <button
@@ -356,10 +340,16 @@ const CapabilitiesDeckPage = () => {
         </section>
       </div>
       
-      <Footer />
+      <Suspense fallback={<div className="h-32" />}>
+        <Footer />
+      </Suspense>
       <div className="print:hidden">
         <ConsultationWidget />
-        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        {isModalOpen && (
+          <Suspense fallback={null}>
+            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          </Suspense>
+        )}
       </div>
       
       <style>{`

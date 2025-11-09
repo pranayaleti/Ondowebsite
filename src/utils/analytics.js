@@ -1,24 +1,8 @@
 // Comprehensive Analytics Tracking Utility
 // Tracks clicks, navigation, user interactions, and other relevant metrics
 
-// Determine API URL based on environment
-const getAPIUrl = () => {
-  // If VITE_API_URL is explicitly set, use it
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-  
-  // In production, use the same origin (relative URL)
-  if (import.meta.env.PROD) {
-    return '/api';
-  }
-  
-  // In development, use relative URL so Vite proxy can handle it
-  // The proxy in vite.config.js will forward /api to http://localhost:5001
-  return '/api';
-};
-
-const API_URL = getAPIUrl();
+// Import centralized API configuration
+import { API_URL } from './apiConfig';
 
 class AnalyticsTracker {
   constructor() {

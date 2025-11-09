@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
-import Testimonials from "../components/Testimonials";
 import ConsultationWidget from "../components/ConsultationWidget";
-import ConsultationModal from "../components/ConsultationModal";
-import Footer from "../components/Footer";
+
+// Lazy load heavy components
+const Testimonials = lazy(() => import("../components/Testimonials"));
+const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const Footer = lazy(() => import("../components/Footer"));
 
 const TestimonialsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,12 +55,20 @@ const TestimonialsPage = () => {
       <div>
         <div className="mx-auto pt-20">
           <div id="testimonials" className="scroll-mt-20">
-            <Testimonials />
+            <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>}>
+              <Testimonials />
+            </Suspense>
           </div>
         </div>
-        <Footer />
+        <Suspense fallback={<div className="h-32" />}>
+          <Footer />
+        </Suspense>
         <ConsultationWidget />
-        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        {isModalOpen && (
+          <Suspense fallback={null}>
+            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          </Suspense>
+        )}
       </div>
     </>
   );

@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Calendar } from 'lucide-react';
-import ConsultationModal from './ConsultationModal';
+
+// Lazy load ConsultationModal - only load when opened
+const ConsultationModal = lazy(() => import('./ConsultationModal'));
 
 const ConsultationWidget = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,12 +32,16 @@ const ConsultationWidget = () => {
         </div>
       </div>
 
-      {/* Modal */}
-      <ConsultationModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        utmMedium="floating_widget"
-      />
+      {/* Modal - Lazy loaded with Suspense */}
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+            utmMedium="floating_widget"
+          />
+        </Suspense>
+      )}
     </>
   );
 };

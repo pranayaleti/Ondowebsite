@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
-import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
-import ConsultationModal from '../components/ConsultationModal';
+
+// Lazy load heavy components
+const Footer = lazy(() => import('../components/Footer'));
+const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { Link } from 'react-router-dom';
 import { companyInfo } from '../constants/companyInfo';
+import ContactInfo from '../components/ContactInfo';
 
 const LegalPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,9 +82,7 @@ const LegalPage = () => {
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white mb-2">Contact Information</h3>
-                      <p className="text-gray-300"><strong>Email:</strong> <a href={`mailto:${companyInfo.email}`} className="text-orange-500 hover:underline">{companyInfo.email}</a></p>
-                      <p className="text-gray-300"><strong>Phone:</strong> <a href={`tel:${companyInfo.phoneE164}`} className="text-orange-500 hover:underline">{companyInfo.phoneDisplay}</a></p>
-                      <p className="text-gray-300"><strong>Address:</strong> {companyInfo.address.streetAddress}, {companyInfo.address.addressLocality}, {companyInfo.address.addressRegion} {companyInfo.address.postalCode}</p>
+                      <ContactInfo variant="detailed" />
                     </div>
                   </div>
                 </div>
@@ -148,9 +149,15 @@ const LegalPage = () => {
         </section>
       </div>
       
-      <Footer />
+      <Suspense fallback={<div className="h-32" />}>
+        <Footer />
+      </Suspense>
       <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };

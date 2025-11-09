@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
-import Footer from '../components/Footer';
 import ConsultationWidget from '../components/ConsultationWidget';
-import ConsultationModal from '../components/ConsultationModal';
+
+// Lazy load heavy components
+const Footer = lazy(() => import('../components/Footer'));
+const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { Link } from 'react-router-dom';
 import { SERVICE_AREAS } from '../utils/unifiedData';
 
@@ -81,10 +83,6 @@ const SitemapPage = () => {
                     <Link to="/faq" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
                       <h3 className="text-lg font-semibold text-white mb-1">FAQ</h3>
                       <p className="text-sm text-gray-400">Frequently asked questions</p>
-                    </Link>
-                    <Link to="/workflow" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
-                      <h3 className="text-lg font-semibold text-white mb-1">Workflow</h3>
-                      <p className="text-sm text-gray-400">Our development process</p>
                     </Link>
                   </div>
                 </div>
@@ -226,9 +224,15 @@ const SitemapPage = () => {
         </section>
       </div>
       
-      <Footer />
+      <Suspense fallback={<div className="h-32" />}>
+        <Footer />
+      </Suspense>
       <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };

@@ -14,6 +14,7 @@ import PerformanceMonitor from "./components/PerformanceMonitor";
 import ScriptOptimizer from "./components/ScriptOptimizer";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PageLoader from "./components/LoadingSpinner";
 import { AuthProvider } from "./contexts/AuthContext";
 import { initPerformanceOptimizations } from "./utils/performance";
 import analyticsTracker from "./utils/analytics";
@@ -59,22 +60,6 @@ const AdminTicketsPage = lazy(() => import("./pages/admin/TicketsPage"));
 const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
 const AdminNotificationsPage = lazy(() => import("./pages/admin/NotificationsPage"));
 
-// Loading component - Enhanced with better visibility
-const PageLoader = () => (
-  <div className="fixed inset-0 z-50 bg-gradient-to-b from-black to-gray-900 flex items-center justify-center backdrop-blur-sm">
-    <div className="text-center">
-      <div className="relative inline-block">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-700 border-t-orange-500 mx-auto mb-6"></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-8 w-8 rounded-full bg-orange-500/30 animate-pulse"></div>
-        </div>
-      </div>
-      <p className="text-white text-lg font-medium">Loading page...</p>
-      <p className="text-gray-400 text-sm mt-2">Please wait</p>
-    </div>
-  </div>
-);
-
 // Scroll to top component for route changes
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -88,18 +73,45 @@ const ScrollToTop = () => {
       prevPathnameRef.current = pathname;
     }
     
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Use requestAnimationFrame for smoother scroll
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
   }, [pathname]);
 
   return null;
 };
 
 const AppRoutes = () => {
+  const location = useLocation();
+  
   // Initialize performance optimizations
   useEffect(() => {
     initPerformanceOptimizations();
     // Initialize analytics tracking
     analyticsTracker.init();
+  }, []);
+
+  // Prefetch likely next routes on idle
+  useEffect(() => {
+    if ('requestIdleCallback' in window) {
+      const prefetchRoutes = () => {
+        // Prefetch common routes
+        const commonRoutes = [
+          () => import('./pages/ServicesPage'),
+          () => import('./pages/ContactPage'),
+          () => import('./pages/AboutPage')
+        ];
+        
+        commonRoutes.forEach((prefetchFn, index) => {
+          setTimeout(() => {
+            prefetchFn().catch(() => {});
+          }, index * 100); // Stagger prefetch requests
+        });
+      };
+
+      requestIdleCallback(prefetchRoutes, { timeout: 2000 });
+    }
   }, []);
 
   return (
@@ -117,7 +129,6 @@ const AppRoutes = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<PortfolioPage />} />
           <Route path="/services" element={<ServicesPage />} />
-          <Route path="/workflow" element={<ServicesPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/testimonials" element={<TestimonialsPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />

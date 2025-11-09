@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo, memo, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
 import HeroCTA from "../components/HeroCTA";
 import TrustBadges from "../components/TrustBadges";
 import ConsultationWidget from "../components/ConsultationWidget";
-import ConsultationModal from "../components/ConsultationModal";
-import Footer from "../components/Footer";
 import HiddenSEOSection from "../components/HiddenSEOSection";
+
+// Lazy load heavy components
+const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const Footer = lazy(() => import("../components/Footer"));
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
+import { getAreaServedSchema } from "../utils/unifiedData";
 import { 
   CheckCircle, 
   Star, 
@@ -27,7 +30,8 @@ import {
 const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const homeStructuredData = {
+  // Memoize structured data to prevent recreation on every render
+  const homeStructuredData = useMemo(() => ({
     "@context": "https://schema.org",
     "@graph": [
       {
@@ -74,175 +78,14 @@ const HomePage = () => {
           "@id": `${companyInfo.urls.website}/#organization`
         },
         "serviceType": "Software Development",
-        "areaServed": [
-          {
-            "@type": "Country",
-            "name": "United States"
-          },
-          {
-            "@type": "City",
-            "name": "Los Angeles",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "California"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "New York",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "New York"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Chicago",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Illinois"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Houston",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Texas"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Phoenix",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Arizona"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Philadelphia",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Pennsylvania"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "San Antonio",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Texas"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "San Diego",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "California"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Dallas",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Texas"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "San Jose",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "California"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Austin",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Texas"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Jacksonville",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Florida"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Fort Worth",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Texas"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Columbus",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Ohio"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Charlotte",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "North Carolina"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "San Francisco",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "California"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Indianapolis",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Indiana"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Seattle",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Washington"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Denver",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "Colorado"
-            }
-          },
-          {
-            "@type": "City",
-            "name": "Washington",
-            "containedInPlace": {
-              "@type": "State",
-              "name": "District of Columbia"
-            }
-          }
-        ]
+        "areaServed": getAreaServedSchema({
+          includeAllStates: true,
+          includeAllCities: true,
+          includeZipCodes: true // Includes first 10 zip codes per city for comprehensive coverage
+        })
       }
     ]
-  };
+  }), []);
 
   return (
     <>
@@ -461,15 +304,21 @@ const HomePage = () => {
         {/* Trust Badges & Success Story */}
         <TrustBadges />
 
-        <Footer />
+        <Suspense fallback={<div className="h-32" />}>
+          <Footer />
+        </Suspense>
         
         {/* Hidden SEO Section - Service Areas for Search Engines */}
         <HiddenSEOSection />
       </div>
       <ConsultationWidget />
-      <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </Suspense>
+      )}
     </>
   );
 };
 
-export default HomePage;
+export default memo(HomePage);

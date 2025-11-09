@@ -1,5 +1,5 @@
 /* Critical CSS - Above the fold styles */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Font loading optimized with font-display: swap - loaded via preconnect in main.jsx */
 
 @tailwind base;
 @tailwind components;

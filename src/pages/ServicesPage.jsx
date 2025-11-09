@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import ServiceSchema from "../components/ServiceSchema";
-import Services from "../components/Services";
 import HeroCTA from "../components/HeroCTA";
 import ConsultationWidget from "../components/ConsultationWidget";
-import ConsultationModal from "../components/ConsultationModal";
-import Footer from "../components/Footer";
+
+// Lazy load heavy components
+const Services = lazy(() => import("../components/Services"));
+const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const Footer = lazy(() => import("../components/Footer"));
 
 const ServicesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -86,16 +88,24 @@ const ServicesPage = () => {
       <div>
         <div className="mx-auto pt-20">
           <div id="services" className="scroll-mt-20">
-            <Services />
+            <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>}>
+              <Services />
+            </Suspense>
           </div>
         </div>
         
         {/* Hero CTA Section */}
         <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
         
-        <Footer />
+        <Suspense fallback={<div className="h-32" />}>
+          <Footer />
+        </Suspense>
         <ConsultationWidget />
-        <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        {isModalOpen && (
+          <Suspense fallback={null}>
+            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          </Suspense>
+        )}
       </div>
     </>
   );
