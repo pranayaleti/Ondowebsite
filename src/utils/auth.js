@@ -29,11 +29,18 @@ export const authAPI = {
           } else {
             const text = await response.text();
             if (text) {
-              errorMessage = text.substring(0, 200);
+              // Check if it's an HTML error page (405, 404, etc.)
+              if (text.includes('405') || text.includes('Not Allowed') || text.includes('<!DOCTYPE html>')) {
+                errorMessage = 'Backend API is not configured or not accessible. Please ensure the backend server is deployed and VITE_API_URL is set correctly in production.';
+              } else if (text.includes('404') || text.includes('Not Found')) {
+                errorMessage = 'API endpoint not found. Please check that the backend server is deployed and accessible.';
+              } else {
+                errorMessage = text.substring(0, 200);
+              }
             } else if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
               errorMessage = 'Backend server is not running. Please start the server and try again.';
             } else if (response.status === 405) {
-              errorMessage = 'API endpoint not configured. Please set VITE_API_URL environment variable to your production backend URL.';
+              errorMessage = 'Backend API is not configured or not accessible. Please ensure the backend server is deployed and VITE_API_URL is set correctly in production.';
             } else {
               errorMessage = `Server error (${response.status}). Please check if the server is running.`;
             }
@@ -89,11 +96,18 @@ export const authAPI = {
           } else {
             const text = await response.text();
             if (text) {
-              errorMessage = text.substring(0, 200);
+              // Check if it's an HTML error page (405, 404, etc.)
+              if (text.includes('405') || text.includes('Not Allowed') || text.includes('<!DOCTYPE html>')) {
+                errorMessage = 'Backend API is not configured or not accessible. Please ensure the backend server is deployed and VITE_API_URL is set correctly in production.';
+              } else if (text.includes('404') || text.includes('Not Found')) {
+                errorMessage = 'API endpoint not found. Please check that the backend server is deployed and accessible.';
+              } else {
+                errorMessage = text.substring(0, 200);
+              }
             } else if (response.status === 0 || response.status === 502 || response.status === 503 || response.status === 500) {
               errorMessage = 'Backend server is not running. Please start the server and try again.';
             } else if (response.status === 405) {
-              errorMessage = 'API endpoint not configured. Please set VITE_API_URL environment variable to your production backend URL.';
+              errorMessage = 'Backend API is not configured or not accessible. Please ensure the backend server is deployed and VITE_API_URL is set correctly in production.';
             } else {
               errorMessage = `Server error (${response.status}). Please check if the server is running.`;
             }
