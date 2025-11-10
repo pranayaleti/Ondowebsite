@@ -209,9 +209,14 @@ export const authAPI = {
   async getNotifications() {
     const response = await fetch(`${API_URL}/admin/notifications`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch notifications');
     }
 
@@ -222,9 +227,14 @@ export const authAPI = {
     const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
       method: 'PATCH',
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to mark notification as read');
     }
 
@@ -235,9 +245,14 @@ export const authAPI = {
     const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
       method: 'PATCH',
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to mark all notifications as read');
     }
 
@@ -544,9 +559,14 @@ export const adminAPI = {
   async getDashboard() {
     const response = await fetch(`${API_URL}/admin/dashboard`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch admin dashboard');
     }
 
@@ -556,9 +576,15 @@ export const adminAPI = {
   async getUsers() {
     const response = await fetch(`${API_URL}/admin/users`, {
       credentials: 'include',
+      cache: 'no-store', // Prevent caching
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        // Clear any cached auth state and redirect to login
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch users');
     }
 
@@ -568,9 +594,14 @@ export const adminAPI = {
   async getCampaigns() {
     const response = await fetch(`${API_URL}/admin/campaigns`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch campaigns');
     }
 
@@ -580,9 +611,14 @@ export const adminAPI = {
   async getAnalytics() {
     const response = await fetch(`${API_URL}/admin/analytics`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch analytics');
     }
 
@@ -592,9 +628,14 @@ export const adminAPI = {
   async getRequestAnalytics() {
     const response = await fetch(`${API_URL}/admin/request-analytics`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch request analytics');
     }
 
@@ -604,9 +645,14 @@ export const adminAPI = {
   async getUserAnalytics() {
     const response = await fetch(`${API_URL}/admin/user-analytics`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch user analytics');
     }
 
@@ -634,9 +680,15 @@ export const adminAPI = {
   async getInvoices() {
     const response = await fetch(`${API_URL}/admin/invoices`, {
       credentials: 'include',
+      cache: 'no-store', // Prevent caching
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        // Clear any cached auth state and redirect to login
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch invoices');
     }
 
@@ -646,9 +698,14 @@ export const adminAPI = {
   async getAssets() {
     const response = await fetch(`${API_URL}/admin/assets`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch assets');
     }
 
@@ -658,9 +715,14 @@ export const adminAPI = {
   async getInvoice(invoiceId) {
     const response = await fetch(`${API_URL}/admin/invoices/${invoiceId}`, {
       credentials: 'include',
+      cache: 'no-store',
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       throw new Error('Failed to fetch invoice');
     }
 
@@ -674,10 +736,15 @@ export const adminAPI = {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
+      cache: 'no-store',
       body: JSON.stringify(invoiceData),
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       const error = await response.json();
       throw new Error(error.error || 'Failed to create invoice');
     }
@@ -692,10 +759,15 @@ export const adminAPI = {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
+      cache: 'no-store',
       body: JSON.stringify(updates),
     });
 
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
       const error = await response.json();
       throw new Error(error.error || 'Failed to update invoice');
     }
@@ -831,6 +903,41 @@ export const adminAPI = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch AI conversations analytics');
+    }
+
+    return response.json();
+  },
+
+  async getFeedback(status = null, limit = 100, offset = 0) {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    params.append('limit', limit);
+    params.append('offset', offset);
+
+    const response = await fetch(`${API_URL}/admin/feedback?${params.toString()}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch feedback');
+    }
+
+    return response.json();
+  },
+
+  async updateFeedback(feedbackId, updates) {
+    const response = await fetch(`${API_URL}/admin/feedback/${feedbackId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update feedback');
     }
 
     return response.json();

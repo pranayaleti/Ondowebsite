@@ -11,13 +11,16 @@ import { LogOut, Home, Menu, X } from 'lucide-react';
  * @param {Array} props.navItems - Array of navigation items with { path, label, icon }
  */
 const BaseLayout = ({ title, navItems }) => {
-  const { user, signout } = useAuth();
+  const auth = useAuth() || {};
+  const { user, signout } = auth;
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signout();
+    if (typeof signout === 'function') {
+      await signout();
+    }
     navigate('/auth/signin');
   };
 
@@ -40,7 +43,7 @@ const BaseLayout = ({ title, navItems }) => {
             <div className="mb-6 flex-shrink-0 flex items-start justify-between">
               <div>
                 <h1 className="text-xl font-bold text-white mb-1">{title}</h1>
-                <p className="text-xs text-gray-400">Welcome, <span className="text-orange-400">{user?.name}</span></p>
+                <p className="text-xs text-gray-400">Welcome, <span className="text-orange-400">{user?.name || 'Guest'}</span></p>
               </div>
               {/* Close button for mobile */}
               <button

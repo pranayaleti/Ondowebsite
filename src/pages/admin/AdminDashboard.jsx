@@ -16,7 +16,10 @@ import {
   Activity,
   MessageSquare,
   Phone,
-  Bot
+  Bot,
+  ThumbsUp,
+  ThumbsDown,
+  MessageCircle
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
@@ -63,7 +66,7 @@ const AdminDashboard = () => {
     );
   }
 
-  const { stats, recentUsers, recentCampaigns, recentSubscriptions, recentConsultationLeads, recentAIConversations, userGrowth } = dashboardData;
+  const { stats, recentUsers, recentCampaigns, recentSubscriptions, recentConsultationLeads, recentAIConversations, recentFeedback, userGrowth } = dashboardData;
 
   // Calculate growth percentage
   const userGrowthPercentage = stats.totalUsers > 0 
@@ -259,6 +262,21 @@ const AdminDashboard = () => {
               {stats.activeAIConversations || 0} active • {stats.newAIConversationsLast7Days || 0} new this week
             </p>
           </Link>
+
+          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 cursor-default">
+            <div className="flex items-center justify-between mb-4">
+              <MessageCircle className="w-8 h-8 text-purple-400" />
+              <div className="flex items-center gap-1 text-green-400 text-sm">
+                <ArrowUp className="w-4 h-4" />
+                <span>{stats.newFeedbackLast7Days || 0}</span>
+              </div>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-1">
+              {stats.totalFeedback || 0}
+            </h3>
+            <p className="text-sm text-gray-400">Feedback</p>
+            <p className="text-xs text-gray-500 mt-2">{stats.newFeedbackLast7Days || 0} new this week</p>
+          </div>
         </div>
 
         {/* Charts and Activity Row */}
@@ -425,6 +443,87 @@ const AdminDashboard = () => {
                     }`}
                   >
                     {lead.status || 'new'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent Feedback */}
+        {recentFeedback && recentFeedback.length > 0 && (
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-purple-500" />
+                  Recent Feedback
+                </h2>
+                <p className="text-sm text-gray-400 mt-1">User feedback, compliments, comments, and complaints</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              {recentFeedback.map((feedback) => (
+                <div
+                  key={feedback.id}
+                  className="flex items-start justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors cursor-default"
+                >
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      feedback.rating === 'up' 
+                        ? 'bg-green-500/20 text-green-400'
+                        : feedback.rating === 'down'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {feedback.rating === 'up' ? (
+                        <ThumbsUp className="w-5 h-5" />
+                      ) : feedback.rating === 'down' ? (
+                        <ThumbsDown className="w-5 h-5" />
+                      ) : (
+                        <span className="text-xl">→</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-white font-medium capitalize">{feedback.type}</h3>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          feedback.type === 'compliment'
+                            ? 'bg-green-500/20 text-green-400'
+                            : feedback.type === 'complaint'
+                            ? 'bg-red-500/20 text-red-400'
+                            : 'bg-blue-500/20 text-blue-400'
+                        }`}>
+                          {feedback.type}
+                        </span>
+                      </div>
+                      {feedback.user_name && (
+                        <p className="text-sm text-gray-400">{feedback.user_name} {feedback.user_email && `(${feedback.user_email})`}</p>
+                      )}
+                      {feedback.description && (
+                        <p className="text-sm text-gray-300 mt-2">{feedback.description}</p>
+                      )}
+                      {feedback.page_url && (
+                        <p className="text-xs text-gray-500 mt-1 truncate max-w-md">
+                          Page: {feedback.page_url}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(feedback.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      feedback.status === 'new'
+                        ? 'bg-purple-500/20 text-purple-400'
+                        : feedback.status === 'reviewed'
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-gray-500/20 text-gray-400'
+                    }`}
+                  >
+                    {feedback.status || 'new'}
                   </span>
                 </div>
               ))}

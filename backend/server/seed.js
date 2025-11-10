@@ -1,0 +1,89 @@
+import 'dotenv/config';
+import pkg from 'pg';
+import bcrypt from 'bcryptjs';
+
+const { Pool } = pkg;
+
+const getDatabaseUrl = () => {
+  // Supabase provides DATABASE_URL in the format:
+  // postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+  // Or direct connection:
+  // postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  throw new Error('DATABASE_URL environment variable is required. Please set it in your .env file or environment variables.');
+};
+
+const pool = new Pool({
+  connectionString: getDatabaseUrl(),
+  ssl: {
+    rejectUnauthorized: false // Supabase requires SSL but allows self-signed certificates
+  }
+});
+
+// Default admin credentials - use environment variables in production
+const adminEmail = process.env.ADMIN_EMAIL || 'admin@ondosoft.com';
+const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+const adminName = process.env.ADMIN_NAME || 'Admin User';
+
+// Default client credentials - use environment variables in production
+const clientEmail = process.env.CLIENT_EMAIL || 'client@ondosoft.com';
+const clientPassword = process.env.CLIENT_PASSWORD || 'client123';
+const clientName = process.env.CLIENT_NAME || 'Test Client';
+
+async function seedUsers() {
+  try {
+    // Create admin user
+    const existingAdmin = await pool.query('SELECT * FROM users WHERE email = $1', [adminEmail]);
+    
+    if (existingAdmin.rows.length > 0) {
+      console.log('⚠️  Admin user already exists!');
+    } else {
+      const hashedAdminPassword = await bcrypt.hash(adminPassword, 10);
+      await pool.query(
+        `INSERT INTO users (email, password, name, role)
+         VALUES ($1, $2, $3, 'ADMIN')
+         RETURNING id, email, name, role`,
+        [adminEmail, hashedAdminPassword, adminName]
+      );
+      console.log('✅ Admin user created successfully!');
+    }
+
+    // Create client user
+    const existingClient = await pool.query('SELECT * FROM users WHERE email = $1', [clientEmail]);
+    
+    if (existingClient.rows.length > 0) {
+      console.log('⚠️  Client user already exists!');
+    } else {
+      const hashedClientPassword = await bcrypt.hash(clientPassword, 10);
+      await pool.query(
+        `INSERT INTO users (email, password, name, role)
+         VALUES ($1, $2, $3, 'USER')
+         RETURNING id, email, name, role`,
+        [clientEmail, hashedClientPassword, clientName]
+      );
+      console.log('✅ Client user created successfully!');
+    }
+
+    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📋 DEFAULT USER CREDENTIALS');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('\n👨‍💼 ADMIN USER:');
+    console.log('   📧 Email:', adminEmail);
+    console.log('   🔑 Password:', adminPassword);
+    console.log('   🔗 Dashboard: http://localhost:3000/admin');
+    console.log('\n👤 CLIENT USER:');
+    console.log('   📧 Email:', clientEmail);
+    console.log('   🔑 Password:', clientPassword);
+    console.log('   🔗 Portal: http://localhost:3000/portal');
+    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('\nYou can sign in at: http://localhost:3000/auth/signin');
+  } catch (error) {
+    console.error('Error creating users:', error);
+  } finally {
+    await pool.end();
+  }
+}
+
+seedUsers();
