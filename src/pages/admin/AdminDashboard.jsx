@@ -15,7 +15,8 @@ import {
   Calendar,
   Activity,
   MessageSquare,
-  Phone
+  Phone,
+  Bot
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
@@ -62,7 +63,7 @@ const AdminDashboard = () => {
     );
   }
 
-  const { stats, recentUsers, recentCampaigns, recentSubscriptions, recentConsultationLeads, userGrowth } = dashboardData;
+  const { stats, recentUsers, recentCampaigns, recentSubscriptions, recentConsultationLeads, recentAIConversations, userGrowth } = dashboardData;
 
   // Calculate growth percentage
   const userGrowthPercentage = stats.totalUsers > 0 
@@ -238,6 +239,26 @@ const AdminDashboard = () => {
             <p className="text-sm text-gray-400">Prospective Leads</p>
             <p className="text-xs text-gray-500 mt-2">{stats.newConsultationLeadsLast7Days || 0} new this week</p>
           </Link>
+
+          <Link
+            to="/admin/ai-conversations"
+            className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-500/30 hover:border-green-500/50 transition-colors cursor-pointer block"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <Bot className="w-8 h-8 text-green-400" />
+              <div className="flex items-center gap-1 text-green-400 text-sm">
+                <ArrowUp className="w-4 h-4" />
+                <span>{stats.newAIConversationsLast7Days || 0}</span>
+              </div>
+            </div>
+            <h3 className="text-3xl font-bold text-white mb-1">
+              {stats.totalAIConversations || 0}
+            </h3>
+            <p className="text-sm text-gray-400">AI Conversations</p>
+            <p className="text-xs text-gray-500 mt-2">
+              {stats.activeAIConversations || 0} active • {stats.newAIConversationsLast7Days || 0} new this week
+            </p>
+          </Link>
         </div>
 
         {/* Charts and Activity Row */}
@@ -315,6 +336,23 @@ const AdminDashboard = () => {
                   </div>
                   <span className="text-xs text-gray-500">
                     {new Date(recentConsultationLeads[0].created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {recentAIConversations && recentAIConversations.length > 0 && (
+                <div className="flex items-center gap-3 p-3 bg-gray-900/50 rounded-lg">
+                  <Bot className="w-5 h-5 text-green-500" />
+                  <div className="flex-1">
+                    <p className="text-sm text-white">New AI conversation</p>
+                    <p className="text-xs text-gray-400">
+                      {recentAIConversations[0].name || recentAIConversations[0].user_name || recentAIConversations[0].email || recentAIConversations[0].user_email || 'Anonymous'}
+                    </p>
+                    <p className="text-xs text-green-400 mt-1">
+                      {recentAIConversations[0].total_messages || 0} messages
+                    </p>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {new Date(recentAIConversations[0].started_at).toLocaleDateString()}
                   </span>
                 </div>
               )}

@@ -18,6 +18,7 @@ import PageLoader from "./components/LoadingSpinner";
 import { AuthProvider } from "./contexts/AuthContext";
 import { initPerformanceOptimizations } from "./utils/performance";
 import analyticsTracker from "./utils/analytics";
+import UnifiedChatWidget from "./components/UnifiedChatWidget";
 
 // Lazy load page components for better performance
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -61,6 +62,7 @@ const AdminTicketsPage = lazy(() => import("./pages/admin/TicketsPage"));
 const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
 const AdminNotificationsPage = lazy(() => import("./pages/admin/NotificationsPage"));
 const ConsultationLeadsPage = lazy(() => import("./pages/admin/ConsultationLeadsPage"));
+const AIConversationsPage = lazy(() => import("./pages/admin/AIConversationsPage"));
 
 // Scroll to top component for route changes
 const ScrollToTop = () => {
@@ -189,11 +191,13 @@ const AppRoutes = () => {
             <Route path="invoices" element={<AdminInvoicesPage />} />
             <Route path="notifications" element={<AdminNotificationsPage />} />
             <Route path="consultation-leads" element={<ConsultationLeadsPage />} />
+            <Route path="ai-conversations" element={<AIConversationsPage />} />
           </Route>
           
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </Suspense>
+        <UnifiedChatWidget />
       </div>
     </ErrorBoundary>
   );

@@ -60,6 +60,7 @@ export const isValidPhone = (phone) => {
 
 // Format phone number as (XXX) XXX-XXXX
 export const formatPhoneNumber = (value) => {
+  if (!value) return '';
   const digitsOnly = value.replace(/\D/g, '');
   if (digitsOnly.length === 0) return '';
   if (digitsOnly.length <= 3) return `(${digitsOnly}`;

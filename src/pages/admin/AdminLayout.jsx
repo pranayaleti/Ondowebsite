@@ -7,7 +7,8 @@ import {
   MessageSquare,
   FileText,
   Folder,
-  Bell
+  Bell,
+  Bot
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -16,6 +17,7 @@ const AdminLayout = () => {
     { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/admin/clients', label: 'Clients', icon: Users },
     { path: '/admin/consultation-leads', label: 'Consultation Leads', icon: MessageSquare },
+    { path: '/admin/ai-conversations', label: 'AI Conversations', icon: Bot },
     { path: '/admin/campaigns', label: 'Campaigns', icon: Megaphone },
     { path: '/admin/assets', label: 'Assets', icon: Folder },
     { path: '/admin/tickets', label: 'Tickets', icon: MessageSquare },

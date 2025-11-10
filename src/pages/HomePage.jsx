@@ -3,7 +3,6 @@ import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
 import HeroCTA from "../components/HeroCTA";
 import TrustBadges from "../components/TrustBadges";
-import ConsultationWidget from "../components/ConsultationWidget";
 import HiddenSEOSection from "../components/HiddenSEOSection";
 
 // Lazy load heavy components
@@ -311,10 +310,14 @@ const HomePage = () => {
         {/* Hidden SEO Section - Service Areas for Search Engines */}
         <HiddenSEOSection />
       </div>
-      <ConsultationWidget />
+      
+      {/* Consultation Modal */}
       {isModalOpen && (
         <Suspense fallback={null}>
-          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <ConsultationModal 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+          />
         </Suspense>
       )}
     </>

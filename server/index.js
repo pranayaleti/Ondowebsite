@@ -333,6 +333,71 @@ const createTables = async () => {
         remind_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS ai_conversations (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        email VARCHAR(255),
+        name VARCHAR(255),
+        phone VARCHAR(50),
+        company VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'active',
+        page_url TEXT,
+        referrer TEXT,
+        user_agent TEXT,
+        ip_address VARCHAR(45),
+        timezone VARCHAR(100),
+        language VARCHAR(10),
+        screen_width INTEGER,
+        screen_height INTEGER,
+        viewport_width INTEGER,
+        viewport_height INTEGER,
+        utm_source VARCHAR(100),
+        utm_medium VARCHAR(100),
+        utm_campaign VARCHAR(100),
+        utm_content VARCHAR(255),
+        started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_message_at TIMESTAMP,
+        ended_at TIMESTAMP,
+        total_messages INTEGER DEFAULT 0,
+        total_user_messages INTEGER DEFAULT 0,
+        total_ai_messages INTEGER DEFAULT 0,
+        conversation_duration_seconds INTEGER,
+        sentiment_score DECIMAL(5, 2),
+        satisfaction_rating INTEGER,
+        satisfaction_feedback TEXT,
+        tags TEXT,
+        notes TEXT,
+        metadata JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS ai_messages (
+        id SERIAL PRIMARY KEY,
+        conversation_id INTEGER NOT NULL REFERENCES ai_conversations(id) ON DELETE CASCADE,
+        role VARCHAR(20) NOT NULL,
+        content TEXT NOT NULL,
+        message_type VARCHAR(50) DEFAULT 'text',
+        button_clicks JSONB,
+        quick_replies JSONB,
+        attachments JSONB,
+        metadata JSONB,
+        response_time_ms INTEGER,
+        message_index INTEGER,
+        is_edited BOOLEAN DEFAULT FALSE,
+        edited_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS ai_conversation_analytics (
+        id SERIAL PRIMARY KEY,
+        conversation_id INTEGER NOT NULL REFERENCES ai_conversations(id) ON DELETE CASCADE,
+        event_type VARCHAR(100) NOT NULL,
+        event_data JSONB,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     console.log('Tables created/verified successfully');
     
@@ -485,6 +550,24 @@ const createIndexes = async () => {
       CREATE INDEX IF NOT EXISTS idx_consultation_leads_status ON consultation_leads(status);
       CREATE INDEX IF NOT EXISTS idx_consultation_leads_created_at ON consultation_leads(created_at);
       CREATE INDEX IF NOT EXISTS idx_consultation_leads_utm_medium ON consultation_leads(utm_medium);
+
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_session_id ON ai_conversations(session_id);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_user_id ON ai_conversations(user_id);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_email ON ai_conversations(email);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_status ON ai_conversations(status);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_started_at ON ai_conversations(started_at);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_last_message_at ON ai_conversations(last_message_at);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversations_session_status ON ai_conversations(session_id, status);
+
+      CREATE INDEX IF NOT EXISTS idx_ai_messages_conversation_id ON ai_messages(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_ai_messages_role ON ai_messages(role);
+      CREATE INDEX IF NOT EXISTS idx_ai_messages_created_at ON ai_messages(created_at);
+      CREATE INDEX IF NOT EXISTS idx_ai_messages_conversation_created ON ai_messages(conversation_id, created_at);
+      CREATE INDEX IF NOT EXISTS idx_ai_messages_message_index ON ai_messages(conversation_id, message_index);
+
+      CREATE INDEX IF NOT EXISTS idx_ai_conversation_analytics_conversation_id ON ai_conversation_analytics(conversation_id);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversation_analytics_event_type ON ai_conversation_analytics(event_type);
+      CREATE INDEX IF NOT EXISTS idx_ai_conversation_analytics_timestamp ON ai_conversation_analytics(timestamp);
       
       CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_session_id ON analytics_user_interactions(session_id);
       CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_pathname ON analytics_user_interactions(pathname);
@@ -2046,6 +2129,30 @@ app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (req, res
       newConsultationLeadsResult = { rows: [{ count: 0 }] };
       recentConsultationLeadsResult = { rows: [] };
     }
+
+    // AI conversations counts
+    let totalAIConversationsResult, newAIConversationsResult, activeAIConversationsResult, recentAIConversationsResult;
+    try {
+      totalAIConversationsResult = await pool.query('SELECT COUNT(*) as count FROM ai_conversations');
+      newAIConversationsResult = await pool.query(
+        "SELECT COUNT(*) as count FROM ai_conversations WHERE started_at >= NOW() - INTERVAL '7 days'"
+      );
+      activeAIConversationsResult = await pool.query(
+        "SELECT COUNT(*) as count FROM ai_conversations WHERE status = 'active'"
+      );
+      recentAIConversationsResult = await pool.query(
+        `SELECT c.*, u.name as user_name, u.email as user_email
+         FROM ai_conversations c
+         LEFT JOIN users u ON c.user_id = u.id
+         ORDER BY c.started_at DESC LIMIT 5`
+      );
+    } catch (err) {
+      console.error('Error querying ai_conversations:', err);
+      totalAIConversationsResult = { rows: [{ count: 0 }] };
+      newAIConversationsResult = { rows: [{ count: 0 }] };
+      activeAIConversationsResult = { rows: [{ count: 0 }] };
+      recentAIConversationsResult = { rows: [] };
+    }
     
     // Active counts
     const activeSubscriptionsResult = await pool.query("SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'");
@@ -2101,6 +2208,9 @@ app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (req, res
         totalInvoices: parseInt(totalInvoicesResult.rows[0].count),
         totalConsultationLeads: parseInt(totalConsultationLeadsResult.rows[0].count),
         newConsultationLeadsLast7Days: parseInt(newConsultationLeadsResult.rows[0].count),
+        totalAIConversations: parseInt(totalAIConversationsResult.rows[0].count),
+        newAIConversationsLast7Days: parseInt(newAIConversationsResult.rows[0].count),
+        activeAIConversations: parseInt(activeAIConversationsResult.rows[0].count),
         activeSubscriptions: parseInt(activeSubscriptionsResult.rows[0].count),
         activeCampaigns: parseInt(activeCampaignsResult.rows[0].count),
         totalRevenue: parseFloat(revenueResult.rows[0].total || 0),
@@ -2111,6 +2221,7 @@ app.get('/api/admin/dashboard', authenticateToken, requireAdmin, async (req, res
       recentCampaigns: recentCampaignsResult.rows,
       recentSubscriptions: recentSubscriptionsResult.rows,
       recentConsultationLeads: recentConsultationLeadsResult.rows,
+      recentAIConversations: recentAIConversationsResult.rows,
       userGrowth: userGrowthResult.rows
     });
   } catch (error) {
@@ -2195,6 +2306,296 @@ app.patch('/api/admin/consultation-leads/:id', authenticateToken, requireAdmin, 
     res.json({ lead: result.rows[0] });
   } catch (error) {
     console.error('Update consultation lead error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ==================== AI Chat Admin Endpoints ====================
+
+// Get all AI conversations (admin)
+app.get('/api/admin/ai-conversations', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { status, limit = 100, offset = 0, search } = req.query;
+    
+    let query = `
+      SELECT c.*, 
+        u.name as user_name, u.email as user_email
+      FROM ai_conversations c
+      LEFT JOIN users u ON c.user_id = u.id
+    `;
+    const params = [];
+    const conditions = [];
+    
+    if (status) {
+      conditions.push(`c.status = $${params.length + 1}`);
+      params.push(status);
+    }
+    
+    if (search) {
+      conditions.push(`(
+        c.email ILIKE $${params.length + 1} OR
+        c.name ILIKE $${params.length + 1} OR
+        c.session_id ILIKE $${params.length + 1} OR
+        u.email ILIKE $${params.length + 1} OR
+        u.name ILIKE $${params.length + 1}
+      )`);
+      params.push(`%${search}%`);
+    }
+    
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+    
+    query += ' ORDER BY c.started_at DESC LIMIT $' + (params.length + 1) + ' OFFSET $' + (params.length + 2);
+    params.push(parseInt(limit), parseInt(offset));
+    
+    const result = await pool.query(query, params);
+    
+    // Get total count
+    let countQuery = 'SELECT COUNT(*) as count FROM ai_conversations c';
+    const countParams = [];
+    const countConditions = [];
+    
+    if (status) {
+      countConditions.push(`c.status = $${countParams.length + 1}`);
+      countParams.push(status);
+    }
+    
+    if (search) {
+      countQuery += ' LEFT JOIN users u ON c.user_id = u.id';
+      countConditions.push(`(
+        c.email ILIKE $${countParams.length + 1} OR
+        c.name ILIKE $${countParams.length + 1} OR
+        c.session_id ILIKE $${countParams.length + 1} OR
+        u.email ILIKE $${countParams.length + 1} OR
+        u.name ILIKE $${countParams.length + 1}
+      )`);
+      countParams.push(`%${search}%`);
+    }
+    
+    if (countConditions.length > 0) {
+      countQuery += ' WHERE ' + countConditions.join(' AND ');
+    }
+    const countResult = await pool.query(countQuery, countParams);
+    
+    res.json({ 
+      conversations: result.rows,
+      total: parseInt(countResult.rows[0].count)
+    });
+  } catch (error) {
+    console.error('Admin AI conversations error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get single AI conversation with messages (admin)
+app.get('/api/admin/ai-conversations/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Get conversation
+    const convResult = await pool.query(
+      `SELECT c.*, u.name as user_name, u.email as user_email
+       FROM ai_conversations c
+       LEFT JOIN users u ON c.user_id = u.id
+       WHERE c.id = $1`,
+      [id]
+    );
+    
+    if (convResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+    
+    // Get messages
+    const messagesResult = await pool.query(
+      `SELECT * FROM ai_messages 
+       WHERE conversation_id = $1 
+       ORDER BY message_index ASC, created_at ASC`,
+      [id]
+    );
+    
+    // Get analytics events
+    const analyticsResult = await pool.query(
+      `SELECT * FROM ai_conversation_analytics 
+       WHERE conversation_id = $1 
+       ORDER BY timestamp ASC`,
+      [id]
+    );
+    
+    res.json({
+      conversation: convResult.rows[0],
+      messages: messagesResult.rows,
+      analytics: analyticsResult.rows
+    });
+  } catch (error) {
+    console.error('Get AI conversation error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update AI conversation (admin)
+app.patch('/api/admin/ai-conversations/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, notes, tags, sentimentScore, satisfactionRating, satisfactionFeedback } = req.body;
+    
+    const updates = [];
+    const params = [];
+    let paramIndex = 1;
+    
+    if (status !== undefined) {
+      updates.push(`status = $${paramIndex++}`);
+      params.push(status);
+    }
+    
+    if (notes !== undefined) {
+      updates.push(`notes = $${paramIndex++}`);
+      params.push(notes);
+    }
+    
+    if (tags !== undefined) {
+      updates.push(`tags = $${paramIndex++}`);
+      params.push(tags);
+    }
+    
+    if (sentimentScore !== undefined) {
+      updates.push(`sentiment_score = $${paramIndex++}`);
+      params.push(sentimentScore);
+    }
+    
+    if (satisfactionRating !== undefined) {
+      updates.push(`satisfaction_rating = $${paramIndex++}`);
+      params.push(satisfactionRating);
+    }
+    
+    if (satisfactionFeedback !== undefined) {
+      updates.push(`satisfaction_feedback = $${paramIndex++}`);
+      params.push(satisfactionFeedback);
+    }
+    
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+    
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    params.push(id);
+    
+    const result = await pool.query(
+      `UPDATE ai_conversations SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
+      params
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+    
+    res.json({ conversation: result.rows[0] });
+  } catch (error) {
+    console.error('Update AI conversation error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get AI conversations analytics (admin)
+app.get('/api/admin/ai-conversations-analytics', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    // Total conversations
+    const totalResult = await pool.query('SELECT COUNT(*) as count FROM ai_conversations');
+    const totalConversations = parseInt(totalResult.rows[0].count);
+    
+    // Active conversations
+    const activeResult = await pool.query(
+      "SELECT COUNT(*) as count FROM ai_conversations WHERE status = 'active'"
+    );
+    const activeConversations = parseInt(activeResult.rows[0].count);
+    
+    // Total messages
+    const messagesResult = await pool.query('SELECT COUNT(*) as count FROM ai_messages');
+    const totalMessages = parseInt(messagesResult.rows[0].count);
+    
+    // Average messages per conversation
+    const avgMessagesResult = await pool.query(
+      'SELECT AVG(total_messages) as avg FROM ai_conversations WHERE total_messages > 0'
+    );
+    const avgMessages = parseFloat(avgMessagesResult.rows[0].avg || 0);
+    
+    // Average conversation duration
+    const avgDurationResult = await pool.query(
+      'SELECT AVG(conversation_duration_seconds) as avg FROM ai_conversations WHERE conversation_duration_seconds IS NOT NULL'
+    );
+    const avgDuration = parseFloat(avgDurationResult.rows[0].avg || 0);
+    
+    // Conversations by status
+    const statusResult = await pool.query(
+      'SELECT status, COUNT(*) as count FROM ai_conversations GROUP BY status'
+    );
+    
+    // Conversations by day (last 30 days)
+    const dailyResult = await pool.query(
+      `SELECT DATE(started_at) as date, COUNT(*) as count 
+       FROM ai_conversations 
+       WHERE started_at >= NOW() - INTERVAL '30 days'
+       GROUP BY DATE(started_at)
+       ORDER BY date DESC`
+    );
+    
+    // Top quick replies used
+    const quickRepliesResult = await pool.query(
+      `SELECT 
+        jsonb_array_elements(quick_replies)->>'value' as reply_value,
+        jsonb_array_elements(quick_replies)->>'label' as reply_label,
+        COUNT(*) as count
+       FROM ai_messages 
+       WHERE quick_replies IS NOT NULL
+       GROUP BY reply_value, reply_label
+       ORDER BY count DESC
+       LIMIT 10`
+    );
+    
+    // Feedback analytics
+    const feedbackResult = await pool.query(
+      `SELECT 
+        event_data->>'feedback' as feedback,
+        COUNT(*) as count
+       FROM ai_conversation_analytics 
+       WHERE event_type = 'feedback' AND event_data->>'feedback' IS NOT NULL
+       GROUP BY event_data->>'feedback'`
+    );
+    
+    const positiveFeedback = feedbackResult.rows.find(r => r.feedback === 'positive')?.count || 0;
+    const negativeFeedback = feedbackResult.rows.find(r => r.feedback === 'negative')?.count || 0;
+    const totalFeedback = positiveFeedback + negativeFeedback;
+    const feedbackScore = totalFeedback > 0 
+      ? Math.round((positiveFeedback / totalFeedback) * 100) 
+      : 0;
+    
+    // Link click analytics
+    const linkClicksResult = await pool.query(
+      `SELECT COUNT(*) as count 
+       FROM ai_conversation_analytics 
+       WHERE event_type = 'link_click'`
+    );
+    const totalLinkClicks = parseInt(linkClicksResult.rows[0].count || 0);
+    
+    res.json({
+      totalConversations,
+      activeConversations,
+      totalMessages,
+      avgMessages: Math.round(avgMessages * 100) / 100,
+      avgDuration: Math.round(avgDuration),
+      byStatus: statusResult.rows,
+      daily: dailyResult.rows,
+      topQuickReplies: quickRepliesResult.rows,
+      feedback: {
+        positive: positiveFeedback,
+        negative: negativeFeedback,
+        total: totalFeedback,
+        score: feedbackScore
+      },
+      linkClicks: totalLinkClicks
+    });
+  } catch (error) {
+    console.error('AI conversations analytics error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -2912,6 +3313,364 @@ app.delete('/api/consultation/draft', async (req, res) => {
     res.status(500).json({
       error: 'Internal server error',
       message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// ==================== AI Chat Endpoints ====================
+
+// Get conversation by session ID (public endpoint) - for loading chat history
+app.get('/api/ai-chat/conversations/session/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    // Get the most recent active conversation for this session
+    const convResult = await pool.query(
+      `SELECT c.*, u.name as user_name, u.email as user_email
+       FROM ai_conversations c
+       LEFT JOIN users u ON c.user_id = u.id
+       WHERE c.session_id = $1 AND c.status = 'active'
+       ORDER BY c.started_at DESC
+       LIMIT 1`,
+      [sessionId]
+    );
+
+    if (convResult.rows.length === 0) {
+      return res.json({ conversation: null, messages: [] });
+    }
+
+    const conversation = convResult.rows[0];
+
+    // Get messages for this conversation
+    const messagesResult = await pool.query(
+      `SELECT * FROM ai_messages 
+       WHERE conversation_id = $1 
+       ORDER BY message_index ASC, created_at ASC`,
+      [conversation.id]
+    );
+
+    res.json({
+      conversation: conversation,
+      messages: messagesResult.rows,
+    });
+  } catch (error) {
+    console.error('Get conversation by session error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+});
+
+// Create AI conversation (public endpoint)
+app.post('/api/ai-chat/conversations', async (req, res) => {
+  try {
+    const {
+      sessionId,
+      pageUrl,
+      referrer,
+      userAgent,
+      timezone,
+      language,
+      screenWidth,
+      screenHeight,
+      viewportWidth,
+      viewportHeight,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmContent,
+    } = req.body;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: 'Session ID is required' });
+    }
+
+    // Get IP address
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+    // Create conversation - convert to MT timezone
+    const result = await pool.query(
+      `INSERT INTO ai_conversations 
+       (session_id, page_url, referrer, user_agent, ip_address, timezone, language,
+        screen_width, screen_height, viewport_width, viewport_height,
+        utm_source, utm_medium, utm_campaign, utm_content, started_at, last_message_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, 
+               (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'), 
+               (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'))
+       RETURNING id, started_at`,
+      [
+        sessionId,
+        pageUrl || null,
+        referrer || null,
+        userAgent || null,
+        ipAddress || null,
+        timezone || null,
+        language || null,
+        screenWidth || null,
+        screenHeight || null,
+        viewportWidth || null,
+        viewportHeight || null,
+        utmSource || null,
+        utmMedium || null,
+        utmCampaign || null,
+        utmContent || null,
+      ]
+    );
+
+    res.json({
+      success: true,
+      conversationId: result.rows[0].id,
+      startedAt: result.rows[0].started_at,
+    });
+  } catch (error) {
+    console.error('AI conversation creation error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+});
+
+// Add message to conversation (public endpoint)
+app.post('/api/ai-chat/conversations/:conversationId/messages', async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { role, content, messageType, quickReplies, buttonClicks, metadata } = req.body;
+
+    if (!role || !content) {
+      return res.status(400).json({ error: 'Role and content are required' });
+    }
+
+    // Get current message count for this conversation
+    const countResult = await pool.query(
+      'SELECT COUNT(*) as count FROM ai_messages WHERE conversation_id = $1',
+      [conversationId]
+    );
+    const messageIndex = parseInt(countResult.rows[0].count) + 1;
+
+    // Insert message - convert to MT timezone
+    const result = await pool.query(
+      `INSERT INTO ai_messages 
+       (conversation_id, role, content, message_type, quick_replies, button_clicks, metadata, message_index, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'))
+       RETURNING id, created_at`,
+      [
+        conversationId,
+        role,
+        content,
+        messageType || 'text',
+        quickReplies ? JSON.stringify(quickReplies) : null,
+        buttonClicks ? JSON.stringify(buttonClicks) : null,
+        metadata ? JSON.stringify(metadata) : null,
+        messageIndex,
+      ]
+    );
+
+    // Update conversation stats - convert to MT timezone
+    const updateField = role === 'user' ? 'total_user_messages' : 'total_ai_messages';
+    await pool.query(
+      `UPDATE ai_conversations 
+       SET total_messages = total_messages + 1,
+           ${updateField} = ${updateField} + 1,
+           last_message_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'),
+           updated_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver')
+       WHERE id = $1`,
+      [conversationId]
+    );
+
+    // Track analytics event - convert to MT timezone
+    await pool.query(
+      `INSERT INTO ai_conversation_analytics (conversation_id, event_type, event_data, timestamp)
+       VALUES ($1, 'message_sent', $2, (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'))`,
+      [
+        conversationId,
+        JSON.stringify({
+          role,
+          messageType: messageType || 'text',
+          messageIndex,
+          hasQuickReplies: !!quickReplies,
+          hasButtonClicks: !!buttonClicks,
+        }),
+      ]
+    );
+
+    res.json({
+      success: true,
+      messageId: result.rows[0].id,
+      createdAt: result.rows[0].created_at,
+    });
+  } catch (error) {
+    console.error('AI message save error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+});
+
+// Save feedback for message (public endpoint)
+app.post('/api/ai-chat/conversations/:conversationId/feedback', async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { messageId, feedback, messageContent, eventType, linkUrl, timestamp } = req.body;
+
+    // Determine event type - either feedback (thumbs up/down) or link_click
+    const analyticsEventType = eventType || 'feedback';
+    
+    // Build event data
+    const eventData = {
+      messageId,
+      ...(feedback && { feedback }), // positive or negative
+      ...(messageContent && { messageContent }),
+      ...(linkUrl && { linkUrl }),
+      timestamp: timestamp || new Date().toISOString(),
+    };
+
+    // Track feedback as analytics event - convert to MT timezone
+    await pool.query(
+      `INSERT INTO ai_conversation_analytics (conversation_id, event_type, event_data, timestamp)
+       VALUES ($1, $2, $3, (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'))`,
+      [
+        conversationId,
+        analyticsEventType,
+        JSON.stringify(eventData),
+      ]
+    );
+
+    // If it's feedback (thumbs up/down), also update the conversation's sentiment
+    if (feedback && (feedback === 'positive' || feedback === 'negative')) {
+      const sentimentScore = feedback === 'positive' ? 1.0 : -1.0;
+      
+      // Get current sentiment and update
+      const convResult = await pool.query(
+        `SELECT sentiment_score FROM ai_conversations WHERE id = $1`,
+        [conversationId]
+      );
+      
+      if (convResult.rows.length > 0) {
+        const currentSentiment = convResult.rows[0].sentiment_score || 0;
+        // Average with existing sentiment (simple approach)
+        const newSentiment = (currentSentiment + sentimentScore) / 2;
+        
+        await pool.query(
+          `UPDATE ai_conversations 
+           SET sentiment_score = $1, 
+               updated_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver')
+           WHERE id = $2`,
+          [newSentiment, conversationId]
+        );
+      }
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('AI feedback save error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+});
+
+// Update conversation with user info (public endpoint)
+app.patch('/api/ai-chat/conversations/:conversationId', async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+    const { email, name, phone, company } = req.body;
+
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (email) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(email);
+    }
+    if (name) {
+      updates.push(`name = $${paramCount++}`);
+      values.push(name);
+    }
+    if (phone) {
+      updates.push(`phone = $${paramCount++}`);
+      values.push(phone);
+    }
+    if (company) {
+      updates.push(`company = $${paramCount++}`);
+      values.push(company);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'At least one field is required' });
+    }
+
+    updates.push(`updated_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver')`);
+    values.push(conversationId);
+
+    await pool.query(
+      `UPDATE ai_conversations SET ${updates.join(', ')} WHERE id = $${paramCount}`,
+      values
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('AI conversation update error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+    });
+  }
+});
+
+// End conversation (public endpoint)
+app.post('/api/ai-chat/conversations/:conversationId/end', async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    // Get conversation start time
+    const convResult = await pool.query(
+      'SELECT started_at FROM ai_conversations WHERE id = $1',
+      [conversationId]
+    );
+
+    if (convResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+
+    const startedAt = new Date(convResult.rows[0].started_at);
+    const endedAt = new Date();
+    const durationSeconds = Math.floor((endedAt - startedAt) / 1000);
+
+    // Update conversation - convert to MT timezone
+    await pool.query(
+      `UPDATE ai_conversations 
+       SET status = 'ended',
+           ended_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'),
+           conversation_duration_seconds = $1,
+           updated_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver')
+       WHERE id = $2`,
+      [durationSeconds, conversationId]
+    );
+
+    // Track analytics event - convert to MT timezone
+    await pool.query(
+      `INSERT INTO ai_conversation_analytics (conversation_id, event_type, event_data, timestamp)
+       VALUES ($1, 'conversation_ended', $2, (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'))`,
+      [
+        conversationId,
+        JSON.stringify({
+          durationSeconds,
+          endedAt: endedAt.toISOString(),
+        }),
+      ]
+    );
+
+    res.json({ success: true, durationSeconds });
+  } catch (error) {
+    console.error('AI conversation end error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 });
