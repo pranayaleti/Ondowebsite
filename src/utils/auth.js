@@ -775,6 +775,66 @@ export const adminAPI = {
 
     return response.json();
   },
+
+  async getAIConversations(status = null, limit = 100, offset = 0, search = null) {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    params.append('limit', limit);
+    params.append('offset', offset);
+    if (search) params.append('search', search);
+
+    const response = await fetch(`${API_URL}/admin/ai-conversations?${params.toString()}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch AI conversations');
+    }
+
+    return response.json();
+  },
+
+  async getAIConversation(conversationId) {
+    const response = await fetch(`${API_URL}/admin/ai-conversations/${conversationId}`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch AI conversation');
+    }
+
+    return response.json();
+  },
+
+  async updateAIConversation(conversationId, updates) {
+    const response = await fetch(`${API_URL}/admin/ai-conversations/${conversationId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update AI conversation');
+    }
+
+    return response.json();
+  },
+
+  async getAIConversationsAnalytics() {
+    const response = await fetch(`${API_URL}/admin/ai-conversations-analytics`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch AI conversations analytics');
+    }
+
+    return response.json();
+  },
 };
 
 // Ticket API functions

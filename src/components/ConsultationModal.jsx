@@ -481,7 +481,8 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-200 transition-colors"
+            className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 hover:text-white rounded-full p-2 transition-all duration-200 border border-orange-500/50 hover:border-orange-500 shadow-lg hover:shadow-orange-500/50"
+            aria-label="Close consultation modal"
           >
             <X className="h-6 w-6" />
           </button>
