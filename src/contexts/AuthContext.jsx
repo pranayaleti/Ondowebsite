@@ -1,15 +1,25 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { authAPI } from '../utils/auth';
 
-const AuthContext = createContext(null);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+const defaultAuthContext = {
+  user: null,
+  loading: true,
+  isAuthenticated: false,
+  isAdmin: false,
+  signup: async () => {
+    throw new Error('AuthProvider is not ready yet. Please wait for initialization.');
+  },
+  signin: async () => {
+    throw new Error('AuthProvider is not ready yet. Please wait for initialization.');
+  },
+  signout: async () => {
+    throw new Error('AuthProvider is not ready yet. Please wait for initialization.');
+  },
 };
+
+const AuthContext = createContext(defaultAuthContext);
+
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -62,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     loading,
     signup,
@@ -70,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     signout,
     isAuthenticated: !!user,
     isAdmin: user?.role === 'ADMIN',
-  };
+  }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -3,6 +3,7 @@ import { memo, useMemo } from "react";
 import { SERVICE_AREAS } from "../utils/unifiedData";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
+import FeedbackWidget from "./FeedbackWidget";
 
 const Footer = () => {
   const location = useLocation();
@@ -182,6 +183,7 @@ const Footer = () => {
           </ul>
         </div>
       </footer>
+      <FeedbackWidget />
     </>
   );
 };
