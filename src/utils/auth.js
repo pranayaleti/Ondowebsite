@@ -59,12 +59,9 @@ const authenticatedFetch = async (url, options = {}) => {
   });
   
   // If 401, remove token as it's invalid
+  // Don't redirect here - let the calling code handle it
   if (response.status === 401) {
     tokenStorage.remove();
-    // Redirect to login if not already there
-    if (!window.location.pathname.includes('/auth/signin')) {
-      window.location.href = '/auth/signin';
-    }
   }
   
   return response;
@@ -272,6 +269,12 @@ export const authAPI = {
 
   async getSession() {
     try {
+      // Don't check session if there's no token
+      const token = tokenStorage.get();
+      if (!token) {
+        return null;
+      }
+
       const response = await fetch(`${API_URL}/auth/session`, {
         headers: getAuthHeaders(),
         credentials: 'include',
