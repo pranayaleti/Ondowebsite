@@ -102,10 +102,26 @@ const pool = new Pool({
   statement_timeout: 30000 // 30 seconds
 });
 
+// Handle pool errors gracefully to prevent server crashes
+pool.on('error', (err, client) => {
+  console.error('Unexpected error on idle database client:', err);
+  // Don't crash the server - log the error and let the pool handle reconnection
+  // The pool will automatically try to reconnect on the next query
+});
+
+// Handle connection errors
+pool.on('connect', (client) => {
+  client.on('error', (err) => {
+    console.error('Database client error:', err.message);
+    // Log but don't crash - the pool will handle reconnection
+  });
+});
+
 // Test connection
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
-    console.error('Database connection error:', err);
+    console.error('Database connection error:', err.message);
+    console.error('⚠️  Server will continue, but database operations may fail until connection is restored');
   } else {
     console.log('Database connected successfully');
   }
@@ -4250,19 +4266,38 @@ app.post('/api/dashboard/tickets', authenticateToken, async (req, res) => {
       due_date,
       estimated_hours,
       budget,
-      tags
+      tags,
+      assigned_to
     } = req.body;
-    
+
     if (!subject || !description) {
       return res.status(400).json({ error: 'Subject and description are required' });
+    }
+
+    let assignedToId = null;
+    if (assigned_to !== undefined && assigned_to !== null && assigned_to !== '') {
+      assignedToId = parseInt(assigned_to, 10);
+      if (Number.isNaN(assignedToId)) {
+        return res.status(400).json({ error: 'Invalid assignee' });
+      }
+
+      // Clients can only assign tickets to admins
+      const assigneeCheck = await pool.query(
+        `SELECT id FROM users WHERE id = $1 AND role = 'ADMIN'`,
+        [assignedToId]
+      );
+
+      if (assigneeCheck.rows.length === 0) {
+        return res.status(400).json({ error: 'Assignee must be an administrator' });
+      }
     }
 
     const result = await pool.query(
       `INSERT INTO tickets (
         user_id, subject, description, type, priority, status,
-        project_name, email_request, category, due_date, estimated_hours, budget, tags
+        assigned_to, project_name, email_request, category, due_date, estimated_hours, budget, tags
       )
-       VALUES ($1, $2, $3, $4, $5, 'open', $6, $7, $8, $9, $10, $11, $12)
+       VALUES ($1, $2, $3, $4, $5, 'open', $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         req.user.id, 
@@ -4270,6 +4305,7 @@ app.post('/api/dashboard/tickets', authenticateToken, async (req, res) => {
         description, 
         type || 'support', 
         priority || 'medium',
+        assignedToId,
         project_name || null,
         email_request || null,
         category || null,
@@ -4280,9 +4316,36 @@ app.post('/api/dashboard/tickets', authenticateToken, async (req, res) => {
       ]
     );
 
-    res.status(201).json({ ticket: result.rows[0] });
+    const ticket = result.rows[0];
+
+    if (assignedToId) {
+      await pool.query(
+        `INSERT INTO notifications (user_id, type, title, message, link)
+         VALUES ($1, 'ticket_assigned', 'New Ticket Assigned', $2, $3)`,
+        [
+          assignedToId,
+          `A new ticket "${subject}" has been assigned to you`,
+          `/admin/tickets/${ticket.id}`
+        ]
+      );
+    }
+
+    res.status(201).json({ ticket });
   } catch (error) {
     console.error('Create ticket error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get available assignees for client tickets (admins)
+app.get('/api/dashboard/tickets/assignees', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, name, email FROM users WHERE role = 'ADMIN' ORDER BY name ASC`
+    );
+    res.json({ assignees: result.rows });
+  } catch (error) {
+    console.error('Get ticket assignees error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -4291,7 +4354,15 @@ app.post('/api/dashboard/tickets', authenticateToken, async (req, res) => {
 app.get('/api/dashboard/tickets', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT * FROM tickets WHERE user_id = $1 ORDER BY created_at DESC`,
+      `SELECT 
+        t.*, 
+        au.name AS assigned_name,
+        au.email AS assigned_email,
+        au.role AS assigned_role
+       FROM tickets t
+       LEFT JOIN users au ON t.assigned_to = au.id
+       WHERE t.user_id = $1
+       ORDER BY t.created_at DESC`,
       [req.user.id]
     );
     // Return empty array if no tickets found
@@ -4306,7 +4377,14 @@ app.get('/api/dashboard/tickets', authenticateToken, async (req, res) => {
 app.get('/api/dashboard/tickets/:id', authenticateToken, async (req, res) => {
   try {
     const ticketResult = await pool.query(
-      `SELECT * FROM tickets WHERE id = $1 AND user_id = $2`,
+      `SELECT 
+        t.*, 
+        au.name AS assigned_name,
+        au.email AS assigned_email,
+        au.role AS assigned_role
+       FROM tickets t
+       LEFT JOIN users au ON t.assigned_to = au.id
+       WHERE t.id = $1 AND t.user_id = $2`,
       [req.params.id, req.user.id]
     );
 
@@ -4373,18 +4451,42 @@ app.post('/api/dashboard/tickets/:id/messages', authenticateToken, async (req, r
 
     // Get ticket info to create notification for admins
     const ticket = ticketResult.rows[0];
-    // Create notification for all admins when client responds
-    const adminUsers = await pool.query("SELECT id FROM users WHERE role = 'ADMIN'");
-    for (const admin of adminUsers.rows) {
-      await pool.query(
-        `INSERT INTO notifications (user_id, type, title, message, link)
-         VALUES ($1, 'ticket_message', 'New Message on Ticket', $2, $3)`,
-        [
-          admin.id,
-          `Client responded to ticket: "${ticket.subject}"`,
-          `/admin/tickets/${req.params.id}`
-        ]
+    // Create notification for assigned admin when client responds
+    if (ticket.assigned_to) {
+      const assigneeResult = await pool.query(
+        `SELECT id, role FROM users WHERE id = $1`,
+        [ticket.assigned_to]
       );
+
+      if (assigneeResult.rows.length > 0) {
+        const assignee = assigneeResult.rows[0];
+        const link = assignee.role === 'ADMIN'
+          ? `/admin/tickets/${req.params.id}`
+          : `/portal/tickets/${req.params.id}`;
+
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, link)
+           VALUES ($1, 'ticket_message', 'New Message on Ticket', $2, $3)`,
+          [
+            assignee.id,
+            `Client responded to ticket: "${ticket.subject}"`,
+            link
+          ]
+        );
+      }
+    } else {
+      const adminUsers = await pool.query("SELECT id FROM users WHERE role = 'ADMIN'");
+      for (const admin of adminUsers.rows) {
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, link)
+           VALUES ($1, 'ticket_message', 'New Message on Ticket', $2, $3)`,
+          [
+            admin.id,
+            `Client responded to ticket: "${ticket.subject}"`,
+            `/admin/tickets/${req.params.id}`
+          ]
+        );
+      }
     }
 
     res.status(201).json({ message: result.rows[0] });
@@ -4429,13 +4531,170 @@ app.post('/api/dashboard/tickets/:id/attachments', authenticateToken, async (req
 
 // Admin ticket endpoints
 
+// Create ticket (admin)
+app.post('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    // Debug logging
+    console.log('Admin ticket creation request:', {
+      body: req.body,
+      user: req.user
+    });
+
+    const {
+      subject,
+      description,
+      type,
+      priority,
+      status,
+      user_id,
+      assigned_to,
+      project_name,
+      email_request,
+      category,
+      due_date,
+      estimated_hours,
+      actual_hours,
+      budget,
+      tags
+    } = req.body;
+
+    // Validate required fields
+    if (!subject || typeof subject !== 'string' || !subject.trim()) {
+      return res.status(400).json({ error: 'Subject is required and must be a non-empty string' });
+    }
+
+    if (!description || typeof description !== 'string' || !description.trim()) {
+      return res.status(400).json({ error: 'Description is required and must be a non-empty string' });
+    }
+
+    if (user_id === undefined || user_id === null || user_id === '') {
+      return res.status(400).json({ error: 'Ticket owner is required' });
+    }
+
+    const ownerId = parseInt(user_id, 10);
+    if (Number.isNaN(ownerId) || ownerId <= 0) {
+      return res.status(400).json({ error: 'Invalid ticket owner ID' });
+    }
+
+    const ownerResult = await pool.query(
+      `SELECT id, role FROM users WHERE id = $1`,
+      [ownerId]
+    );
+
+    if (ownerResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Ticket owner not found' });
+    }
+
+    let assignedToId = null;
+    let assignedUserResult = null;
+    if (assigned_to !== undefined && assigned_to !== null && assigned_to !== '') {
+      assignedToId = parseInt(assigned_to, 10);
+      if (Number.isNaN(assignedToId) || assignedToId <= 0) {
+        return res.status(400).json({ error: 'Invalid assignee ID' });
+      }
+
+      assignedUserResult = await pool.query(
+        `SELECT id, role FROM users WHERE id = $1`,
+        [assignedToId]
+      );
+
+      if (assignedUserResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Assignee not found' });
+      }
+    }
+
+    const statusValue = status || 'open';
+
+    const result = await pool.query(
+      `INSERT INTO tickets (
+        user_id, subject, description, type, priority, status,
+        assigned_to, project_name, email_request, category, due_date,
+        estimated_hours, actual_hours, budget, tags
+      )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+       RETURNING *`,
+      [
+        ownerId,
+        subject,
+        description,
+        type || 'support',
+        priority || 'medium',
+        statusValue,
+        assignedToId,
+        project_name || null,
+        email_request || null,
+        category || null,
+        due_date || null,
+        estimated_hours || null,
+        actual_hours || null,
+        budget || null,
+        tags || null
+      ]
+    );
+
+    const ticket = result.rows[0];
+
+    const ownerLink = ownerResult.rows[0].role === 'ADMIN'
+      ? `/admin/tickets/${ticket.id}`
+      : `/portal/tickets/${ticket.id}`;
+
+    await pool.query(
+      `INSERT INTO notifications (user_id, type, title, message, link)
+       VALUES ($1, 'ticket_created', 'New Ticket Created', $2, $3)`,
+      [
+        ownerId,
+        `A new ticket "${subject}" has been created for you`,
+        ownerLink
+      ]
+    );
+
+    if (assignedToId && assignedToId !== ownerId) {
+      const assignedUser = assignedUserResult ? assignedUserResult.rows[0] : null;
+      const assignedLink = assignedUser && assignedUser.role === 'ADMIN'
+        ? `/admin/tickets/${ticket.id}`
+        : `/portal/tickets/${ticket.id}`;
+
+      await pool.query(
+        `INSERT INTO notifications (user_id, type, title, message, link)
+         VALUES ($1, 'ticket_assigned', 'New Ticket Assigned', $2, $3)`,
+        [
+          assignedToId,
+          `Ticket "${subject}" has been assigned to you`,
+          assignedLink
+        ]
+      );
+    }
+
+    res.status(201).json({ ticket });
+  } catch (error) {
+    console.error('Admin create ticket error:', error);
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error.message 
+      : 'Internal server error';
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: errorMessage
+    });
+  }
+});
+
 // Get all tickets (admin)
 app.get('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT t.*, u.name as user_name, u.email as user_email, u.phone as user_phone, u.company_name as user_company
+      `SELECT 
+        t.*, 
+        u.name as user_name, 
+        u.email as user_email, 
+        u.phone as user_phone, 
+        u.company_name as user_company,
+        au.id as assigned_user_id,
+        au.name as assigned_user_name,
+        au.email as assigned_user_email,
+        au.role as assigned_user_role
        FROM tickets t
        JOIN users u ON t.user_id = u.id
+       LEFT JOIN users au ON t.assigned_to = au.id
        ORDER BY t.created_at DESC`
     );
     res.json({ tickets: result.rows });
@@ -4449,9 +4708,18 @@ app.get('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res) 
 app.get('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const ticketResult = await pool.query(
-      `SELECT t.*, u.name as user_name, u.email as user_email
+      `SELECT 
+        t.*, 
+        u.name as user_name, 
+        u.email as user_email,
+        u.role as user_role,
+        au.id as assigned_user_id,
+        au.name as assigned_user_name,
+        au.email as assigned_user_email,
+        au.role as assigned_user_role
        FROM tickets t
        JOIN users u ON t.user_id = u.id
+       LEFT JOIN users au ON t.assigned_to = au.id
        WHERE t.id = $1`,
       [req.params.id]
     );
@@ -4488,23 +4756,101 @@ app.get('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req, r
 // Update ticket (admin)
 app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const { status, priority, assigned_to } = req.body;
-    
+    const {
+      status,
+      priority,
+      assigned_to,
+      project_name,
+      email_request,
+      category,
+      due_date,
+      estimated_hours,
+      actual_hours,
+      budget,
+      tags
+    } = req.body;
+
+    const existingTicketResult = await pool.query(
+      `SELECT * FROM tickets WHERE id = $1`,
+      [req.params.id]
+    );
+
+    if (existingTicketResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    const existingTicket = existingTicketResult.rows[0];
+
+    let assignedToId = existingTicket.assigned_to;
+    let newAssignedUser = null;
+    let assignmentChanged = false;
+
+    if (assigned_to !== undefined) {
+      if (assigned_to === null || assigned_to === '' || assigned_to === 'null') {
+        assignedToId = null;
+      } else {
+        const parsed = parseInt(assigned_to, 10);
+        if (Number.isNaN(parsed)) {
+          return res.status(400).json({ error: 'Invalid assignee' });
+        }
+
+        const assigneeResult = await pool.query(
+          `SELECT id, role FROM users WHERE id = $1`,
+          [parsed]
+        );
+
+        if (assigneeResult.rows.length === 0) {
+          return res.status(404).json({ error: 'Assignee not found' });
+        }
+
+        assignedToId = parsed;
+        newAssignedUser = assigneeResult.rows[0];
+      }
+
+      assignmentChanged = assignedToId !== existingTicket.assigned_to;
+    }
+
     const updates = [];
     const values = [];
     let paramCount = 1;
 
-    if (status) {
-      updates.push(`status = $${paramCount++}`);
-      values.push(status);
+    const addUpdate = (column, value) => {
+      updates.push(`${column} = $${paramCount++}`);
+      values.push(value);
+    };
+
+    if (status !== undefined) {
+      addUpdate('status', status);
     }
-    if (priority) {
-      updates.push(`priority = $${paramCount++}`);
-      values.push(priority);
+    if (priority !== undefined) {
+      addUpdate('priority', priority);
     }
     if (assigned_to !== undefined) {
-      updates.push(`assigned_to = $${paramCount++}`);
-      values.push(assigned_to);
+      addUpdate('assigned_to', assignedToId);
+    }
+    if (project_name !== undefined) {
+      addUpdate('project_name', project_name || null);
+    }
+    if (email_request !== undefined) {
+      addUpdate('email_request', email_request || null);
+    }
+    if (category !== undefined) {
+      addUpdate('category', category || null);
+    }
+    if (due_date !== undefined) {
+      addUpdate('due_date', due_date || null);
+    }
+    if (estimated_hours !== undefined) {
+      addUpdate('estimated_hours', estimated_hours === '' ? null : estimated_hours);
+    }
+    if (actual_hours !== undefined) {
+      addUpdate('actual_hours', actual_hours === '' ? null : actual_hours);
+    }
+    if (budget !== undefined) {
+      addUpdate('budget', budget === '' ? null : budget);
+    }
+    if (tags !== undefined) {
+      addUpdate('tags', tags || null);
     }
 
     if (updates.length === 0) {
@@ -4520,34 +4866,109 @@ app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req,
       values
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Ticket not found' });
-    }
-
     const ticket = result.rows[0];
-    
-    // Create notification for ticket owner when admin updates ticket
+
+    // Notify ticket owner
     if (ticket.user_id) {
-      let notificationTitle = 'Ticket Updated';
       let notificationMessage = `Your ticket "${ticket.subject}" has been updated`;
-      
+
       if (status) {
-        notificationMessage = `Your ticket "${ticket.subject}" status changed to ${status}`;
+        notificationMessage = `Your ticket "${ticket.subject}" status changed to ${ticket.status}`;
+      } else if (assignmentChanged && assignedToId) {
+        notificationMessage = `Your ticket "${ticket.subject}" has been reassigned`;
       }
-      
+
       await pool.query(
         `INSERT INTO notifications (user_id, type, title, message, link)
-         VALUES ($1, 'ticket_update', $2, $3, $4)`,
+         VALUES ($1, 'ticket_update', 'Ticket Updated', $2, $3)`,
         [
           ticket.user_id,
-          notificationTitle,
           notificationMessage,
           `/portal/tickets/${req.params.id}`
         ]
       );
     }
 
-    res.json({ ticket: result.rows[0] });
+    // Notify new assignee if applicable
+    if (assignmentChanged && assignedToId) {
+      if (!newAssignedUser) {
+        const assigneeLookup = await pool.query(
+          `SELECT id, role FROM users WHERE id = $1`,
+          [assignedToId]
+        );
+        newAssignedUser = assigneeLookup.rows[0] || null;
+      }
+
+      if (newAssignedUser) {
+        const link = newAssignedUser.role === 'ADMIN'
+          ? `/admin/tickets/${ticket.id}`
+          : `/portal/tickets/${ticket.id}`;
+
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, link)
+           VALUES ($1, 'ticket_assigned', 'Ticket Assigned', $2, $3)`,
+          [
+            assignedToId,
+            `Ticket "${ticket.subject}" has been assigned to you`,
+            link
+          ]
+        );
+      }
+    } else if (ticket.assigned_to) {
+      const assigneeLookup = await pool.query(
+        `SELECT id, role FROM users WHERE id = $1`,
+        [ticket.assigned_to]
+      );
+
+      if (assigneeLookup.rows.length > 0) {
+        const assignee = assigneeLookup.rows[0];
+        const link = assignee.role === 'ADMIN'
+          ? `/admin/tickets/${ticket.id}`
+          : `/portal/tickets/${ticket.id}`;
+
+        let assignedMessage = `Ticket "${ticket.subject}" has been updated`;
+        if (status) {
+          assignedMessage = `Ticket "${ticket.subject}" status changed to ${ticket.status}`;
+        }
+
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, link)
+           VALUES ($1, 'ticket_update', 'Ticket Updated', $2, $3)`,
+          [
+            ticket.assigned_to,
+            assignedMessage,
+            link
+          ]
+        );
+      }
+    }
+
+    // Notify previous assignee if ticket was unassigned or reassigned
+    if (assignmentChanged && existingTicket.assigned_to && existingTicket.assigned_to !== assignedToId) {
+      const previousAssigneeLookup = await pool.query(
+        `SELECT id, role FROM users WHERE id = $1`,
+        [existingTicket.assigned_to]
+      );
+
+      const previousAssignee = previousAssigneeLookup.rows[0];
+      if (previousAssignee) {
+        const previousLink = previousAssignee.role === 'ADMIN'
+          ? `/admin/tickets/${ticket.id}`
+          : `/portal/tickets/${ticket.id}`;
+
+        await pool.query(
+          `INSERT INTO notifications (user_id, type, title, message, link)
+           VALUES ($1, 'ticket_update', 'Ticket Unassigned', $2, $3)`,
+          [
+            previousAssignee.id,
+            `Ticket "${ticket.subject}" is no longer assigned to you`,
+            previousLink
+          ]
+        );
+      }
+    }
+
+    res.json({ ticket });
   } catch (error) {
     console.error('Update ticket error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -5012,6 +5433,26 @@ app.get('/api/admin/invoices/:id/pdf', authenticateToken, requireAdmin, async (r
     console.error('Generate PDF error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Handle unhandled errors to prevent server crashes
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Log but don't exit - let the server continue running
+  // Database connection errors are common and should be handled gracefully
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // For database connection errors, log and continue
+  // For other critical errors, we might want to exit
+  if (error.code === 'EADDRNOTAVAIL' || error.message?.includes('database') || error.message?.includes('pool')) {
+    console.error('Database connection error detected. Server will continue but database operations may fail.');
+    return; // Don't exit for database errors
+  }
+  // For other uncaught exceptions, exit after logging
+  console.error('Critical error detected. Exiting...');
+  process.exit(1);
 });
 
 const DEFAULT_PORT = parseInt(process.env.PORT, 10) || 5001;

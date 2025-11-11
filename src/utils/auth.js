@@ -970,6 +970,19 @@ export const ticketAPI = {
     return response.json();
   },
 
+  async getAssignees() {
+    const response = await fetch(`${API_URL}/dashboard/tickets/assignees`, {
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || 'Failed to fetch ticket assignees');
+    }
+
+    return response.json();
+  },
+
   async getTickets() {
     const response = await fetch(`${API_URL}/dashboard/tickets`, {
       credentials: 'include',
@@ -1127,6 +1140,30 @@ export const adminTicketAPI = {
 
     if (!response.ok) {
       throw new Error('Failed to fetch ticket');
+    }
+
+    return response.json();
+  },
+
+  async createTicket(payload) {
+    const response = await fetch(`${API_URL}/admin/tickets`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+      }
+      const errorMessage = errorData.error || errorData.message || 'Failed to create ticket';
+      throw new Error(errorMessage);
     }
 
     return response.json();

@@ -12,7 +12,8 @@ import {
   Paperclip,
   Image as ImageIcon,
   FileText,
-  ArrowRight
+  ArrowRight,
+  UserCheck
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
@@ -25,6 +26,9 @@ const TicketsPage = () => {
   const [ticketDetails, setTicketDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [assignees, setAssignees] = useState([]);
+  const [assigneesLoading, setAssigneesLoading] = useState(true);
+  const [assigneesError, setAssigneesError] = useState(null);
 
   const [formData, setFormData] = useState({
     subject: '',
@@ -37,11 +41,13 @@ const TicketsPage = () => {
     due_date: '',
     estimated_hours: '',
     budget: '',
-    tags: ''
+    tags: '',
+    assigned_to: ''
   });
 
   useEffect(() => {
     fetchTickets();
+    fetchAssignees();
   }, []);
 
   const fetchTickets = async () => {
@@ -55,6 +61,20 @@ const TicketsPage = () => {
       setError(err.message || 'Failed to fetch tickets. Please try again later.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAssignees = async () => {
+    try {
+      setAssigneesLoading(true);
+      setAssigneesError(null);
+      const data = await ticketAPI.getAssignees();
+      setAssignees(data.assignees || []);
+    } catch (err) {
+      console.error('Error fetching ticket assignees:', err);
+      setAssigneesError(err.message || 'Failed to load available assignees.');
+    } finally {
+      setAssigneesLoading(false);
     }
   };
 
@@ -78,7 +98,8 @@ const TicketsPage = () => {
         due_date: formData.due_date || null,
         estimated_hours: formData.estimated_hours ? parseFloat(formData.estimated_hours) : null,
         budget: formData.budget ? parseFloat(formData.budget) : null,
-        tags: formData.tags || null
+        tags: formData.tags || null,
+        assigned_to: formData.assigned_to || null
       };
       await ticketAPI.createTicket(
         formData.subject,
@@ -99,7 +120,8 @@ const TicketsPage = () => {
         due_date: '',
         estimated_hours: '',
         budget: '',
-        tags: ''
+        tags: '',
+        assigned_to: ''
       });
       fetchTickets();
     } catch (err) {
@@ -204,7 +226,7 @@ const TicketsPage = () => {
               ← Back to Tickets
             </button>
             <h1 className="text-4xl font-bold text-white mb-2">{ticketDetails.ticket.subject}</h1>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(ticketDetails.ticket.status)}`}>
                 {ticketDetails.ticket.status}
               </span>
@@ -213,6 +235,16 @@ const TicketsPage = () => {
               </span>
               <span className="text-sm text-gray-400">
                 Created {new Date(ticketDetails.ticket.created_at).toLocaleDateString()}
+              </span>
+              <span className="flex items-center gap-2 text-sm text-gray-300">
+                <UserCheck className="w-4 h-4 text-orange-400" />
+                {ticketDetails.ticket.assigned_name ? (
+                  <>
+                    Assigned to <span className="text-white font-medium">{ticketDetails.ticket.assigned_name}</span>
+                  </>
+                ) : (
+                  'Unassigned'
+                )}
               </span>
             </div>
           </div>
@@ -399,6 +431,12 @@ const TicketsPage = () => {
                           Due: {new Date(ticket.due_date).toLocaleDateString()}
                         </span>
                       )}
+                      {ticket.assigned_name && (
+                        <span className="flex items-center gap-1 px-2 py-1 bg-gray-700/40 text-gray-300 rounded text-xs">
+                          <UserCheck className="w-3 h-3 text-orange-400" />
+                          {ticket.assigned_name}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <ArrowRight className="w-6 h-6 text-gray-400" />
@@ -455,6 +493,39 @@ const TicketsPage = () => {
                     <option value="enhancement">Feature Enhancement</option>
                     <option value="bug">Bug Report</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Assign To
+                  </label>
+                  {assigneesLoading ? (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-gray-400 text-sm">
+                      <Loader className="w-4 h-4 animate-spin text-orange-500" />
+                      Loading team members...
+                    </div>
+                  ) : assigneesError ? (
+                    <div className="px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-300">
+                      {assigneesError}
+                    </div>
+                  ) : assignees.length > 0 ? (
+                    <select
+                      value={formData.assigned_to}
+                      onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
+                      className="w-full p-3 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                      <option value="">Select an admin</option>
+                      {assignees.map((assignee) => (
+                        <option key={assignee.id} value={assignee.id}>
+                          {assignee.name} ({assignee.email})
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-sm text-gray-400">
+                      No admin users available right now. The ticket will remain unassigned.
+                    </div>
+                  )}
                 </div>
 
                 <div>
