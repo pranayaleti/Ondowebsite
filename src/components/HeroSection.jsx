@@ -28,17 +28,17 @@ const HeroSection = ({ onOpenConsultation }) => {
           </div>
           
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-            <span className="text-white">Hire the Best</span>
+            <span className="text-white">Ondosoft - Best</span>
             <br />
             <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text drop-shadow-lg">
-              Software Developers
+              Freelancing Site Near Me
             </span>
           </h1>
           
           <p className="text-xl text-neutral-300 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-            <strong className="text-orange-400 font-semibold">Nationwide software development company</strong> specializing in 
-            custom web applications, SaaS platforms, and mobile apps. From startups to enterprises, 
-            we deliver scalable solutions that drive real business growth.
+            <strong className="text-orange-400 font-semibold">Ondosoft</strong> is the best freelancing site and #1 software development platform. 
+            Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. 
+            From startups to enterprises, we deliver scalable solutions that drive real business growth.
           </p>
           
           {/* Key Benefits */}

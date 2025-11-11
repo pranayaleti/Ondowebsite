@@ -1,6 +1,75 @@
 // Import centralized API configuration
 import { API_URL } from './apiConfig';
 
+// Token storage utilities
+const TOKEN_KEY = 'ondosoft_auth_token';
+
+export const tokenStorage = {
+  get: () => {
+    try {
+      return localStorage.getItem(TOKEN_KEY);
+    } catch (error) {
+      console.error('Error reading token from localStorage:', error);
+      return null;
+    }
+  },
+  set: (token) => {
+    try {
+      if (token) {
+        localStorage.setItem(TOKEN_KEY, token);
+      } else {
+        localStorage.removeItem(TOKEN_KEY);
+      }
+    } catch (error) {
+      console.error('Error storing token in localStorage:', error);
+    }
+  },
+  remove: () => {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+    } catch (error) {
+      console.error('Error removing token from localStorage:', error);
+    }
+  }
+};
+
+// Helper function to get headers with token
+const getAuthHeaders = (customHeaders = {}) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...customHeaders,
+  };
+  
+  const token = tokenStorage.get();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
+// Helper function to make authenticated fetch requests
+const authenticatedFetch = async (url, options = {}) => {
+  const headers = getAuthHeaders(options.headers);
+  
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    credentials: 'include',
+  });
+  
+  // If 401, remove token as it's invalid
+  if (response.status === 401) {
+    tokenStorage.remove();
+    // Redirect to login if not already there
+    if (!window.location.pathname.includes('/auth/signin')) {
+      window.location.href = '/auth/signin';
+    }
+  }
+  
+  return response;
+};
+
 // Auth API functions
 export const authAPI = {
   async signup(email, password, name, additionalData = {}) {
@@ -65,7 +134,14 @@ export const authAPI = {
         throw new Error(`Invalid response format. Server may not be running properly. ${text.substring(0, 100)}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      
+      // Store token in localStorage if provided
+      if (data.token) {
+        tokenStorage.set(data.token);
+      }
+      
+      return data;
     } catch (error) {
       // Handle network errors
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -132,7 +208,14 @@ export const authAPI = {
         throw new Error(`Invalid response format. Server may not be running properly. ${text.substring(0, 100)}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      
+      // Store token in localStorage if provided
+      if (data.token) {
+        tokenStorage.set(data.token);
+      }
+      
+      return data;
     } catch (error) {
       // Handle network errors
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -144,8 +227,12 @@ export const authAPI = {
 
   async signout() {
     try {
+      // Remove token from localStorage first
+      tokenStorage.remove();
+      
       const response = await fetch(`${API_URL}/auth/signout`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -171,6 +258,9 @@ export const authAPI = {
       // If not JSON, return empty object
       return {};
     } catch (error) {
+      // Always remove token even if request fails
+      tokenStorage.remove();
+      
       // Handle network errors gracefully for signout
       if (error instanceof TypeError && error.message.includes('fetch')) {
         console.warn('Network error during signout. User will be signed out locally.');
@@ -183,10 +273,15 @@ export const authAPI = {
   async getSession() {
     try {
       const response = await fetch(`${API_URL}/auth/session`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
       if (!response.ok) {
+        // If 401, remove token as it's invalid
+        if (response.status === 401) {
+          tokenStorage.remove();
+        }
         return null;
       }
 
@@ -208,6 +303,7 @@ export const authAPI = {
 
   async getNotifications() {
     const response = await fetch(`${API_URL}/admin/notifications`, {
+      headers: getAuthHeaders(),
       credentials: 'include',
       cache: 'no-store',
     });
@@ -226,6 +322,7 @@ export const authAPI = {
   async markNotificationRead(notificationId) {
     const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
       method: 'PATCH',
+      headers: getAuthHeaders(),
       credentials: 'include',
       cache: 'no-store',
     });
@@ -244,6 +341,7 @@ export const authAPI = {
   async markAllNotificationsRead() {
     const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
       method: 'PATCH',
+      headers: getAuthHeaders(),
       credentials: 'include',
       cache: 'no-store',
     });
@@ -264,8 +362,8 @@ export const authAPI = {
 export const portalAPI = {
   async getDashboard() {
     try {
-      const response = await fetch(`${API_URL}/dashboard/dashboard`, {
-        credentials: 'include',
+      const response = await authenticatedFetch(`${API_URL}/dashboard/dashboard`, {
+        method: 'GET',
       });
 
       if (!response.ok) {
