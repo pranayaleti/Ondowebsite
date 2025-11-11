@@ -8,26 +8,21 @@
  * @returns {string} The API base URL
  */
 export const getAPIUrl = () => {
-  // If VITE_API_URL is explicitly set, use it
+  // If VITE_API_URL is explicitly set, use it (and ensure it has /api suffix)
   if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+    const apiUrl = import.meta.env.VITE_API_URL.trim();
+    // Ensure the URL ends with /api if it doesn't already
+    if (apiUrl.endsWith('/api')) {
+      return apiUrl;
+    } else if (apiUrl.endsWith('/')) {
+      return apiUrl + 'api';
+    } else {
+      return apiUrl + '/api';
+    }
   }
   
   // In production, use relative /api path since backend serves the frontend
-  // If VITE_API_URL is explicitly set (for separate frontend/backend deployments), use it
   if (import.meta.env.PROD) {
-    // If VITE_API_URL is explicitly set, use it (for separate deployments)
-    if (import.meta.env.VITE_API_URL) {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      // Ensure the URL ends with /api if it doesn't already
-      if (apiUrl.endsWith('/api')) {
-        return apiUrl;
-      } else if (apiUrl.endsWith('/')) {
-        return apiUrl + 'api';
-      } else {
-        return apiUrl + '/api';
-      }
-    }
     // Default: use relative path since backend serves the frontend on the same domain
     return '/api';
   }
@@ -76,4 +71,22 @@ export const API_URL = getAPIUrl();
 
 // Export the API base URL as a constant for direct use
 export const API_BASE = getAPIBase();
+
+// Debug logging (only in development or if there's an issue)
+if (import.meta.env.DEV || API_URL.includes('your-backend-url') || API_URL.includes('placeholder')) {
+  console.warn('🔧 API Configuration:', {
+    API_URL,
+    API_BASE,
+    VITE_API_URL: import.meta.env.VITE_API_URL || 'not set',
+    PROD: import.meta.env.PROD,
+    MODE: import.meta.env.MODE
+  });
+  
+  if (API_URL.includes('your-backend-url') || API_URL.includes('placeholder')) {
+    console.error('❌ ERROR: VITE_API_URL contains a placeholder value!');
+    console.error('📝 To fix: Set VITE_API_URL environment variable to your actual backend URL');
+    console.error('   Example: VITE_API_URL=https://ondowebsite.onrender.com/api');
+    console.error('   Or: VITE_API_URL=https://ondowebsite.onrender.com (will auto-add /api)');
+  }
+}
 
