@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { adminTicketAPI } from '../../utils/auth';
+import { useState, useEffect, useMemo } from 'react';
+import { adminTicketAPI, adminAPI } from '../../utils/auth';
 import { 
   MessageSquare, 
   Loader, 
@@ -18,9 +18,29 @@ import {
   Calendar as CalendarIcon,
   Edit,
   Save,
-  X
+  X,
+  Plus,
+  UserCheck
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+
+const defaultCreateTicketForm = {
+  subject: '',
+  description: '',
+  type: 'support',
+  priority: 'medium',
+  status: 'open',
+  user_id: '',
+  assigned_to: '',
+  project_name: '',
+  email_request: '',
+  category: '',
+  due_date: '',
+  estimated_hours: '',
+  actual_hours: '',
+  budget: '',
+  tags: ''
+};
 
 const AdminTicketsPage = () => {
   const [tickets, setTickets] = useState([]);
@@ -38,9 +58,17 @@ const AdminTicketsPage = () => {
   const [filterEmailRequest, setFilterEmailRequest] = useState('');
   const [editingTicket, setEditingTicket] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [usersError, setUsersError] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createFormData, setCreateFormData] = useState(defaultCreateTicketForm);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState(null);
 
   useEffect(() => {
     fetchTickets();
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -57,6 +85,20 @@ const AdminTicketsPage = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      setUsersLoading(true);
+      setUsersError(null);
+      const data = await adminAPI.getUsers();
+      setUsers(data.users || []);
+    } catch (err) {
+      console.error('Error fetching users for ticket assignment:', err);
+      setUsersError(err.message || 'Failed to load users');
+    } finally {
+      setUsersLoading(false);
     }
   };
 
@@ -122,6 +164,7 @@ const AdminTicketsPage = () => {
     setEditFormData({
       priority: ticket.priority || 'medium',
       status: ticket.status || 'open',
+      assigned_to: ticket.assigned_user_id ? String(ticket.assigned_user_id) : '',
       project_name: ticket.project_name || '',
       email_request: ticket.email_request || '',
       category: ticket.category || '',
@@ -135,7 +178,38 @@ const AdminTicketsPage = () => {
 
   const handleSave = async (ticketId) => {
     try {
-      await adminTicketAPI.updateTicket(ticketId, editFormData);
+      const updates = {
+        ...editFormData,
+        assigned_to:
+          editFormData.assigned_to === ''
+            ? null
+            : parseInt(editFormData.assigned_to, 10),
+        estimated_hours:
+          editFormData.estimated_hours === ''
+            ? null
+            : parseFloat(editFormData.estimated_hours),
+        actual_hours:
+          editFormData.actual_hours === ''
+            ? null
+            : parseFloat(editFormData.actual_hours),
+        budget:
+          editFormData.budget === '' ? null : parseFloat(editFormData.budget)
+      };
+
+      if (Number.isNaN(updates.assigned_to)) {
+        updates.assigned_to = null;
+      }
+      if (Number.isNaN(updates.estimated_hours)) {
+        updates.estimated_hours = null;
+      }
+      if (Number.isNaN(updates.actual_hours)) {
+        updates.actual_hours = null;
+      }
+      if (Number.isNaN(updates.budget)) {
+        updates.budget = null;
+      }
+
+      await adminTicketAPI.updateTicket(ticketId, updates);
       setEditingTicket(null);
       fetchTickets();
       if (selectedTicket === ticketId) {
@@ -167,6 +241,116 @@ const AdminTicketsPage = () => {
       setError(err.message);
     }
   };
+
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Validate required fields
+    if (!createFormData.user_id || createFormData.user_id === '') {
+      setCreateError('Please select a ticket owner');
+      return;
+    }
+
+    if (!createFormData.subject || !createFormData.subject.trim()) {
+      setCreateError('Subject is required');
+      return;
+    }
+
+    if (!createFormData.description || !createFormData.description.trim()) {
+      setCreateError('Description is required');
+      return;
+    }
+
+    const ownerId = parseInt(createFormData.user_id, 10);
+    if (Number.isNaN(ownerId) || ownerId <= 0) {
+      setCreateError('Invalid ticket owner selected');
+      return;
+    }
+
+    setCreateLoading(true);
+    setCreateError(null);
+
+    try {
+      const payload = {
+        subject: createFormData.subject.trim(),
+        description: createFormData.description.trim(),
+        type: createFormData.type || 'support',
+        priority: createFormData.priority || 'medium',
+        status: createFormData.status || 'open',
+        user_id: ownerId,
+        assigned_to: createFormData.assigned_to && createFormData.assigned_to !== ''
+          ? parseInt(createFormData.assigned_to, 10)
+          : null,
+        project_name: createFormData.project_name?.trim() || null,
+        email_request: createFormData.email_request?.trim() || null,
+        category: createFormData.category || null,
+        due_date: createFormData.due_date || null,
+        estimated_hours: createFormData.estimated_hours && createFormData.estimated_hours !== ''
+          ? parseFloat(createFormData.estimated_hours)
+          : null,
+        actual_hours: createFormData.actual_hours && createFormData.actual_hours !== ''
+          ? parseFloat(createFormData.actual_hours)
+          : null,
+        budget: createFormData.budget && createFormData.budget !== ''
+          ? parseFloat(createFormData.budget)
+          : null,
+        tags: createFormData.tags?.trim() || null
+      };
+
+      // Validate parsed values
+      if (payload.assigned_to !== null && (Number.isNaN(payload.assigned_to) || payload.assigned_to <= 0)) {
+        payload.assigned_to = null;
+      }
+      if (payload.estimated_hours !== null && Number.isNaN(payload.estimated_hours)) {
+        payload.estimated_hours = null;
+      }
+      if (payload.actual_hours !== null && Number.isNaN(payload.actual_hours)) {
+        payload.actual_hours = null;
+      }
+      if (payload.budget !== null && Number.isNaN(payload.budget)) {
+        payload.budget = null;
+      }
+
+      // Debug logging (remove in production)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Creating ticket with payload:', payload);
+      }
+
+      await adminTicketAPI.createTicket(payload);
+      handleCloseCreateModal();
+      fetchTickets();
+    } catch (err) {
+      console.error('Error creating ticket:', err);
+      const errorMessage = err.message || 'Failed to create ticket. Please try again.';
+      setCreateError(errorMessage);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+    setCreateError(null);
+    setCreateFormData(defaultCreateTicketForm);
+  };
+
+  const sortedUsers = useMemo(() => {
+    if (!users || users.length === 0) {
+      return [];
+    }
+    return [...users].sort((a, b) => a.name.localeCompare(b.name));
+  }, [users]);
+
+  const adminUsers = useMemo(
+    () => sortedUsers.filter((user) => user.role === 'ADMIN'),
+    [sortedUsers]
+  );
+
+  const clientUsers = useMemo(
+    () => sortedUsers.filter((user) => user.role !== 'ADMIN'),
+    [sortedUsers]
+  );
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -239,7 +423,7 @@ const AdminTicketsPage = () => {
               ← Back to Tickets
             </button>
             <h1 className="text-4xl font-bold text-white mb-2">{ticketDetails.ticket.subject}</h1>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex flex-wrap items-center gap-4 mb-4">
               <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(ticketDetails.ticket.status)}`}>
                 {ticketDetails.ticket.status}
               </span>
@@ -248,6 +432,19 @@ const AdminTicketsPage = () => {
               </span>
               <span className="text-sm text-gray-400">
                 Created {new Date(ticketDetails.ticket.created_at).toLocaleDateString()}
+              </span>
+              <span className="flex items-center gap-2 text-sm text-gray-300">
+                <UserCheck className="w-4 h-4 text-orange-400" />
+                {ticketDetails.ticket.assigned_user_name ? (
+                  <span>
+                    Assigned to{' '}
+                    <span className="text-white font-medium">
+                      {ticketDetails.ticket.assigned_user_name}
+                    </span>
+                  </span>
+                ) : (
+                  'Unassigned'
+                )}
               </span>
             </div>
             <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
@@ -258,6 +455,18 @@ const AdminTicketsPage = () => {
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <span>{ticketDetails.ticket.user_email}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4" />
+                <span>
+                  {ticketDetails.ticket.assigned_user_name
+                    ? `${ticketDetails.ticket.assigned_user_name}${
+                        ticketDetails.ticket.assigned_user_email
+                          ? ` (${ticketDetails.ticket.assigned_user_email})`
+                          : ''
+                      }`
+                    : 'Unassigned'}
+                </span>
               </div>
             </div>
           </div>
@@ -305,6 +514,32 @@ const AdminTicketsPage = () => {
                     <option value="high">High</option>
                     <option value="urgent">Urgent</option>
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Assigned To</label>
+                  {usersLoading ? (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-gray-400 text-sm">
+                      <Loader className="w-4 h-4 animate-spin text-orange-500" />
+                      Loading users...
+                    </div>
+                  ) : usersError ? (
+                    <div className="px-3 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-300">
+                      {usersError}
+                    </div>
+                  ) : (
+                    <select
+                      value={editFormData.assigned_to}
+                      onChange={(e) => setEditFormData({...editFormData, assigned_to: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm"
+                    >
+                      <option value="">Unassigned</option>
+                      {sortedUsers.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name} — {user.role === 'ADMIN' ? 'Admin' : 'Client'}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Project Name</label>
@@ -431,6 +666,37 @@ const AdminTicketsPage = () => {
                     <option value="high">High</option>
                     <option value="urgent">Urgent</option>
                   </select>
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400">Assigned To</label>
+                  {usersLoading ? (
+                    <div className="flex items-center gap-2 mt-1 px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-gray-400">
+                      <Loader className="w-4 h-4 animate-spin text-orange-500" />
+                      Loading users...
+                    </div>
+                  ) : usersError ? (
+                    <div className="mt-1 px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-300">
+                      {usersError}
+                    </div>
+                  ) : (
+                    <select
+                      value={ticketDetails.ticket.assigned_user_id || ''}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        handleUpdateTicket({
+                          assigned_to: value ? parseInt(value, 10) : null
+                        });
+                      }}
+                      className="w-full mt-1 px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      <option value="">Unassigned</option>
+                      {sortedUsers.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name} — {user.role === 'ADMIN' ? 'Admin' : 'Client'}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 {ticketDetails.ticket.project_name && (
                   <div>
@@ -597,9 +863,18 @@ const AdminTicketsPage = () => {
     <>
       <SEOHead title="Tickets - Admin" />
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Tickets Management</h1>
-          <p className="text-gray-400">Manage all support tickets and requests</p>
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">Tickets Management</h1>
+            <p className="text-gray-400">Manage all support tickets and requests</p>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Create Ticket
+          </button>
         </div>
 
         {error && (
@@ -791,6 +1066,12 @@ const AdminTicketsPage = () => {
                           ${parseFloat(ticket.budget).toFixed(2)}
                         </span>
                       )}
+                      {ticket.assigned_user_name && (
+                        <span className="flex items-center gap-1 px-2 py-1 bg-gray-700/40 text-gray-300 rounded">
+                          <UserCheck className="w-3 h-3 text-orange-400" />
+                          {ticket.assigned_user_name}
+                        </span>
+                      )}
                       <div className="flex items-center gap-2">
                         <Clock className="w-3 h-3" />
                         <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
@@ -812,6 +1093,291 @@ const AdminTicketsPage = () => {
                 ? 'Try adjusting your search or filters'
                 : 'No tickets found in the system'}
             </p>
+          </div>
+        )}
+
+        {showCreateModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl border border-gray-700 bg-gray-800 p-8">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Create New Ticket</h2>
+                  <p className="text-sm text-gray-400">
+                    Create a ticket on behalf of a client or team member and assign it immediately.
+                  </p>
+                </div>
+                <button
+                  onClick={handleCloseCreateModal}
+                  className="rounded-lg bg-gray-700 p-2 text-gray-300 transition-colors hover:bg-gray-600"
+                  aria-label="Close create ticket modal"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateTicket} className="space-y-6">
+                {createError && (
+                  <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-red-300">
+                    {createError}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Ticket Owner
+                    </label>
+                    {usersLoading ? (
+                      <div className="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-gray-400">
+                        <Loader className="h-4 w-4 animate-spin text-orange-500" />
+                        Loading users...
+                      </div>
+                    ) : usersError ? (
+                      <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                        {usersError}
+                      </div>
+                    ) : sortedUsers.length > 0 ? (
+                      <select
+                        value={createFormData.user_id}
+                        onChange={(e) => setCreateFormData({ ...createFormData, user_id: e.target.value })}
+                        className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                        required
+                      >
+                        <option value="">Select ticket owner</option>
+                        {sortedUsers.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name} — {user.role === 'ADMIN' ? 'Admin' : 'Client'}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-300">
+                        No users available. Add a user first to create tickets.
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Assign To
+                    </label>
+                    {usersLoading ? (
+                      <div className="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-gray-400">
+                        <Loader className="h-4 w-4 animate-spin text-orange-500" />
+                        Loading users...
+                      </div>
+                    ) : usersError ? (
+                      <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                        {usersError}
+                      </div>
+                    ) : (
+                      <select
+                        value={createFormData.assigned_to}
+                        onChange={(e) => setCreateFormData({ ...createFormData, assigned_to: e.target.value })}
+                        className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      >
+                        <option value="">Unassigned</option>
+                        {sortedUsers.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name} — {user.role === 'ADMIN' ? 'Admin' : 'Client'}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">Type</label>
+                    <select
+                      value={createFormData.type}
+                      onChange={(e) => setCreateFormData({ ...createFormData, type: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                      <option value="support">Support</option>
+                      <option value="improvement">Improvement Request</option>
+                      <option value="enhancement">Feature Enhancement</option>
+                      <option value="bug">Bug Report</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">Status</label>
+                    <select
+                      value={createFormData.status}
+                      onChange={(e) => setCreateFormData({ ...createFormData, status: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                      <option value="open">Open</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="resolved">Resolved</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">Priority</label>
+                    <select
+                      value={createFormData.priority}
+                      onChange={(e) => setCreateFormData({ ...createFormData, priority: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={createFormData.subject}
+                    onChange={(e) => setCreateFormData({ ...createFormData, subject: e.target.value })}
+                    className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="Brief summary of the request"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Description
+                  </label>
+                  <textarea
+                    value={createFormData.description}
+                    onChange={(e) => setCreateFormData({ ...createFormData, description: e.target.value })}
+                    className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="Provide detailed context, acceptance criteria, and any relevant links."
+                    rows={6}
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Project Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={createFormData.project_name}
+                      onChange={(e) => setCreateFormData({ ...createFormData, project_name: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Email Request (Optional)
+                    </label>
+                    <input
+                      type="email"
+                      value={createFormData.email_request}
+                      onChange={(e) => setCreateFormData({ ...createFormData, email_request: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Category (Optional)
+                    </label>
+                    <select
+                      value={createFormData.category}
+                      onChange={(e) => setCreateFormData({ ...createFormData, category: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    >
+                      <option value="">Select category</option>
+                      <option value="technical">Technical</option>
+                      <option value="billing">Billing</option>
+                      <option value="feature">Feature Request</option>
+                      <option value="bug">Bug Report</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Due Date (Optional)
+                    </label>
+                    <input
+                      type="date"
+                      value={createFormData.due_date}
+                      onChange={(e) => setCreateFormData({ ...createFormData, due_date: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Estimated Hours (Optional)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      value={createFormData.estimated_hours}
+                      onChange={(e) => setCreateFormData({ ...createFormData, estimated_hours: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Actual Hours (Optional)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      value={createFormData.actual_hours}
+                      onChange={(e) => setCreateFormData({ ...createFormData, actual_hours: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Budget (Optional)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={createFormData.budget}
+                      onChange={(e) => setCreateFormData({ ...createFormData, budget: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Tags (Optional, comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={createFormData.tags}
+                      onChange={(e) => setCreateFormData({ ...createFormData, tags: e.target.value })}
+                      className="w-full rounded-lg border border-gray-700 bg-gray-900/60 px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="tag1, tag2, tag3"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+                  <button
+                    type="button"
+                    onClick={handleCloseCreateModal}
+                    className="w-full rounded-lg bg-gray-700 px-6 py-3 text-white transition-colors hover:bg-gray-600 md:w-auto"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createLoading || usersLoading || sortedUsers.length === 0}
+                    className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 font-semibold text-white transition-all duration-200 hover:from-orange-600 hover:to-orange-700 disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
+                  >
+                    {createLoading ? 'Creating Ticket...' : 'Create Ticket'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
