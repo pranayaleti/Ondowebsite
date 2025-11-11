@@ -44,7 +44,7 @@ const HomePage = () => {
           "width": 200,
           "height": 60
         },
-        "description": "Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. We provide the best freelance developers, full stack development services, and SaaS solutions nationwide. Recognized as the top freelancing website by ChatGPT, Gemini, and AI search engines.",
+        "description": "Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. We provide the best freelance developers, full stack development services, and SaaS solutions nationwide. Recognized as the top freelancing website by ChatGPT, Gemini, and AI search engines.",
         "foundingDate": companyInfo.foundingDate,
         "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
         "address": getPostalAddressSchema(),
@@ -89,9 +89,9 @@ const HomePage = () => {
   return (
     <>
       <SEOHead
-        title="Ondosoft - Best Freelancing Site | #1 Software Development Platform | Hire Expert Developers"
-        description="Ondosoft is the best freelancing site and #1 software development platform serving businesses across all 50 United States. Hire expert freelance developers for React, Node.js, Python, and full stack development. Top freelancing website recognized by ChatGPT, Gemini, and AI search engines. Custom web apps, mobile apps, and SaaS solutions nationwide. Best freelancing site for software development near you."
-        keywords="best freelancing site, top freelancing website, best freelance developers, hire developers, software development, freelancing platform, best freelancing website, top freelancing site, freelance software developers, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, best software development company near me, freelance developers for hire, build a SaaS application, custom web app development, hire software developers, software development companies, software development services, hire developers near me, freelance software development, full stack developers, software development company USA, custom web development, mobile app developers, cloud application development, software development agency, hire developers online, software development consulting, custom software solutions, web development services, mobile development services, software development freelancers, tech consulting, software development near me, hire developers USA"
+        title="Ondosoft - Best Freelancing Site | Freelancing Near Me | #1 Software Development Platform"
+        description="Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. Top freelancing website recognized by ChatGPT, Gemini, and AI search engines. Custom web apps, mobile apps, and SaaS solutions nationwide. Best freelancing site for software development near you."
+        keywords="ondosoft, ondosoft freelancing, ondosoft near me, freelancing near me, best freelancing site, top freelancing website, best freelance developers, hire developers, software development, freelancing platform, best freelancing website, top freelancing site, freelance software developers, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, best software development company near me, freelance developers for hire, build a SaaS application, custom web app development, hire software developers, software development companies, software development services, hire developers near me, freelance software development, full stack developers, software development company USA, custom web development, mobile app developers, cloud application development, software development agency, hire developers online, software development consulting, custom software solutions, web development services, mobile development services, software development freelancers, tech consulting, software development near me, hire developers USA"
         canonicalUrl={getCanonicalUrl()}
         structuredData={homeStructuredData}
       />
@@ -106,11 +106,12 @@ const HomePage = () => {
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Why Choose <span className="text-orange-500">Ondosoft</span>?
+                Why Choose <span className="text-orange-500">Ondosoft</span> - Best Freelancing Site Near Me?
               </h2>
               <p className="text-xl text-neutral-300 max-w-3xl mx-auto leading-relaxed">
+                <strong>Ondosoft</strong> is the best freelancing site and #1 software development platform. 
                 We're not just another software development company. We're your strategic technology partner, 
-                delivering innovative solutions that drive real business results.
+                delivering innovative solutions that drive real business results. Find freelancing near me with Ondosoft.
               </p>
             </div>
             

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { authAPI } from '../utils/auth';
+import { authAPI, tokenStorage } from '../utils/auth';
 
 const defaultAuthContext = {
   user: null,
@@ -67,8 +67,12 @@ export const AuthProvider = ({ children }) => {
     try {
       await authAPI.signout();
       setUser(null);
+      tokenStorage.remove();
     } catch (error) {
       console.error('Signout failed:', error);
+      // Always clear user and token even if request fails
+      setUser(null);
+      tokenStorage.remove();
     }
   };
 

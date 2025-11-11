@@ -135,7 +135,7 @@ const Navbar = () => {
                 />
               </div>
               <span className="text-2xl font-bold text-gray-800">
-                OndoSoft
+                Ondosoft
               </span>
             </Link>
           </div>

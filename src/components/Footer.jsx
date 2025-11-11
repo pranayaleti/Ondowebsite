@@ -33,7 +33,7 @@ const Footer = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": companyInfo.name,
-    "description": "Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
+    "description": "Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
     "url": companyInfo.urls.website,
     "logo": `${companyInfo.urls.website}/logo.png`,
     "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
@@ -68,7 +68,7 @@ const Footer = () => {
           <div className="pr-8">
             <h3 className="text-xl font-bold mb-3">Ondosoft</h3>
             <p className="text-sm leading-relaxed">
-              Ondosoft is a nationwide software development company specializing in freelancing, full stack development, and SaaS solutions for businesses nationwide. We serve clients across all 50 states.
+              Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. Ondosoft is a nationwide software development company specializing in freelancing, full stack development, and SaaS solutions for businesses nationwide. We serve clients across all 50 states.
             </p>
           </div>
 
