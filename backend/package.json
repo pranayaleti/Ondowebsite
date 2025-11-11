@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Backend API server for OndoSoft",
-  "main": "server/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "node server/index.js",
-    "seed": "node server/seed.js"
+    "start": "node index.js",
+    "dev": "node index.js",
+    "seed": "node seed.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
