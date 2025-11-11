@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { authAPI, tokenStorage } from '../utils/auth';
 
 const defaultAuthContext = {
@@ -24,9 +24,14 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const hasCheckedSessionRef = useRef(false);
 
   useEffect(() => {
-    checkSession();
+    // Only check session once on mount
+    if (!hasCheckedSessionRef.current) {
+      hasCheckedSessionRef.current = true;
+      checkSession();
+    }
   }, []);
 
   const checkSession = async () => {
@@ -34,6 +39,9 @@ export const AuthProvider = ({ children }) => {
       const data = await authAPI.getSession();
       if (data && data.user) {
         setUser(data.user);
+      } else {
+        // If no user data, clear user state
+        setUser(null);
       }
     } catch (error) {
       console.error('Session check failed:', error);
