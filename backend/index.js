@@ -901,6 +901,8 @@ const allowedOrigins = [
   'http://127.0.0.1:5173',
   'https://ondosoft.com',
   'https://www.ondosoft.com',
+  'https://ondowebsite.onrender.com',
+  'http://ondowebsite.onrender.com',
   process.env.FRONTEND_URL
 ].filter(Boolean); // Remove undefined values
 
@@ -1076,6 +1078,14 @@ const authenticateToken = (req, res, next) => {
 
 // Apply request tracking middleware to all routes (before route definitions)
 app.use(trackRequest);
+
+// Serve static files from the dist directory (frontend build)
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath, {
+  maxAge: '1y', // Cache static assets for 1 year
+  etag: true,
+  lastModified: true
+}));
 
 // Routes
 
@@ -5433,6 +5443,24 @@ app.get('/api/admin/invoices/:id/pdf', authenticateToken, requireAdmin, async (r
     console.error('Generate PDF error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// Catch-all handler: serve index.html for client-side routing
+// This must be after all API routes
+app.get('*', (req, res, next) => {
+  // Skip API routes - they should have been handled above
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  
+  // Serve index.html for all non-API routes to enable client-side routing
+  const indexPath = path.join(distPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err);
+      res.status(500).send('Error loading application');
+    }
+  });
 });
 
 // Handle unhandled errors to prevent server crashes

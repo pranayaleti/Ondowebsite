@@ -3,7 +3,7 @@ services:
     name: ondo-soft-backend
     env: node
     plan: starter
-    buildCommand: npm install
+    buildCommand: cd .. && npm install && npm run build && cd backend && npm install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
