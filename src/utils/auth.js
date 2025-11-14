@@ -410,8 +410,8 @@ export const portalAPI = {
   },
 
   async getSubscriptions() {
-    const response = await fetch(`${API_URL}/dashboard/subscriptions`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/subscriptions`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -422,12 +422,8 @@ export const portalAPI = {
   },
 
   async createSubscription(planData) {
-    const response = await fetch(`${API_URL}/dashboard/subscriptions`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/subscriptions`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(planData),
     });
 
@@ -452,12 +448,8 @@ export const portalAPI = {
   },
 
   async updateSubscription(subscriptionId, updates) {
-    const response = await fetch(`${API_URL}/dashboard/subscriptions/${subscriptionId}`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/subscriptions/${subscriptionId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(updates),
     });
 
@@ -470,8 +462,8 @@ export const portalAPI = {
   },
 
   async getCampaigns() {
-    const response = await fetch(`${API_URL}/dashboard/campaigns`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/campaigns`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -482,8 +474,8 @@ export const portalAPI = {
   },
 
   async getAssets() {
-    const response = await fetch(`${API_URL}/dashboard/assets`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/assets`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -494,8 +486,8 @@ export const portalAPI = {
   },
 
   async getInvoices() {
-    const response = await fetch(`${API_URL}/dashboard/invoices`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/invoices`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -506,8 +498,8 @@ export const portalAPI = {
   },
 
   async getInvoice(invoiceId) {
-    const response = await fetch(`${API_URL}/dashboard/invoices/${invoiceId}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/invoices/${invoiceId}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -518,12 +510,8 @@ export const portalAPI = {
   },
 
   async uploadAsset(assetData) {
-    const response = await fetch(`${API_URL}/dashboard/assets`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/assets`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(assetData),
     });
 
@@ -536,9 +524,8 @@ export const portalAPI = {
   },
 
   async deleteAsset(assetId) {
-    const response = await fetch(`${API_URL}/dashboard/assets/${assetId}`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/assets/${assetId}`, {
       method: 'DELETE',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -551,12 +538,8 @@ export const portalAPI = {
 
   async createInvoice(invoiceData) {
     try {
-      const response = await fetch(`${API_URL}/dashboard/invoices`, {
+      const response = await authenticatedFetch(`${API_URL}/dashboard/invoices`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
         body: JSON.stringify(invoiceData),
       });
 
@@ -587,8 +570,8 @@ export const portalAPI = {
   },
 
   async getNotifications() {
-    const response = await fetch(`${API_URL}/dashboard/notifications`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/notifications`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -599,9 +582,8 @@ export const portalAPI = {
   },
 
   async markNotificationRead(notificationId) {
-    const response = await fetch(`${API_URL}/dashboard/notifications/${notificationId}/read`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/notifications/${notificationId}/read`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -612,9 +594,8 @@ export const portalAPI = {
   },
 
   async markAllNotificationsRead() {
-    const response = await fetch(`${API_URL}/dashboard/notifications/read-all`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/notifications/read-all`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -625,12 +606,8 @@ export const portalAPI = {
   },
 
   async remindMeLater(notificationId, remindAt) {
-    const response = await fetch(`${API_URL}/dashboard/notifications/${notificationId}/remind`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/notifications/${notificationId}/remind`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify({ remind_at: remindAt }),
     });
 
@@ -642,9 +619,8 @@ export const portalAPI = {
   },
 
   async dismissNotification(notificationId) {
-    const response = await fetch(`${API_URL}/dashboard/notifications/${notificationId}/dismiss`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/notifications/${notificationId}/dismiss`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -658,8 +634,8 @@ export const portalAPI = {
 // Admin API functions
 export const adminAPI = {
   async getDashboard() {
-    const response = await fetch(`${API_URL}/admin/dashboard`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/dashboard`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -675,8 +651,8 @@ export const adminAPI = {
   },
 
   async getUsers() {
-    const response = await fetch(`${API_URL}/admin/users`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/users`, {
+      method: 'GET',
       cache: 'no-store', // Prevent caching
     });
 
@@ -693,8 +669,8 @@ export const adminAPI = {
   },
 
   async getCampaigns() {
-    const response = await fetch(`${API_URL}/admin/campaigns`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/campaigns`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -710,8 +686,8 @@ export const adminAPI = {
   },
 
   async getAnalytics() {
-    const response = await fetch(`${API_URL}/admin/analytics`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/analytics`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -727,8 +703,8 @@ export const adminAPI = {
   },
 
   async getRequestAnalytics() {
-    const response = await fetch(`${API_URL}/admin/request-analytics`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/request-analytics`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -744,8 +720,8 @@ export const adminAPI = {
   },
 
   async getUserAnalytics() {
-    const response = await fetch(`${API_URL}/admin/user-analytics`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/user-analytics`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -761,12 +737,8 @@ export const adminAPI = {
   },
 
   async updateUser(userId, updates) {
-    const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/users/${userId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(updates),
     });
 
@@ -779,8 +751,8 @@ export const adminAPI = {
   },
 
   async getInvoices() {
-    const response = await fetch(`${API_URL}/admin/invoices`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/invoices`, {
+      method: 'GET',
       cache: 'no-store', // Prevent caching
     });
 
@@ -797,8 +769,8 @@ export const adminAPI = {
   },
 
   async getAssets() {
-    const response = await fetch(`${API_URL}/admin/assets`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/assets`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -814,8 +786,8 @@ export const adminAPI = {
   },
 
   async getInvoice(invoiceId) {
-    const response = await fetch(`${API_URL}/admin/invoices/${invoiceId}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/invoices/${invoiceId}`, {
+      method: 'GET',
       cache: 'no-store',
     });
 
@@ -831,12 +803,8 @@ export const adminAPI = {
   },
 
   async createInvoice(invoiceData) {
-    const response = await fetch(`${API_URL}/admin/invoices`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/invoices`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       cache: 'no-store',
       body: JSON.stringify(invoiceData),
     });
@@ -854,12 +822,8 @@ export const adminAPI = {
   },
 
   async updateInvoice(invoiceId, updates) {
-    const response = await fetch(`${API_URL}/admin/invoices/${invoiceId}`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/invoices/${invoiceId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       cache: 'no-store',
       body: JSON.stringify(updates),
     });
@@ -877,8 +841,8 @@ export const adminAPI = {
   },
 
   async getNotifications() {
-    const response = await fetch(`${API_URL}/admin/notifications`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -889,9 +853,8 @@ export const adminAPI = {
   },
 
   async markNotificationRead(notificationId) {
-    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -902,9 +865,8 @@ export const adminAPI = {
   },
 
   async markAllNotificationsRead() {
-    const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications/read-all`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -920,8 +882,8 @@ export const adminAPI = {
     params.append('limit', limit);
     params.append('offset', offset);
 
-    const response = await fetch(`${API_URL}/admin/consultation-leads?${params.toString()}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/consultation-leads?${params.toString()}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -932,12 +894,8 @@ export const adminAPI = {
   },
 
   async updateConsultationLead(leadId, updates) {
-    const response = await fetch(`${API_URL}/admin/consultation-leads/${leadId}`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/consultation-leads/${leadId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(updates),
     });
 
@@ -956,8 +914,8 @@ export const adminAPI = {
     params.append('offset', offset);
     if (search) params.append('search', search);
 
-    const response = await fetch(`${API_URL}/admin/ai-conversations?${params.toString()}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/ai-conversations?${params.toString()}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -968,8 +926,8 @@ export const adminAPI = {
   },
 
   async getAIConversation(conversationId) {
-    const response = await fetch(`${API_URL}/admin/ai-conversations/${conversationId}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/ai-conversations/${conversationId}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -980,12 +938,8 @@ export const adminAPI = {
   },
 
   async updateAIConversation(conversationId, updates) {
-    const response = await fetch(`${API_URL}/admin/ai-conversations/${conversationId}`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/ai-conversations/${conversationId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(updates),
     });
 
@@ -998,8 +952,8 @@ export const adminAPI = {
   },
 
   async getAIConversationsAnalytics() {
-    const response = await fetch(`${API_URL}/admin/ai-conversations-analytics`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/ai-conversations-analytics`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1015,8 +969,8 @@ export const adminAPI = {
     params.append('limit', limit);
     params.append('offset', offset);
 
-    const response = await fetch(`${API_URL}/admin/feedback?${params.toString()}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/feedback?${params.toString()}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1027,12 +981,8 @@ export const adminAPI = {
   },
 
   async updateFeedback(feedbackId, updates) {
-    const response = await fetch(`${API_URL}/admin/feedback/${feedbackId}`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/feedback/${feedbackId}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(updates),
     });
 
@@ -1048,12 +998,8 @@ export const adminAPI = {
 // Ticket API functions
 export const ticketAPI = {
   async createTicket(subject, description, type, priority, additionalData = {}) {
-    const response = await fetch(`${API_URL}/dashboard/tickets`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/tickets`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify({ 
         subject, 
         description, 
@@ -1072,8 +1018,8 @@ export const ticketAPI = {
   },
 
   async getAssignees() {
-    const response = await fetch(`${API_URL}/dashboard/tickets/assignees`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/tickets/assignees`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1085,8 +1031,8 @@ export const ticketAPI = {
   },
 
   async getTickets() {
-    const response = await fetch(`${API_URL}/dashboard/tickets`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/tickets`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1098,8 +1044,8 @@ export const ticketAPI = {
   },
 
   async getTicket(id) {
-    const response = await fetch(`${API_URL}/dashboard/tickets/${id}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/dashboard/tickets/${id}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1110,12 +1056,8 @@ export const ticketAPI = {
   },
 
   async addMessage(ticketId, message) {
-    const response = await fetch(`${API_URL}/dashboard/tickets/${ticketId}/messages`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/tickets/${ticketId}/messages`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify({ message }),
     });
 
@@ -1128,12 +1070,8 @@ export const ticketAPI = {
   },
 
   async uploadAttachment(ticketId, fileData, messageId = null) {
-    const response = await fetch(`${API_URL}/dashboard/tickets/${ticketId}/attachments`, {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/tickets/${ticketId}/attachments`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify({
         file_name: fileData.name,
         file_url: fileData.url,
@@ -1152,8 +1090,8 @@ export const ticketAPI = {
   },
 
   async getNotifications() {
-    const response = await fetch(`${API_URL}/admin/notifications`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1164,9 +1102,8 @@ export const ticketAPI = {
   },
 
   async markNotificationRead(notificationId) {
-    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications/${notificationId}/read`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -1177,9 +1114,8 @@ export const ticketAPI = {
   },
 
   async markAllNotificationsRead() {
-    const response = await fetch(`${API_URL}/admin/notifications/read-all`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications/read-all`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -1190,12 +1126,8 @@ export const ticketAPI = {
   },
 
   async remindMeLater(notificationId, remindAt) {
-    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/remind`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications/${notificationId}/remind`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify({ remind_at: remindAt }),
     });
 
@@ -1207,9 +1139,8 @@ export const ticketAPI = {
   },
 
   async dismissNotification(notificationId) {
-    const response = await fetch(`${API_URL}/admin/notifications/${notificationId}/dismiss`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/notifications/${notificationId}/dismiss`, {
       method: 'PATCH',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -1223,8 +1154,8 @@ export const ticketAPI = {
 // Admin ticket API functions
 export const adminTicketAPI = {
   async getTickets() {
-    const response = await fetch(`${API_URL}/admin/tickets`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/tickets`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1235,8 +1166,8 @@ export const adminTicketAPI = {
   },
 
   async getTicket(id) {
-    const response = await fetch(`${API_URL}/admin/tickets/${id}`, {
-      credentials: 'include',
+    const response = await authenticatedFetch(`${API_URL}/admin/tickets/${id}`, {
+      method: 'GET',
     });
 
     if (!response.ok) {
@@ -1247,12 +1178,8 @@ export const adminTicketAPI = {
   },
 
   async createTicket(payload) {
-    const response = await fetch(`${API_URL}/admin/tickets`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/tickets`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(payload),
     });
 
@@ -1271,12 +1198,8 @@ export const adminTicketAPI = {
   },
 
   async updateTicket(id, updates) {
-    const response = await fetch(`${API_URL}/admin/tickets/${id}`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/tickets/${id}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(updates),
     });
 
@@ -1289,12 +1212,8 @@ export const adminTicketAPI = {
   },
 
   async addMessage(ticketId, message) {
-    const response = await fetch(`${API_URL}/admin/tickets/${ticketId}/messages`, {
+    const response = await authenticatedFetch(`${API_URL}/admin/tickets/${ticketId}/messages`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify({ message }),
     });
 

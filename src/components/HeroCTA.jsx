@@ -42,10 +42,10 @@ const HeroCTA = ({ onOpenConsultation }) => {
           <a 
             href="/pricing" 
             className="group border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-orange-600 transition-all duration-300 flex items-center justify-center"
-            aria-label="Estimate project cost and view pricing"
+            aria-label="View pricing and estimate project cost"
           >
             <Calculator className="h-5 w-5 mr-2" />
-            Estimate Project Cost
+            View Pricing
             <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
