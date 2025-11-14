@@ -36,6 +36,14 @@ const SignInPage = () => {
     setError('');
   };
 
+  const handleFillCredentials = (email, password) => {
+    setFormData({
+      email,
+      password,
+    });
+    setError('');
+  };
+
   const handleGoogleSignIn = async () => {
     setError('');
     setLoading(true);
@@ -83,12 +91,65 @@ const SignInPage = () => {
               <p className="text-gray-400">Access your dashboard</p>
             </div>
 
-            {/* Demo Credentials for Testing */}
-            <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/50 rounded-lg">
-              <p className="text-blue-400 text-sm font-semibold mb-2">Demo Credentials (for testing):</p>
-              <div className="text-xs text-gray-400 space-y-1 font-mono">
-                <p>Client: client@ondosoft.com / client123</p>
-                <p>Admin: admin@ondosoft.com / admin123</p>
+            {/* Test Credentials */}
+            <div className="mb-6 p-5 bg-gray-900/80 border border-gray-700 rounded-xl">
+              <h3 className="text-lg font-bold text-cyan-400 mb-1">Test Credentials</h3>
+              <p className="text-gray-400 text-sm mb-4">Use these credentials to sign in for testing purposes</p>
+              
+              {/* Admin Account */}
+              <div className="mb-4 pb-4 border-b border-gray-700 last:border-b-0 last:mb-0 last:pb-0">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-base font-semibold text-gray-200">Admin Account</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleFillCredentials('admin@ondosoft.com', 'admin123')}
+                    className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
+                  >
+                    Fill
+                  </button>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Email:</span>
+                    <span className="text-gray-200 font-medium">admin@ondosoft.com</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Password:</span>
+                    <span className="text-gray-200 font-medium">admin123</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Role:</span>
+                    <span className="text-gray-200 font-medium">Administrator</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Client Account */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-base font-semibold text-gray-200">Client Account</h4>
+                  <button
+                    type="button"
+                    onClick={() => handleFillCredentials('client@ondosoft.com', 'client123')}
+                    className="text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors"
+                  >
+                    Fill
+                  </button>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Email:</span>
+                    <span className="text-gray-200 font-medium">client@ondosoft.com</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Password:</span>
+                    <span className="text-gray-200 font-medium">client123</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Role:</span>
+                    <span className="text-gray-200 font-medium">Client</span>
+                  </div>
+                </div>
               </div>
             </div>
 
