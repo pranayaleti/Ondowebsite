@@ -483,6 +483,42 @@ const createTables = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS pricing_page_interactions (
+        id SERIAL PRIMARY KEY,
+        session_id VARCHAR(255) NOT NULL,
+        user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        interaction_type VARCHAR(100) NOT NULL,
+        interaction_details JSONB NOT NULL,
+        element_type VARCHAR(50),
+        element_id VARCHAR(255),
+        element_class TEXT,
+        element_text TEXT,
+        click_x INTEGER,
+        click_y INTEGER,
+        selected_plan VARCHAR(255),
+        selected_plan_price VARCHAR(50),
+        selected_plan_index INTEGER,
+        time_on_page_seconds INTEGER,
+        scroll_depth INTEGER,
+        page_url TEXT,
+        referrer TEXT,
+        user_agent TEXT,
+        ip_address VARCHAR(45),
+        screen_width INTEGER,
+        screen_height INTEGER,
+        viewport_width INTEGER,
+        viewport_height INTEGER,
+        language VARCHAR(10),
+        timezone VARCHAR(100),
+        utm_source VARCHAR(100),
+        utm_medium VARCHAR(100),
+        utm_campaign VARCHAR(100),
+        utm_content VARCHAR(255),
+        interaction_sequence INTEGER DEFAULT 0,
+        metadata JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
     console.log('Tables created/verified successfully');
     
@@ -660,6 +696,13 @@ const createIndexes = async () => {
       CREATE INDEX IF NOT EXISTS idx_feedback_status ON feedback(status);
       CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at);
       CREATE INDEX IF NOT EXISTS idx_feedback_type_rating ON feedback(type, rating);
+      
+      CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_session_id ON pricing_page_interactions(session_id);
+      CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_user_id ON pricing_page_interactions(user_id);
+      CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_interaction_type ON pricing_page_interactions(interaction_type);
+      CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_selected_plan ON pricing_page_interactions(selected_plan);
+      CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_created_at ON pricing_page_interactions(created_at);
+      CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_session_type ON pricing_page_interactions(session_id, interaction_type);
       
       CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_session_id ON analytics_user_interactions(session_id);
       CREATE INDEX IF NOT EXISTS idx_analytics_user_interactions_pathname ON analytics_user_interactions(pathname);
@@ -3515,6 +3558,172 @@ app.get('/api/consultation/draft', async (req, res) => {
     });
   } catch (error) {
     console.error('Consultation draft load error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// ==================== Pricing Page Interactions Endpoints ====================
+
+// Save pricing page interaction (public endpoint)
+app.post('/api/pricing/interaction', async (req, res) => {
+  try {
+    const {
+      sessionId,
+      interactionType,
+      interactionDetails,
+      elementType,
+      elementId,
+      elementClass,
+      elementText,
+      clickX,
+      clickY,
+      selectedPlan,
+      selectedPlanPrice,
+      selectedPlanIndex,
+      timeOnPageSeconds,
+      scrollDepth,
+      interactionSequence
+    } = req.body;
+
+    // Validate required fields
+    if (!sessionId || !interactionType || !interactionDetails) {
+      return res.status(400).json({ error: 'Session ID, interaction type, and interaction details are required' });
+    }
+
+    // Get user ID if authenticated (optional)
+    let userId = null;
+    try {
+      const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+      if (token) {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        userId = decoded.id;
+      }
+    } catch (err) {
+      // User not authenticated, continue without user_id
+    }
+
+    // Get additional context from request
+    const ipAddress = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for']?.split(',')[0] || null;
+    const userAgent = req.get('user-agent') || null;
+    const referrer = req.get('referer') || null;
+    const pageUrl = req.body.pageUrl || null;
+
+    // Extract UTM parameters from query or body
+    const utmSource = req.query.utm_source || req.body.utmSource || null;
+    const utmMedium = req.query.utm_medium || req.body.utmMedium || null;
+    const utmCampaign = req.query.utm_campaign || req.body.utmCampaign || null;
+    const utmContent = req.query.utm_content || req.body.utmContent || null;
+
+    // Get screen/viewport info from body
+    const screenWidth = req.body.screenWidth || null;
+    const screenHeight = req.body.screenHeight || null;
+    const viewportWidth = req.body.viewportWidth || null;
+    const viewportHeight = req.body.viewportHeight || null;
+    const language = req.body.language || null;
+    const timezone = req.body.timezone || null;
+
+    // Get interaction sequence (count existing interactions for this session)
+    let sequence = interactionSequence || 0;
+    if (!interactionSequence) {
+      const countResult = await pool.query(
+        'SELECT COUNT(*) as count FROM pricing_page_interactions WHERE session_id = $1',
+        [sessionId]
+      );
+      sequence = parseInt(countResult.rows[0].count) + 1;
+    }
+
+    // Insert interaction
+    const result = await pool.query(
+      `INSERT INTO pricing_page_interactions 
+       (session_id, user_id, interaction_type, interaction_details, element_type, element_id, element_class,
+        element_text, click_x, click_y, selected_plan, selected_plan_price, selected_plan_index,
+        time_on_page_seconds, scroll_depth, page_url, referrer, user_agent, ip_address,
+        screen_width, screen_height, viewport_width, viewport_height, language, timezone,
+        utm_source, utm_medium, utm_campaign, utm_content, interaction_sequence, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
+       RETURNING id, created_at`,
+      [
+        sessionId,
+        userId,
+        interactionType,
+        JSON.stringify(interactionDetails),
+        elementType || null,
+        elementId || null,
+        elementClass || null,
+        elementText || null,
+        clickX || null,
+        clickY || null,
+        selectedPlan || null,
+        selectedPlanPrice || null,
+        selectedPlanIndex || null,
+        timeOnPageSeconds || null,
+        scrollDepth || null,
+        pageUrl,
+        referrer,
+        userAgent,
+        ipAddress,
+        screenWidth,
+        screenHeight,
+        viewportWidth,
+        viewportHeight,
+        language,
+        timezone,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        utmContent,
+        sequence,
+        req.body.metadata ? JSON.stringify(req.body.metadata) : null
+      ]
+    );
+
+    res.json({
+      success: true,
+      id: result.rows[0].id,
+      createdAt: result.rows[0].created_at,
+      sequence
+    });
+  } catch (error) {
+    console.error('Pricing page interaction save error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack
+    });
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Get pricing page interactions by session (public endpoint)
+app.get('/api/pricing/interactions/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { interactionType } = req.query;
+
+    let query = `SELECT * FROM pricing_page_interactions WHERE session_id = $1`;
+    const params = [sessionId];
+
+    if (interactionType) {
+      query += ` AND interaction_type = $2`;
+      params.push(interactionType);
+    }
+
+    query += ` ORDER BY created_at ASC`;
+
+    const result = await pool.query(query, params);
+
+    res.json({
+      success: true,
+      interactions: result.rows,
+      total: result.rows.length
+    });
+  } catch (error) {
+    console.error('Get pricing page interactions error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: process.env.NODE_ENV === 'development' ? error.message : undefined
