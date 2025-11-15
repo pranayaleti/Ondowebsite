@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -131,6 +132,15 @@ pool.query('SELECT NOW()', (err, res) => {
 const createTables = async () => {
   try {
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        token VARCHAR(255) UNIQUE NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        used BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -174,6 +184,20 @@ const createTables = async () => {
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         name VARCHAR(255) NOT NULL,
         status VARCHAR(50) DEFAULT 'active',
+        email_template_id INTEGER REFERENCES email_templates(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS email_templates (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        subject VARCHAR(500) NOT NULL,
+        body_html TEXT NOT NULL,
+        body_text TEXT,
+        category VARCHAR(100),
+        is_active BOOLEAN DEFAULT true,
+        created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -188,8 +212,20 @@ const createTables = async () => {
         file_size INTEGER,
         category VARCHAR(100),
         description TEXT,
+        project VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+      
+      -- Add project column if it doesn't exist (for existing databases)
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'assets' AND column_name = 'project'
+        ) THEN
+          ALTER TABLE assets ADD COLUMN project VARCHAR(255);
+        END IF;
+      END $$;
 
       CREATE TABLE IF NOT EXISTS invoices (
         id SERIAL PRIMARY KEY,
@@ -540,6 +576,12 @@ const createTables = async () => {
     // Add new columns to existing consultation_leads table if they don't exist
     await addConsultationLeadsColumns();
     
+    // Add new columns to existing campaigns table if they don't exist
+    await addCampaignColumns();
+    
+    // Seed default email templates
+    await seedEmailTemplates();
+    
     // Create indexes for better query performance
     await createIndexes();
   } catch (error) {
@@ -573,6 +615,13 @@ const createIndexes = async () => {
       CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
       CREATE INDEX IF NOT EXISTS idx_campaigns_created_at ON campaigns(created_at);
       CREATE INDEX IF NOT EXISTS idx_campaigns_user_status ON campaigns(user_id, status);
+      CREATE INDEX IF NOT EXISTS idx_campaigns_email_template_id ON campaigns(email_template_id);
+    `);
+
+    // Indexes for email_templates table
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_email_templates_is_active ON email_templates(is_active);
+      CREATE INDEX IF NOT EXISTS idx_email_templates_category ON email_templates(category);
     `);
 
     // Indexes for assets table
@@ -930,6 +979,651 @@ const addConsultationLeadsColumns = async () => {
   }
 };
 
+// Add new columns to campaigns table if they don't exist
+const addCampaignColumns = async () => {
+  try {
+    // First check if email_templates table exists
+    const tableCheck = await pool.query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_name='email_templates'
+    `);
+    
+    if (tableCheck.rows.length === 0) {
+      console.log('email_templates table does not exist yet, skipping campaign column migration');
+      return;
+    }
+
+    const columns = [
+      { name: 'email_template_id', type: 'INTEGER' }
+    ];
+    
+    for (const column of columns) {
+      // Check if column exists
+      const checkColumn = await pool.query(`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name='campaigns' AND column_name=$1
+      `, [column.name]);
+      
+      if (checkColumn.rows.length === 0) {
+        try {
+          // Add column first
+          await pool.query(`ALTER TABLE campaigns ADD COLUMN ${column.name} ${column.type}`);
+          console.log(`Added column to campaigns: ${column.name}`);
+          
+          // Then add foreign key constraint if it doesn't exist
+          try {
+            const constraintCheck = await pool.query(`
+              SELECT constraint_name 
+              FROM information_schema.table_constraints 
+              WHERE table_name='campaigns' AND constraint_name='fk_campaigns_email_template'
+            `);
+            
+            if (constraintCheck.rows.length === 0) {
+              await pool.query(`
+                ALTER TABLE campaigns 
+                ADD CONSTRAINT fk_campaigns_email_template 
+                FOREIGN KEY (email_template_id) 
+                REFERENCES email_templates(id) 
+                ON DELETE SET NULL
+              `);
+              console.log(`Added foreign key constraint for ${column.name}`);
+            }
+          } catch (fkError) {
+            console.error(`Error adding foreign key constraint:`, fkError);
+          }
+        } catch (alterError) {
+          console.error(`Error adding column ${column.name}:`, alterError);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error adding campaign columns:', error);
+  }
+};
+
+// Seed default email templates
+const seedEmailTemplates = async () => {
+  try {
+    // Check if email_templates table exists first
+    const tableCheck = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'email_templates'
+      )
+    `);
+    
+    if (!tableCheck.rows[0].exists) {
+      console.log('email_templates table does not exist yet, skipping seed');
+      return;
+    }
+    
+    // Check if templates already exist (but we'll still try to insert missing ones)
+    const existingTemplates = await pool.query('SELECT COUNT(*) as count FROM email_templates');
+    const existingCount = parseInt(existingTemplates.rows[0].count);
+    console.log(`Found ${existingCount} existing email templates`);
+
+    const defaultTemplates = [
+      {
+        name: 'Welcome Campaign',
+        subject: 'Welcome to {{company_name}}!',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .button { display: inline-block; padding: 12px 24px; background: #f97316; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>Welcome to {{company_name}}!</h1>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>We're thrilled to have you on board! Thank you for choosing {{company_name}}.</p>
+                <p>We're here to help you succeed. If you have any questions, feel free to reach out.</p>
+                <a href="{{website_url}}" class="button">Get Started</a>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Welcome to {{company_name}}! Hi {{name}}, We\'re thrilled to have you on board! Thank you for choosing {{company_name}}. Visit us at {{website_url}}',
+        category: 'welcome',
+        is_active: true
+      },
+      {
+        name: 'Product Launch',
+        subject: 'Introducing Our New Product: {{product_name}}',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .button { display: inline-block; padding: 12px 24px; background: #3b82f6; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🎉 New Product Launch!</h1>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>We're excited to announce our latest product: <strong>{{product_name}}</strong>!</p>
+                <p>{{product_description}}</p>
+                <a href="{{product_url}}" class="button">Learn More</a>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Introducing {{product_name}}! Hi {{name}}, We\'re excited to announce our latest product. Learn more at {{product_url}}',
+        category: 'product',
+        is_active: true
+      },
+      {
+        name: 'Promotional Offer',
+        subject: 'Special Offer Just for You!',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .offer { background: #fff; border: 2px dashed #10b981; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px; }
+              .button { display: inline-block; padding: 12px 24px; background: #10b981; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🎁 Special Offer!</h1>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <div class="offer">
+                  <h2>{{offer_title}}</h2>
+                  <p style="font-size: 24px; color: #10b981; font-weight: bold;">{{offer_discount}}</p>
+                  <p>{{offer_description}}</p>
+                </div>
+                <p>This offer is valid until {{offer_expiry}}.</p>
+                <a href="{{offer_url}}" class="button">Claim Offer</a>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Special Offer! Hi {{name}}, {{offer_title}} - {{offer_discount}}. Valid until {{offer_expiry}}. Claim at {{offer_url}}',
+        category: 'promotional',
+        is_active: true
+      },
+      {
+        name: 'Newsletter',
+        subject: '{{newsletter_title}} - Monthly Newsletter',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .article { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #8b5cf6; }
+              .button { display: inline-block; padding: 12px 24px; background: #8b5cf6; color: white; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>{{newsletter_title}}</h1>
+                <p>Monthly Newsletter</p>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>Here's what's new this month:</p>
+                <div class="article">
+                  <h3>{{article_1_title}}</h3>
+                  <p>{{article_1_summary}}</p>
+                  <a href="{{article_1_url}}" class="button">Read More</a>
+                </div>
+                <p>Thank you for being part of our community!</p>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: '{{newsletter_title}} - Monthly Newsletter. Hi {{name}}, Here\'s what\'s new: {{article_1_title}} - {{article_1_summary}}. Read more at {{article_1_url}}',
+        category: 'newsletter',
+        is_active: true
+      },
+      {
+        name: 'Order Confirmation',
+        subject: 'Order Confirmation - {{order_number}}',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .order-details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border: 1px solid #e5e7eb; }
+              .order-item { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+              .order-item:last-child { border-bottom: none; }
+              .total { font-size: 18px; font-weight: bold; color: #6366f1; margin-top: 15px; padding-top: 15px; border-top: 2px solid #e5e7eb; }
+              .button { display: inline-block; padding: 12px 24px; background: #6366f1; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>✅ Order Confirmed!</h1>
+                <p>Order #{{order_number}}</p>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>Thank you for your order! We've received your payment and your order is being processed.</p>
+                <div class="order-details">
+                  <h3>Order Details</h3>
+                  <div class="order-item">
+                    <strong>{{item_name}}</strong><br>
+                    Quantity: {{item_quantity}}<br>
+                    Price: {{item_price}}
+                  </div>
+                  <div class="total">Total: {{order_total}}</div>
+                </div>
+                <p><strong>Shipping Address:</strong><br>{{shipping_address}}</p>
+                <p>You'll receive a tracking number once your order ships.</p>
+                <a href="{{order_tracking_url}}" class="button">Track Your Order</a>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Order Confirmation #{{order_number}}. Hi {{name}}, Thank you for your order! Total: {{order_total}}. Track at {{order_tracking_url}}',
+        category: 'transactional',
+        is_active: true
+      },
+      {
+        name: 'Password Reset',
+        subject: 'Reset Your Password - {{company_name}}',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .warning { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px; }
+              .button { display: inline-block; padding: 12px 24px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+              .security-note { font-size: 12px; color: #6b7280; margin-top: 20px; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🔒 Password Reset Request</h1>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>We received a request to reset your password for your {{company_name}} account.</p>
+                <div class="warning">
+                  <strong>⚠️ Security Notice:</strong> If you didn't request this, please ignore this email. Your password will remain unchanged.
+                </div>
+                <p>To reset your password, click the button below:</p>
+                <a href="{{reset_url}}" class="button">Reset Password</a>
+                <p>This link will expire in {{reset_expiry}} hours.</p>
+                <div class="security-note">
+                  <p><strong>Security Tips:</strong></p>
+                  <ul>
+                    <li>Never share your password with anyone</li>
+                    <li>Use a strong, unique password</li>
+                    <li>If you didn't request this, contact support immediately</li>
+                  </ul>
+                </div>
+                <p>Best regards,<br>The {{company_name}} Security Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Password Reset Request. Hi {{name}}, Click here to reset your password: {{reset_url}}. Expires in {{reset_expiry}} hours. If you didn\'t request this, ignore this email.',
+        category: 'security',
+        is_active: true
+      },
+      {
+        name: 'Invoice Payment Reminder',
+        subject: 'Payment Reminder - Invoice #{{invoice_number}}',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .invoice-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border: 2px solid #f59e0b; }
+              .amount { font-size: 32px; font-weight: bold; color: #f59e0b; text-align: center; margin: 15px 0; }
+              .due-date { background: #fef3c7; padding: 10px; border-radius: 6px; text-align: center; margin: 15px 0; }
+              .button { display: inline-block; padding: 12px 24px; background: #f59e0b; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>💳 Payment Reminder</h1>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>This is a friendly reminder that you have an outstanding invoice.</p>
+                <div class="invoice-box">
+                  <h3>Invoice #{{invoice_number}}</h3>
+                  <div class="amount">{{invoice_amount}}</div>
+                  <div class="due-date">
+                    <strong>Due Date:</strong> {{due_date}}
+                  </div>
+                  <p><strong>Description:</strong> {{invoice_description}}</p>
+                </div>
+                <p>Please make payment at your earliest convenience to avoid any service interruptions.</p>
+                <a href="{{payment_url}}" class="button">Pay Now</a>
+                <p>If you've already made this payment, please disregard this reminder.</p>
+                <p>Best regards,<br>The {{company_name}} Billing Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Payment Reminder - Invoice #{{invoice_number}} for {{invoice_amount}}. Due: {{due_date}}. Pay at {{payment_url}}',
+        category: 'billing',
+        is_active: true
+      },
+      {
+        name: 'Account Activation',
+        subject: 'Activate Your {{company_name}} Account',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .features { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }
+              .feature-item { padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+              .feature-item:last-child { border-bottom: none; }
+              .feature-item::before { content: "✓ "; color: #06b6d4; font-weight: bold; }
+              .button { display: inline-block; padding: 12px 24px; background: #06b6d4; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🎉 Welcome to {{company_name}}!</h1>
+                <p>Activate Your Account</p>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>Thank you for signing up! We're excited to have you join our community.</p>
+                <p>To get started, please activate your account by clicking the button below:</p>
+                <a href="{{activation_url}}" class="button">Activate Account</a>
+                <div class="features">
+                  <h3>What you'll get:</h3>
+                  <div class="feature-item">Access to all platform features</div>
+                  <div class="feature-item">24/7 customer support</div>
+                  <div class="feature-item">Regular updates and new features</div>
+                  <div class="feature-item">Exclusive member benefits</div>
+                </div>
+                <p>This activation link will expire in {{activation_expiry}} hours.</p>
+                <p>If you didn't create an account, you can safely ignore this email.</p>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'Activate Your Account. Hi {{name}}, Welcome to {{company_name}}! Click here to activate: {{activation_url}}. Expires in {{activation_expiry}} hours.',
+        category: 'onboarding',
+        is_active: true
+      },
+      {
+        name: 'Event Invitation',
+        subject: 'You\'re Invited: {{event_name}}',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .event-details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #ec4899; }
+              .event-info { margin: 10px 0; }
+              .event-info strong { color: #ec4899; }
+              .button { display: inline-block; padding: 12px 24px; background: #ec4899; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🎊 You're Invited!</h1>
+                <h2>{{event_name}}</h2>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>We'd love to have you join us for a special event!</p>
+                <div class="event-details">
+                  <h3>Event Details</h3>
+                  <div class="event-info"><strong>Date:</strong> {{event_date}}</div>
+                  <div class="event-info"><strong>Time:</strong> {{event_time}}</div>
+                  <div class="event-info"><strong>Location:</strong> {{event_location}}</div>
+                  <div class="event-info"><strong>Duration:</strong> {{event_duration}}</div>
+                </div>
+                <p>{{event_description}}</p>
+                <p><strong>What to expect:</strong></p>
+                <ul>
+                  <li>{{event_highlight_1}}</li>
+                  <li>{{event_highlight_2}}</li>
+                  <li>{{event_highlight_3}}</li>
+                </ul>
+                <a href="{{rsvp_url}}" class="button">RSVP Now</a>
+                <p>We hope to see you there!</p>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'You\'re Invited: {{event_name}} on {{event_date}} at {{event_time}}. Location: {{event_location}}. RSVP at {{rsvp_url}}',
+        category: 'event',
+        is_active: true
+      },
+      {
+        name: 'Feature Update Announcement',
+        subject: 'New Feature: {{feature_name}} is Now Available!',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .feature-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border: 2px solid #14b8a6; }
+              .benefit { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+              .benefit:last-child { border-bottom: none; }
+              .benefit::before { content: "✨ "; }
+              .button { display: inline-block; padding: 12px 24px; background: #14b8a6; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>🚀 New Feature Available!</h1>
+                <h2>{{feature_name}}</h2>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>We're excited to announce a new feature that will make your experience even better!</p>
+                <div class="feature-box">
+                  <h3>{{feature_name}}</h3>
+                  <p>{{feature_description}}</p>
+                  <h4>Key Benefits:</h4>
+                  <div class="benefit">{{benefit_1}}</div>
+                  <div class="benefit">{{benefit_2}}</div>
+                  <div class="benefit">{{benefit_3}}</div>
+                </div>
+                <p>Ready to try it out?</p>
+                <a href="{{feature_url}}" class="button">Explore {{feature_name}}</a>
+                <p>As always, we'd love to hear your feedback!</p>
+                <p>Best regards,<br>The {{company_name}} Product Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'New Feature: {{feature_name}} is now available! {{feature_description}}. Try it at {{feature_url}}',
+        category: 'product',
+        is_active: true
+      },
+      {
+        name: 'Customer Feedback Request',
+        subject: 'We\'d Love Your Feedback - {{company_name}}',
+        body_html: `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+              .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+              .header { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+              .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+              .feedback-box { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; border: 2px dashed #a855f7; }
+              .button { display: inline-block; padding: 12px 24px; background: #a855f7; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>💬 Your Opinion Matters</h1>
+              </div>
+              <div class="content">
+                <p>Hi {{name}},</p>
+                <p>We hope you're enjoying your experience with {{company_name}}!</p>
+                <p>Your feedback helps us improve and create a better experience for everyone.</p>
+                <div class="feedback-box">
+                  <p><strong>Quick Questions:</strong></p>
+                  <ul>
+                    <li>How would you rate your overall experience?</li>
+                    <li>What features do you find most useful?</li>
+                    <li>What could we improve?</li>
+                  </ul>
+                </div>
+                <p>It only takes 2 minutes, and your input makes a real difference!</p>
+                <a href="{{feedback_url}}" class="button">Share Your Feedback</a>
+                <p>Thank you for being part of our community!</p>
+                <p>Best regards,<br>The {{company_name}} Team</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
+        body_text: 'We\'d love your feedback! Help us improve by sharing your thoughts: {{feedback_url}}',
+        category: 'feedback',
+        is_active: true
+      }
+    ];
+
+    // Get admin user ID for created_by
+    const adminResult = await pool.query("SELECT id FROM users WHERE role = 'ADMIN' LIMIT 1");
+    const adminId = adminResult.rows.length > 0 ? adminResult.rows[0].id : null;
+
+    let insertedCount = 0;
+    let errorCount = 0;
+    
+    for (const template of defaultTemplates) {
+      try {
+        // Check if template with this name already exists
+        const existing = await pool.query(
+          'SELECT id FROM email_templates WHERE name = $1',
+          [template.name]
+        );
+        
+        if (existing.rows.length === 0) {
+          const result = await pool.query(
+            `INSERT INTO email_templates (name, subject, body_html, body_text, category, is_active, created_by)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING id, name`,
+            [template.name, template.subject, template.body_html, template.body_text, template.category, template.is_active, adminId]
+          );
+          insertedCount++;
+          console.log(`  ✓ Created template: ${template.name} (ID: ${result.rows[0].id})`);
+        } else {
+          console.log(`  - Template already exists: ${template.name} (ID: ${existing.rows[0].id})`);
+        }
+      } catch (templateError) {
+        errorCount++;
+        console.error(`  ✗ Error creating template "${template.name}":`, templateError.message);
+      }
+    }
+
+    if (insertedCount > 0) {
+      console.log(`✅ Successfully seeded ${insertedCount} new email template(s)`);
+    } else if (errorCount === 0) {
+      console.log('✅ All email templates already exist');
+    }
+    
+    if (errorCount > 0) {
+      console.warn(`⚠️  ${errorCount} template(s) failed to seed`);
+    }
+    
+    // Final count check
+    const finalCount = await pool.query('SELECT COUNT(*) as count FROM email_templates WHERE is_active = true');
+    console.log(`📧 Total active email templates: ${finalCount.rows[0].count}`);
+  } catch (error) {
+    console.error('❌ Error seeding email templates:', error);
+    console.error('Stack trace:', error.stack);
+  }
+};
+
 // Initialize tables on startup
 createTables().catch(err => {
   console.error('Error creating tables on startup:', err);
@@ -1127,7 +1821,8 @@ const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath, {
   maxAge: '1y', // Cache static assets for 1 year
   etag: true,
-  lastModified: true
+  lastModified: true,
+  fallthrough: true // Allow requests to fall through to next middleware if file not found
 }));
 
 // Routes
@@ -1580,12 +2275,38 @@ app.patch('/api/dashboard/subscriptions/:id', authenticateToken, async (req, res
 app.get('/api/dashboard/campaigns', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM campaigns WHERE user_id = $1 ORDER BY created_at DESC',
+      `SELECT c.*, et.name as template_name, et.subject as template_subject
+       FROM campaigns c
+       LEFT JOIN email_templates et ON c.email_template_id = et.id
+       WHERE c.user_id = $1 ORDER BY c.created_at DESC`,
       [req.user.id]
     );
     res.json({ campaigns: result.rows });
   } catch (error) {
     console.error('Campaigns error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create campaign (portal)
+app.post('/api/dashboard/campaigns', authenticateToken, async (req, res) => {
+  try {
+    const { name, status = 'active', email_template_id } = req.body;
+    
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Campaign name is required' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO campaigns (user_id, name, status, email_template_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, user_id, name, status, email_template_id, created_at, updated_at`,
+      [req.user.id, name.trim(), status, email_template_id || null]
+    );
+
+    res.status(201).json({ campaign: result.rows[0], message: 'Campaign created successfully' });
+  } catch (error) {
+    console.error('Create campaign error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -1596,10 +2317,10 @@ app.get('/api/dashboard/assets', authenticateToken, async (req, res) => {
     // Exclude file_data from SELECT to avoid sending large binary data
     // We'll use the url field (base64) for display, or create an endpoint for binary data if needed
     const result = await pool.query(
-      `SELECT id, user_id, name, type, url, file_size, category, description, created_at 
+      `SELECT id, user_id, name, type, url, file_size, category, description, project, created_at 
        FROM assets 
        WHERE user_id = $1 
-       ORDER BY created_at DESC`,
+       ORDER BY project NULLS LAST, created_at DESC`,
       [req.user.id]
     );
     res.json({ assets: result.rows });
@@ -1647,7 +2368,7 @@ app.get('/api/dashboard/assets/:id/file', authenticateToken, async (req, res) =>
 // Upload asset (portal)
 app.post('/api/dashboard/assets', authenticateToken, async (req, res) => {
   try {
-    const { name, type, url, file_size, category, description } = req.body;
+    const { name, type, url, file_size, category, description, project } = req.body;
     
     if (!name || !type) {
       return res.status(400).json({ error: 'Name and type are required' });
@@ -1669,10 +2390,10 @@ app.post('/api/dashboard/assets', authenticateToken, async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO assets (user_id, name, type, url, file_data, file_size, category, description)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, user_id, name, type, url, file_size, category, description, created_at`,
-      [req.user.id, name, type, finalUrl || null, fileData, file_size || null, category || null, description || null]
+      `INSERT INTO assets (user_id, name, type, url, file_data, file_size, category, description, project)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, user_id, name, type, url, file_size, category, description, project, created_at`,
+      [req.user.id, name, type, finalUrl || null, fileData, file_size || null, category || null, description || null, project || null]
     );
 
     res.status(201).json({ asset: result.rows[0], message: 'Asset uploaded successfully' });
@@ -2887,6 +3608,94 @@ app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) =>
   }
 });
 
+// Create user (admin)
+app.post('/api/admin/users', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { 
+      email, 
+      password, 
+      name, 
+      role = 'USER',
+      phone,
+      company_name,
+      company_size,
+      industry,
+      address,
+      city,
+      state,
+      country,
+      zip_code,
+      website,
+      account_status = 'active',
+      notes,
+      tags,
+      signup_source = 'admin-created'
+    } = req.body;
+
+    // Validate required fields
+    if (!email || !name) {
+      return res.status(400).json({ error: 'Email and name are required' });
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Check if user already exists
+    const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+
+    // Validate role
+    if (role !== 'USER' && role !== 'ADMIN') {
+      return res.status(400).json({ error: 'Invalid role. Must be USER or ADMIN' });
+    }
+
+    // Hash password if provided, otherwise generate a temporary one
+    let hashedPassword;
+    if (password) {
+      if (password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      }
+      hashedPassword = await bcrypt.hash(password, 10);
+    } else {
+      // Generate a random temporary password if not provided
+      const tempPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12);
+      hashedPassword = await bcrypt.hash(tempPassword, 10);
+    }
+
+    // Create user
+    const result = await pool.query(
+      `INSERT INTO users (
+        email, password, name, role, phone, company_name, company_size, industry,
+        address, city, state, country, zip_code, website, signup_source,
+        account_status, notes, tags
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+      RETURNING id, email, name, role, phone, company_name, company_size, industry,
+        address, city, state, country, zip_code, website, signup_source,
+        account_status, last_login, notes, tags, created_at, updated_at`,
+      [
+        email, hashedPassword, name, role, phone || null, company_name || null, 
+        company_size || null, industry || null, address || null, city || null,
+        state || null, country || null, zip_code || null, website || null,
+        signup_source, account_status, notes || null, tags || null
+      ]
+    );
+
+    const user = result.rows[0];
+    res.status(201).json({ 
+      user,
+      message: 'User created successfully'
+    });
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Update user (admin)
 app.patch('/api/admin/users/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
@@ -2986,14 +3795,293 @@ app.patch('/api/admin/users/:id', authenticateToken, requireAdmin, async (req, r
 app.get('/api/admin/campaigns', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT c.*, u.email, u.name as user_name 
+      SELECT c.*, u.email, u.name as user_name,
+             et.name as template_name, et.subject as template_subject
       FROM campaigns c 
       JOIN users u ON c.user_id = u.id 
+      LEFT JOIN email_templates et ON c.email_template_id = et.id
       ORDER BY c.created_at DESC
     `);
     res.json({ campaigns: result.rows });
   } catch (error) {
     console.error('Admin campaigns error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create campaign (admin - can assign to any user)
+app.post('/api/admin/campaigns', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { user_id, name, status = 'active', email_template_id } = req.body;
+    
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Campaign name is required' });
+    }
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // Verify user exists
+    const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [user_id]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify template exists if provided
+    if (email_template_id) {
+      const templateResult = await pool.query('SELECT id FROM email_templates WHERE id = $1 AND is_active = true', [email_template_id]);
+      if (templateResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Email template not found or inactive' });
+      }
+    }
+
+    const result = await pool.query(
+      `INSERT INTO campaigns (user_id, name, status, email_template_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, user_id, name, status, email_template_id, created_at, updated_at`,
+      [user_id, name.trim(), status, email_template_id || null]
+    );
+
+    // Get user info for response
+    const userInfo = await pool.query(
+      `SELECT name as user_name, email
+       FROM users WHERE id = $1`,
+      [user_id]
+    );
+
+    const campaign = result.rows[0];
+    if (userInfo.rows.length > 0) {
+      campaign.user_name = userInfo.rows[0].user_name;
+      campaign.email = userInfo.rows[0].email;
+    }
+
+    res.status(201).json({ campaign, message: 'Campaign created successfully' });
+  } catch (error) {
+    console.error('Create campaign error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ==================== Email Templates Endpoints ====================
+
+// Get all email templates (admin and portal - active only)
+app.get('/api/email-templates', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, name, subject, category, is_active, created_at, updated_at
+       FROM email_templates
+       WHERE is_active = true
+       ORDER BY name ASC`
+    );
+    res.json({ templates: result.rows });
+  } catch (error) {
+    console.error('Get email templates error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get single email template with full details (for preview)
+app.get('/api/email-templates/:id', authenticateToken, async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id, 10);
+    
+    if (isNaN(templateId) || templateId <= 0) {
+      return res.status(400).json({ error: 'Invalid template ID' });
+    }
+    
+    // First check if template exists (even if inactive) to provide better error message
+    const checkResult = await pool.query(
+      `SELECT id, is_active FROM email_templates WHERE id = $1`,
+      [templateId]
+    );
+    
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Email template not found' });
+    }
+    
+    if (!checkResult.rows[0].is_active) {
+      return res.status(404).json({ error: 'Email template is inactive' });
+    }
+    
+    // Get full template details
+    const result = await pool.query(
+      `SELECT id, name, subject, body_html, body_text, category, is_active, created_at, updated_at
+       FROM email_templates
+       WHERE id = $1 AND is_active = true`,
+      [templateId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email template not found or inactive' });
+    }
+    
+    res.json({ template: result.rows[0] });
+  } catch (error) {
+    console.error('Get email template error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all email templates (admin - all templates)
+app.get('/api/admin/email-templates', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT et.*, u.name as created_by_name, u.email as created_by_email
+       FROM email_templates et
+       LEFT JOIN users u ON et.created_by = u.id
+       ORDER BY et.created_at DESC`
+    );
+    res.json({ templates: result.rows });
+  } catch (error) {
+    console.error('Get email templates error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get single email template (admin)
+app.get('/api/admin/email-templates/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT et.*, u.name as created_by_name, u.email as created_by_email
+       FROM email_templates et
+       LEFT JOIN users u ON et.created_by = u.id
+       WHERE et.id = $1`,
+      [req.params.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email template not found' });
+    }
+    
+    res.json({ template: result.rows[0] });
+  } catch (error) {
+    console.error('Get email template error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create email template (admin)
+app.post('/api/admin/email-templates', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { name, subject, body_html, body_text, category, is_active = true } = req.body;
+    
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Template name is required' });
+    }
+
+    if (!subject || !subject.trim()) {
+      return res.status(400).json({ error: 'Email subject is required' });
+    }
+
+    if (!body_html || !body_html.trim()) {
+      return res.status(400).json({ error: 'Email body (HTML) is required' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO email_templates (name, subject, body_html, body_text, category, is_active, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, name, subject, body_html, body_text, category, is_active, created_by, created_at, updated_at`,
+      [name.trim(), subject.trim(), body_html, body_text || null, category || null, is_active, req.user.id]
+    );
+
+    res.status(201).json({ template: result.rows[0], message: 'Email template created successfully' });
+  } catch (error) {
+    console.error('Create email template error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Update email template (admin)
+app.patch('/api/admin/email-templates/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { name, subject, body_html, body_text, category, is_active } = req.body;
+    
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (name !== undefined) {
+      updates.push(`name = $${paramCount++}`);
+      values.push(name.trim());
+    }
+    if (subject !== undefined) {
+      updates.push(`subject = $${paramCount++}`);
+      values.push(subject.trim());
+    }
+    if (body_html !== undefined) {
+      updates.push(`body_html = $${paramCount++}`);
+      values.push(body_html);
+    }
+    if (body_text !== undefined) {
+      updates.push(`body_text = $${paramCount++}`);
+      values.push(body_text);
+    }
+    if (category !== undefined) {
+      updates.push(`category = $${paramCount++}`);
+      values.push(category);
+    }
+    if (is_active !== undefined) {
+      updates.push(`is_active = $${paramCount++}`);
+      values.push(is_active);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    values.push(req.params.id);
+
+    const result = await pool.query(
+      `UPDATE email_templates 
+       SET ${updates.join(', ')}
+       WHERE id = $${paramCount}
+       RETURNING id, name, subject, body_html, body_text, category, is_active, created_by, created_at, updated_at`,
+      values
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email template not found' });
+    }
+
+    res.json({ template: result.rows[0], message: 'Email template updated successfully' });
+  } catch (error) {
+    console.error('Update email template error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Delete email template (admin)
+app.delete('/api/admin/email-templates/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM email_templates WHERE id = $1 RETURNING id',
+      [req.params.id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Email template not found' });
+    }
+
+    res.json({ message: 'Email template deleted successfully' });
+  } catch (error) {
+    console.error('Delete email template error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Seed email templates (admin - manual trigger)
+app.post('/api/admin/email-templates/seed', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    await seedEmailTemplates();
+    const countResult = await pool.query('SELECT COUNT(*) as count FROM email_templates WHERE is_active = true');
+    res.json({ 
+      message: 'Email templates seeded successfully',
+      count: parseInt(countResult.rows[0].count)
+    });
+  } catch (error) {
+    console.error('Seed email templates error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -5486,11 +6574,73 @@ app.get('/api/admin/assets', authenticateToken, requireAdmin, async (req, res) =
       `SELECT a.*, u.name as user_name, u.email as user_email, u.company_name
        FROM assets a
        JOIN users u ON a.user_id = u.id
-       ORDER BY a.created_at DESC`
+       ORDER BY u.name, a.project NULLS LAST, a.created_at DESC`
     );
     res.json({ assets: result.rows });
   } catch (error) {
     console.error('Get assets error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Create asset (admin - can assign to any user)
+app.post('/api/admin/assets', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { user_id, name, type, url, file_size, category, description, project } = req.body;
+    
+    if (!name || !type) {
+      return res.status(400).json({ error: 'Name and type are required' });
+    }
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // Verify user exists
+    const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [user_id]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Convert base64 data URL to binary if provided
+    let fileData = null;
+    let finalUrl = url;
+    
+    if (url && url.startsWith('data:')) {
+      // Extract base64 data from data URL
+      const base64Data = url.split(',')[1];
+      if (base64Data) {
+        // Convert base64 to binary buffer
+        fileData = Buffer.from(base64Data, 'base64');
+        // Keep the data URL for easy display in frontend
+        finalUrl = url;
+      }
+    }
+
+    const result = await pool.query(
+      `INSERT INTO assets (user_id, name, type, url, file_data, file_size, category, description, project)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, user_id, name, type, url, file_size, category, description, project, created_at`,
+      [user_id, name, type, finalUrl || null, fileData, file_size || null, category || null, description || null, project || null]
+    );
+
+    // Get user info for response
+    const userInfo = await pool.query(
+      `SELECT name as user_name, email as user_email, company_name
+       FROM users WHERE id = $1`,
+      [user_id]
+    );
+
+    const asset = result.rows[0];
+    if (userInfo.rows.length > 0) {
+      asset.user_name = userInfo.rows[0].user_name;
+      asset.user_email = userInfo.rows[0].user_email;
+      asset.company_name = userInfo.rows[0].company_name;
+    }
+
+    res.status(201).json({ asset, message: 'Asset created successfully' });
+  } catch (error) {
+    console.error('Create asset error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -5655,19 +6805,29 @@ app.get('/api/admin/invoices/:id/pdf', authenticateToken, requireAdmin, async (r
 });
 
 // Catch-all handler: serve index.html for client-side routing
-// This must be after all API routes
+// This must be after all API routes and static file serving
 app.get('*', (req, res, next) => {
   // Skip API routes - they should have been handled above
   if (req.path.startsWith('/api/')) {
-    return next();
+    return res.status(404).json({ error: 'API endpoint not found' });
   }
   
   // Serve index.html for all non-API routes to enable client-side routing
   const indexPath = path.join(distPath, 'index.html');
+  
+  // Check if index.html exists
+  if (!fs.existsSync(indexPath)) {
+    console.error('index.html not found at:', indexPath);
+    return res.status(500).send('Application not built. Please build the frontend first.');
+  }
+  
   res.sendFile(indexPath, (err) => {
     if (err) {
       console.error('Error serving index.html:', err);
-      res.status(500).send('Error loading application');
+      // If there's an error, still try to send a response
+      if (!res.headersSent) {
+        res.status(500).send('Error loading application');
+      }
     }
   });
 });

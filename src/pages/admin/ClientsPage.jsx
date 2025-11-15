@@ -4,7 +4,7 @@ import { adminAPI } from '../../utils/auth';
 import { formatPhoneNumber } from '../../utils/security';
 import { 
   Users, Loader, Search, Filter, Calendar, Mail, Phone, Building2, 
-  Globe, MapPin, Clock, Tag, Edit, Save, X, CheckCircle, AlertCircle 
+  Globe, MapPin, Clock, Tag, Edit, Save, X, CheckCircle, AlertCircle, Plus 
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
@@ -21,6 +21,27 @@ const ClientsPage = () => {
   const [filterAccountStatus, setFilterAccountStatus] = useState('all');
   const [editingUser, setEditingUser] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newUserData, setNewUserData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    role: 'USER',
+    phone: '',
+    company_name: '',
+    company_size: '',
+    industry: '',
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    zip_code: '',
+    website: '',
+    account_status: 'active',
+    notes: '',
+    tags: ''
+  });
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -120,6 +141,59 @@ const ClientsPage = () => {
     setEditFormData({});
   };
 
+  const handleAddUser = async () => {
+    try {
+      setCreating(true);
+      setError(null);
+      
+      // Validate required fields
+      if (!newUserData.email || !newUserData.name) {
+        setError('Email and name are required');
+        return;
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(newUserData.email)) {
+        setError('Please enter a valid email address');
+        return;
+      }
+
+      // Password validation (if provided)
+      if (newUserData.password && newUserData.password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+
+      await adminAPI.createUser(newUserData);
+      setShowAddModal(false);
+      setNewUserData({
+        email: '',
+        password: '',
+        name: '',
+        role: 'USER',
+        phone: '',
+        company_name: '',
+        company_size: '',
+        industry: '',
+        address: '',
+        city: '',
+        state: '',
+        country: '',
+        zip_code: '',
+        website: '',
+        account_status: 'active',
+        notes: '',
+        tags: ''
+      });
+      fetchUsers();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setCreating(false);
+    }
+  };
+
   const getUniqueValues = (field) => {
     return [...new Set(users.map(u => u[field]).filter(Boolean))].sort();
   };
@@ -159,9 +233,18 @@ const ClientsPage = () => {
     <>
       <SEOHead title="Clients - Admin" />
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Clients Management</h1>
-          <p className="text-gray-400">Manage all platform users</p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">Clients Management</h1>
+            <p className="text-gray-400">Manage all platform users</p>
+          </div>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-lg transition-all duration-200 flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add New Client
+          </button>
         </div>
 
         {error && (
@@ -512,6 +595,347 @@ const ClientsPage = () => {
                 ? 'Try adjusting your search or filters'
                 : 'No users found in the system'}
             </p>
+          </div>
+        )}
+
+        {/* Add New Client Modal */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white p-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">Add New Client</h2>
+                  <p className="text-sm text-orange-100 mt-1">Create a new user account</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setError(null);
+                    setNewUserData({
+                      email: '',
+                      password: '',
+                      name: '',
+                      role: 'USER',
+                      phone: '',
+                      company_name: '',
+                      company_size: '',
+                      industry: '',
+                      address: '',
+                      city: '',
+                      state: '',
+                      country: '',
+                      zip_code: '',
+                      website: '',
+                      account_status: 'active',
+                      notes: '',
+                      tags: ''
+                    });
+                  }}
+                  className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400 mb-6">
+                    {error}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Required Fields */}
+                  <div className="md:col-span-2">
+                    <h3 className="text-lg font-semibold text-white mb-4">Required Information</h3>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Name <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={newUserData.name}
+                      onChange={(e) => setNewUserData({...newUserData, name: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Email <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={newUserData.email}
+                      onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="user@example.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Password <span className="text-gray-500 text-xs">(optional - will generate if not provided)</span>
+                    </label>
+                    <input
+                      type="password"
+                      value={newUserData.password}
+                      onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="Leave empty to generate"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Role
+                    </label>
+                    <select
+                      value={newUserData.role}
+                      onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      <option value="USER">User</option>
+                      <option value="ADMIN">Admin</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Account Status
+                    </label>
+                    <select
+                      value={newUserData.account_status}
+                      onChange={(e) => setNewUserData({...newUserData, account_status: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                      <option value="suspended">Suspended</option>
+                    </select>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="md:col-span-2 mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-4">Contact Information</h3>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
+                    <input
+                      type="tel"
+                      value={newUserData.phone}
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, '');
+                        const limitedDigits = digitsOnly.slice(0, 10);
+                        const formatted = formatPhoneNumber(limitedDigits);
+                        setNewUserData({...newUserData, phone: formatted});
+                      }}
+                      inputMode="tel"
+                      pattern="^\(\d{3}\) \d{3}-\d{4}$"
+                      placeholder="(123) 456-7890"
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Website</label>
+                    <input
+                      type="url"
+                      value={newUserData.website}
+                      onChange={(e) => setNewUserData({...newUserData, website: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="https://example.com"
+                    />
+                  </div>
+
+                  {/* Company Information */}
+                  <div className="md:col-span-2 mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-4">Company Information</h3>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Company Name</label>
+                    <input
+                      type="text"
+                      value={newUserData.company_name}
+                      onChange={(e) => setNewUserData({...newUserData, company_name: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="Company Inc."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Company Size</label>
+                    <select
+                      value={newUserData.company_size}
+                      onChange={(e) => setNewUserData({...newUserData, company_size: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                      <option value="">Select size</option>
+                      {companyInfo.companySizes.map(size => (
+                        <option key={size.value} value={size.value}>{size.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Industry</label>
+                    <input
+                      type="text"
+                      value={newUserData.industry}
+                      onChange={(e) => setNewUserData({...newUserData, industry: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="Technology"
+                    />
+                  </div>
+
+                  {/* Address Information */}
+                  <div className="md:col-span-2 mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-4">Address Information</h3>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Street Address</label>
+                    <input
+                      type="text"
+                      value={newUserData.address}
+                      onChange={(e) => setNewUserData({...newUserData, address: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="123 Main St"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">City</label>
+                    <input
+                      type="text"
+                      value={newUserData.city}
+                      onChange={(e) => setNewUserData({...newUserData, city: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="City"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">State</label>
+                    <input
+                      type="text"
+                      value={newUserData.state}
+                      onChange={(e) => setNewUserData({...newUserData, state: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="State"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value={newUserData.country}
+                      onChange={(e) => setNewUserData({...newUserData, country: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="Country"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Zip Code</label>
+                    <input
+                      type="text"
+                      value={newUserData.zip_code}
+                      onChange={(e) => setNewUserData({...newUserData, zip_code: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="12345"
+                    />
+                  </div>
+
+                  {/* Additional Information */}
+                  <div className="md:col-span-2 mt-4">
+                    <h3 className="text-lg font-semibold text-white mb-4">Additional Information</h3>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Notes</label>
+                    <textarea
+                      value={newUserData.notes}
+                      onChange={(e) => setNewUserData({...newUserData, notes: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      rows={3}
+                      placeholder="Internal notes about this client..."
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Tags</label>
+                    <input
+                      type="text"
+                      value={newUserData.tags}
+                      onChange={(e) => setNewUserData({...newUserData, tags: e.target.value})}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      placeholder="tag1, tag2, tag3"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-900/50 p-6 flex items-center justify-end gap-4 border-t border-gray-700">
+                <button
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setError(null);
+                    setNewUserData({
+                      email: '',
+                      password: '',
+                      name: '',
+                      role: 'USER',
+                      phone: '',
+                      company_name: '',
+                      company_size: '',
+                      industry: '',
+                      address: '',
+                      city: '',
+                      state: '',
+                      country: '',
+                      zip_code: '',
+                      website: '',
+                      account_status: 'active',
+                      notes: '',
+                      tags: ''
+                    });
+                  }}
+                  className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm transition-colors"
+                  disabled={creating}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddUser}
+                  disabled={creating}
+                  className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg text-sm flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {creating ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Create Client
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

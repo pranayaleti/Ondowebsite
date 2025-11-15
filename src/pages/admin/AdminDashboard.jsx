@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { adminAPI } from '../../utils/auth';
 import { 
@@ -27,18 +27,26 @@ const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const fetchInitiatedRef = useRef(false);
 
   useEffect(() => {
-    fetchDashboardData();
+    // Only fetch once, even if component re-renders (handles React StrictMode)
+    if (!fetchInitiatedRef.current) {
+      fetchInitiatedRef.current = true;
+      fetchDashboardData();
+    }
   }, []);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await adminAPI.getDashboard();
       setDashboardData(data);
     } catch (err) {
       setError(err.message);
+      // Reset flag on error to allow retry
+      fetchInitiatedRef.current = false;
     } finally {
       setLoading(false);
     }

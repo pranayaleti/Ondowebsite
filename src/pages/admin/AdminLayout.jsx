@@ -8,7 +8,8 @@ import {
   FileText,
   Folder,
   Bell,
-  Bot
+  Bot,
+  Mail
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -19,6 +20,7 @@ const AdminLayout = () => {
     { path: '/admin/consultation-leads', label: 'Consultation Leads', icon: MessageSquare },
     { path: '/admin/ai-conversations', label: 'AI Conversations', icon: Bot },
     { path: '/admin/campaigns', label: 'Campaigns', icon: Megaphone },
+    { path: '/admin/email-templates', label: 'Email Templates', icon: Mail },
     { path: '/admin/assets', label: 'Assets', icon: Folder },
     { path: '/admin/tickets', label: 'Tickets', icon: MessageSquare },
     { path: '/admin/invoices', label: 'Invoices', icon: FileText },

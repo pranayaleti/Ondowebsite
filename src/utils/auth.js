@@ -473,6 +473,49 @@ export const portalAPI = {
     return response.json();
   },
 
+  async createCampaign(campaignData) {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/campaigns`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(campaignData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create campaign');
+    }
+
+    return response.json();
+  },
+
+  async getEmailTemplates() {
+    const response = await authenticatedFetch(`${API_URL}/email-templates`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch email templates');
+    }
+
+    return response.json();
+  },
+
+  async getEmailTemplate(templateId) {
+    const response = await authenticatedFetch(`${API_URL}/email-templates/${templateId}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `Failed to fetch email template (${response.status})`;
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  },
+
   async getAssets() {
     const response = await authenticatedFetch(`${API_URL}/dashboard/assets`, {
       method: 'GET',
@@ -668,6 +711,23 @@ export const adminAPI = {
     return response.json();
   },
 
+  async createUser(userData) {
+    const response = await authenticatedFetch(`${API_URL}/admin/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create user');
+    }
+
+    return response.json();
+  },
+
   async getCampaigns() {
     const response = await authenticatedFetch(`${API_URL}/admin/campaigns`, {
       method: 'GET',
@@ -680,6 +740,113 @@ export const adminAPI = {
         throw new Error('Authentication required. Please sign in again.');
       }
       throw new Error('Failed to fetch campaigns');
+    }
+
+    return response.json();
+  },
+
+  async createCampaign(campaignData) {
+    const response = await authenticatedFetch(`${API_URL}/admin/campaigns`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(campaignData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create campaign');
+    }
+
+    return response.json();
+  },
+
+  async getEmailTemplates() {
+    const response = await authenticatedFetch(`${API_URL}/email-templates`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch email templates');
+    }
+
+    return response.json();
+  },
+
+  async getEmailTemplate(templateId) {
+    const response = await authenticatedFetch(`${API_URL}/email-templates/${templateId}`, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `Failed to fetch email template (${response.status})`;
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  },
+
+  async getEmailTemplatesAdmin() {
+    const response = await authenticatedFetch(`${API_URL}/admin/email-templates`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = '/auth/signin';
+        throw new Error('Authentication required. Please sign in again.');
+      }
+      throw new Error('Failed to fetch email templates');
+    }
+
+    return response.json();
+  },
+
+  async createEmailTemplate(templateData) {
+    const response = await authenticatedFetch(`${API_URL}/admin/email-templates`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(templateData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create email template');
+    }
+
+    return response.json();
+  },
+
+  async updateEmailTemplate(templateId, templateData) {
+    const response = await authenticatedFetch(`${API_URL}/admin/email-templates/${templateId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(templateData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update email template');
+    }
+
+    return response.json();
+  },
+
+  async deleteEmailTemplate(templateId) {
+    const response = await authenticatedFetch(`${API_URL}/admin/email-templates/${templateId}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete email template');
     }
 
     return response.json();
@@ -780,6 +947,23 @@ export const adminAPI = {
         throw new Error('Authentication required. Please sign in again.');
       }
       throw new Error('Failed to fetch assets');
+    }
+
+    return response.json();
+  },
+
+  async createAsset(assetData) {
+    const response = await authenticatedFetch(`${API_URL}/admin/assets`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(assetData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create asset');
     }
 
     return response.json();
