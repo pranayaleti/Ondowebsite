@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { portalAPI } from '../../utils/auth';
-import { FolderOpen, Loader, Upload, X, Image as ImageIcon, FileText, File, Trash2, Plus, CheckCircle2, AlertCircle, Download, CheckSquare, Square } from 'lucide-react';
+import { FolderOpen, Loader, Upload, X, Image as ImageIcon, FileText, File, Trash2, Plus, CheckCircle2, AlertCircle, Download, CheckSquare, Square, Folder, ChevronDown, ChevronUp } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 
 const AssetsPage = () => {
@@ -15,6 +15,8 @@ const AssetsPage = () => {
   const [assetToDelete, setAssetToDelete] = useState(null);
   const [selectedAssets, setSelectedAssets] = useState(new Set());
   const [isSelectMode, setIsSelectMode] = useState(false);
+  const [collapsedProjects, setCollapsedProjects] = useState(new Set());
+  const [groupedAssets, setGroupedAssets] = useState({});
   const fileInputRef = useRef(null);
   const successTimeoutRef = useRef(null);
   
@@ -24,7 +26,8 @@ const AssetsPage = () => {
   // Default metadata that applies to all files (can be overridden per file)
   const [defaultMetadata, setDefaultMetadata] = useState({
     category: 'image',
-    description: ''
+    description: '',
+    project: ''
   });
 
   useEffect(() => {
@@ -60,7 +63,19 @@ const AssetsPage = () => {
           });
         }
       }
-      setAssets(data.assets || []);
+      const assetsData = data.assets || [];
+      setAssets(assetsData);
+      
+      // Group assets by project
+      const grouped = {};
+      assetsData.forEach(asset => {
+        const projectName = asset.project || 'Uncategorized';
+        if (!grouped[projectName]) {
+          grouped[projectName] = [];
+        }
+        grouped[projectName].push(asset);
+      });
+      setGroupedAssets(grouped);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -199,7 +214,8 @@ const AssetsPage = () => {
             description: '',
             url: result,
             file_size: file.size,
-            originalName: file.name
+            originalName: file.name,
+            project: ''
           });
         } catch (err) {
           reject(err);
@@ -716,7 +732,8 @@ const AssetsPage = () => {
             category: fileData.category,
             description: fileData.description || '',
             url: fileData.url,
-            file_size: fileData.file_size
+            file_size: fileData.file_size,
+            project: fileData.project || defaultMetadata.project || null
           };
           
           await portalAPI.uploadAsset(assetData);
@@ -746,7 +763,8 @@ const AssetsPage = () => {
       setSelectedFiles([]);
       setDefaultMetadata({
         category: 'image',
-        description: ''
+        description: '',
+        project: ''
       });
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -792,6 +810,36 @@ const AssetsPage = () => {
     setIsSelectMode(!isSelectMode);
     if (isSelectMode) {
       setSelectedAssets(new Set());
+    }
+  };
+
+  const toggleProjectCollapse = (projectName) => {
+    const newCollapsed = new Set(collapsedProjects);
+    if (newCollapsed.has(projectName)) {
+      newCollapsed.delete(projectName);
+    } else {
+      newCollapsed.add(projectName);
+    }
+    setCollapsedProjects(newCollapsed);
+  };
+
+  const getSelectedCountForProject = (projectName) => {
+    const projectAssets = groupedAssets[projectName] || [];
+    return projectAssets.filter(asset => selectedAssets.has(asset.id)).length;
+  };
+
+  const handleSelectAllProject = (projectName) => {
+    const projectAssets = groupedAssets[projectName] || [];
+    const allSelected = projectAssets.every(asset => selectedAssets.has(asset.id));
+    
+    if (allSelected) {
+      const newSelected = new Set(selectedAssets);
+      projectAssets.forEach(asset => newSelected.delete(asset.id));
+      setSelectedAssets(newSelected);
+    } else {
+      const newSelected = new Set(selectedAssets);
+      projectAssets.forEach(asset => newSelected.add(asset.id));
+      setSelectedAssets(newSelected);
     }
   };
 
@@ -1058,9 +1106,60 @@ const AssetsPage = () => {
           </div>
         )}
 
-        {assets.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {assets.map((asset) => {
+        {Object.keys(groupedAssets).length > 0 ? (
+          <div className="space-y-6">
+            {Object.entries(groupedAssets).map(([projectName, projectAssets]) => {
+              const isProjectCollapsed = collapsedProjects.has(projectName);
+              
+              return (
+                <div key={projectName} className="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700 overflow-hidden">
+                  {/* Project Header */}
+                  <div className="bg-gray-900/50 p-4 border-b border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        <button
+                          onClick={() => toggleProjectCollapse(projectName)}
+                          className="p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+                          title={isProjectCollapsed ? 'Expand' : 'Collapse'}
+                        >
+                          {isProjectCollapsed ? (
+                            <ChevronDown className="w-4 h-4 text-gray-400" />
+                          ) : (
+                            <ChevronUp className="w-4 h-4 text-gray-400" />
+                          )}
+                        </button>
+                        <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                          <Folder className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-white">{projectName}</h3>
+                          <div className="flex items-center gap-3 text-sm text-gray-400">
+                            <span>{projectAssets.length} asset{projectAssets.length !== 1 ? 's' : ''}</span>
+                            {getSelectedCountForProject(projectName) > 0 && (
+                              <span className="text-orange-400">
+                                {getSelectedCountForProject(projectName)} selected
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      {isSelectMode && (
+                        <button
+                          onClick={() => handleSelectAllProject(projectName)}
+                          className="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                          title="Select all assets in this project"
+                        >
+                          Select All
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Assets Grid */}
+                  {!isProjectCollapsed && (
+                    <div className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {projectAssets.map((asset) => {
               const AssetIcon = getAssetIcon(asset.type, asset.category);
               // Debug: Log asset data
               if (asset.category === 'image' || asset.category === 'logo') {
@@ -1339,6 +1438,12 @@ const AssetsPage = () => {
                   </p>
                 </div>
               );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
             })}
           </div>
         ) : (
@@ -1439,17 +1544,30 @@ const AssetsPage = () => {
                       Apply to All
                     </button>
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
-                    <select
-                      value={defaultMetadata.category}
-                      onChange={(e) => setDefaultMetadata({ ...defaultMetadata, category: e.target.value })}
-                      className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    >
-                      <option value="image">Image</option>
-                      <option value="logo">Logo</option>
-                      <option value="document">Document</option>
-                    </select>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 mb-1">Category</label>
+                      <select
+                        value={defaultMetadata.category}
+                        onChange={(e) => setDefaultMetadata({ ...defaultMetadata, category: e.target.value })}
+                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      >
+                        <option value="image">Image</option>
+                        <option value="logo">Logo</option>
+                        <option value="document">Document</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 mb-1">Project</label>
+                      <input
+                        type="text"
+                        value={defaultMetadata.project}
+                        onChange={(e) => setDefaultMetadata({ ...defaultMetadata, project: e.target.value })}
+                        className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="Enter project name (optional)"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Leave empty to add to "Uncategorized"</p>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1535,6 +1653,17 @@ const AssetsPage = () => {
                                 <option value="logo">Logo</option>
                                 <option value="document">Document</option>
                               </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-400 mb-1">Project</label>
+                              <input
+                                type="text"
+                                value={fileData.project || ''}
+                                onChange={(e) => handleUpdateFileMetadata(fileData.id, { project: e.target.value })}
+                                className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                placeholder="Enter project name (optional)"
+                              />
                             </div>
 
                             <div className="flex items-center justify-between text-xs text-gray-400">

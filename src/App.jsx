@@ -44,6 +44,8 @@ const AccessibilityPage = lazy(() => import("./pages/AccessibilityPage"));
 const CapabilitiesDeckPage = lazy(() => import("./pages/CapabilitiesDeckPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const PortalLayout = lazy(() => import("./pages/portal/PortalLayout"));
 const PortalDashboard = lazy(() => import("./pages/portal/PortalDashboard"));
 const SubscriptionsPage = lazy(() => import("./pages/portal/SubscriptionsPage"));
@@ -63,6 +65,7 @@ const AdminInvoicesPage = lazy(() => import("./pages/admin/InvoicesPage"));
 const AdminNotificationsPage = lazy(() => import("./pages/admin/NotificationsPage"));
 const ConsultationLeadsPage = lazy(() => import("./pages/admin/ConsultationLeadsPage"));
 const AIConversationsPage = lazy(() => import("./pages/admin/AIConversationsPage"));
+const EmailTemplatesPage = lazy(() => import("./pages/admin/EmailTemplatesPage"));
 
 // Scroll to top component for route changes
 const ScrollToTop = () => {
@@ -154,6 +157,8 @@ const AppRoutes = () => {
           {/* Auth Routes */}
           <Route path="/auth/signup" element={<SignUpPage />} />
           <Route path="/auth/signin" element={<SignInPage />} />
+          <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           
           {/* Dashboard Routes */}
           <Route
@@ -192,6 +197,7 @@ const AppRoutes = () => {
             <Route path="notifications" element={<AdminNotificationsPage />} />
             <Route path="consultation-leads" element={<ConsultationLeadsPage />} />
             <Route path="ai-conversations" element={<AIConversationsPage />} />
+            <Route path="email-templates" element={<EmailTemplatesPage />} />
           </Route>
           
           <Route path="*" element={<NotFoundPage />} />

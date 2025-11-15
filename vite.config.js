@@ -107,7 +107,37 @@ export default defineConfig({
         target: 'http://localhost:5001',
         changeOrigin: true,
         secure: false,
-        ws: true
+        ws: true,
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('⚠️  Proxy error:', err.message);
+            console.log('💡 Make sure the backend server is running on port 5001');
+            console.log('   Run: cd backend && node index.js');
+          });
+          // Only log non-analytics requests to reduce noise
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            // Skip logging analytics tracking requests (they're very frequent)
+            if (!req.url.includes('/api/analytics/track')) {
+              console.log(`🔄 Proxying ${req.method} ${req.url} to http://localhost:5001${req.url}`);
+            }
+          });
+        },
+        // Retry on connection errors
+        timeout: 10000,
+        // Don't fail on connection errors, just log them
+        onProxyReq: (proxyReq, req, res) => {
+          // Add error handling
+          proxyReq.on('error', (err) => {
+            console.error('❌ Proxy request error:', err.message);
+            if (!res.headersSent) {
+              res.status(503).json({ 
+                error: 'Backend server is not available',
+                message: 'Please ensure the backend server is running on port 5001',
+                hint: 'Run: cd backend && node index.js'
+              });
+            }
+          });
+        }
       }
     }
   },
