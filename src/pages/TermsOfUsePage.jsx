@@ -6,6 +6,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
+import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const TermsOfUsePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +29,7 @@ const TermsOfUsePage = () => {
                 Terms of <span className="text-orange-500">Use</span>
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-gray-300 drop-shadow-md">
-                Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                Last Updated: {formatDateUserTimezone(new Date(), { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { portalAPI } from '../../utils/auth';
+import { portalAPI } from '../../utils/auth.js';
 import { 
   CreditCard, 
   Megaphone, 
@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateUserTimezone, formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
 const PortalDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -249,7 +250,7 @@ const PortalDashboard = () => {
                         <h3 className="text-white font-medium">{campaign.name}</h3>
                         <p className="text-sm text-gray-400 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          Created {new Date(campaign.created_at).toLocaleDateString()}
+                          Created {formatDateTimeUserTimezone(campaign.created_at)}
                         </p>
                       </div>
                     </div>
@@ -315,7 +316,7 @@ const PortalDashboard = () => {
                         <h3 className="text-white font-medium">Invoice #{invoice.id}</h3>
                         <p className="text-sm text-gray-400 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {new Date(invoice.created_at).toLocaleDateString()}
+                          {formatDateTimeUserTimezone(invoice.created_at)}
                         </p>
                       </div>
                     </div>
@@ -383,7 +384,7 @@ const PortalDashboard = () => {
                     </a>
                   )}
                   <p className="text-xs text-gray-500 mt-2">
-                    {new Date(asset.created_at).toLocaleDateString()}
+                    {formatDateTimeUserTimezone(asset.created_at)}
                   </p>
                 </div>
               ))}

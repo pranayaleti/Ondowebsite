@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { 
   FileText, 
   Image, 
@@ -28,6 +28,7 @@ import {
   Upload
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const AssetsPage = () => {
   const [assets, setAssets] = useState([]);
@@ -809,7 +810,7 @@ const AssetsPage = () => {
                             <div className="flex items-center justify-between text-xs text-gray-400">
                               <div className="flex items-center gap-2">
                                 <Calendar className="w-3 h-3" />
-                                <span>{new Date(asset.created_at).toLocaleDateString()}</span>
+                                <span>{formatDateTimeMST(asset.created_at)}</span>
                               </div>
                               {asset.file_size && (
                                 <span>{formatFileSize(asset.file_size)}</span>

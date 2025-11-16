@@ -1,4 +1,4 @@
-import { SERVICE_AREAS, US_CITIES, US_STATES } from '../utils/unifiedData';
+import { SERVICE_AREAS, US_CITIES, US_STATES } from '../utils/unifiedData.js';
 
 const HiddenSEOSection = () => {
   // Generate comprehensive location-based SEO content

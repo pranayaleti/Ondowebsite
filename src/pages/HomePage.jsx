@@ -9,7 +9,7 @@ import HiddenSEOSection from "../components/HiddenSEOSection";
 const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
 const Footer = lazy(() => import("../components/Footer"));
 import { companyInfo, getPostalAddressSchema, getContactPointSchema, getCanonicalUrl } from "../constants/companyInfo";
-import { getAreaServedSchema } from "../utils/unifiedData";
+import { getAreaServedSchema } from "../utils/unifiedData.js";
 import { 
   CheckCircle, 
   Star, 

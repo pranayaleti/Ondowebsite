@@ -1,4 +1,4 @@
-import { generateRobotsTxt } from '../utils/sitemapGenerator';
+import { generateRobotsTxt } from '../utils/sitemapGenerator.js';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import ConsultationWidget from '../components/ConsultationWidget';
 

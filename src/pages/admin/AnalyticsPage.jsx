@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -101,7 +101,12 @@ const AnalyticsPage = () => {
         if (isNaN(date.getTime())) {
           return dateString; // Return as-is if invalid date
         }
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        // Use MST for admin analytics
+        return date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          timeZone: 'America/Denver'
+        });
       } catch (error) {
         return dateString; // Return as-is if parsing fails
       }

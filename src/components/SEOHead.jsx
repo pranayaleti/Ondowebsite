@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData';
+import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData.js';
 import { companyInfo, getPostalAddressSchema, getContactPointSchema, getWeekdayHours } from '../constants/companyInfo';
 
 const SEOHead = ({ 

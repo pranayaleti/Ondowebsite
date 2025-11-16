@@ -16,8 +16,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PageLoader from "./components/LoadingSpinner";
 import { AuthProvider } from "./contexts/AuthContext";
-import { initPerformanceOptimizations } from "./utils/performance";
-import analyticsTracker from "./utils/analytics";
+import { initPerformanceOptimizations } from "./utils/performance.js";
+import analyticsTracker from "./utils/analytics.js";
 import UnifiedChatWidget from "./components/UnifiedChatWidget";
 
 // Lazy load page components for better performance

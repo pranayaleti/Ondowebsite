@@ -6,6 +6,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
+import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const AccessibilityPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -222,7 +223,7 @@ const AccessibilityPage = () => {
                 <div>
                   <h2 className="text-3xl font-bold text-white mb-4">Last Updated</h2>
                   <p className="leading-relaxed">
-                    This accessibility statement was last updated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. We review and update this statement regularly to reflect our ongoing commitment to accessibility.
+                    This accessibility statement was last updated on {formatDateUserTimezone(new Date(), { year: 'numeric', month: 'long', day: 'numeric' })}. We review and update this statement regularly to reflect our ongoing commitment to accessibility.
                   </p>
                 </div>
 

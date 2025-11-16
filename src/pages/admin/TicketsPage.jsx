@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { adminTicketAPI, adminAPI } from '../../utils/auth';
+import { adminTicketAPI, adminAPI } from '../../utils/auth.js';
 import { 
   MessageSquare, 
   Loader, 
@@ -23,6 +23,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateMST, formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const defaultCreateTicketForm = {
   subject: '',
@@ -431,7 +432,7 @@ const AdminTicketsPage = () => {
                 {ticketDetails.ticket.priority} priority
               </span>
               <span className="text-sm text-gray-400">
-                Created {new Date(ticketDetails.ticket.created_at).toLocaleDateString()}
+                Created {formatDateTimeMST(ticketDetails.ticket.created_at)}
               </span>
               <span className="flex items-center gap-2 text-sm text-gray-300">
                 <UserCheck className="w-4 h-4 text-orange-400" />
@@ -724,7 +725,7 @@ const AdminTicketsPage = () => {
                         ? 'text-red-400'
                         : 'text-white'
                     }`}>
-                      {new Date(ticketDetails.ticket.due_date).toLocaleDateString()}
+                      {formatDateTimeMST(ticketDetails.ticket.due_date)}
                     </p>
                   </div>
                 )}
@@ -790,7 +791,7 @@ const AdminTicketsPage = () => {
                       )}
                     </div>
                     <span className="text-xs text-gray-400">
-                      {new Date(message.created_at).toLocaleString()}
+                      {formatDateTimeMST(message.created_at)}
                     </span>
                   </div>
                   <p className="text-gray-300 whitespace-pre-wrap">{message.message}</p>
@@ -1057,7 +1058,7 @@ const AdminTicketsPage = () => {
                             : 'bg-orange-500/20 text-orange-400'
                         }`}>
                           <CalendarIcon className="w-3 h-3" />
-                          Due: {new Date(ticket.due_date).toLocaleDateString()}
+                          Due: {formatDateTimeMST(ticket.due_date)}
                         </span>
                       )}
                       {ticket.budget && (
@@ -1074,7 +1075,7 @@ const AdminTicketsPage = () => {
                       )}
                       <div className="flex items-center gap-2">
                         <Clock className="w-3 h-3" />
-                        <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                        <span>{formatDateTimeMST(ticket.created_at)}</span>
                       </div>
                     </div>
                     <p className="text-sm text-gray-400 line-clamp-2">{ticket.description}</p>

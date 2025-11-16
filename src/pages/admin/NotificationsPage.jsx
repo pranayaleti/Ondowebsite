@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Bell, MessageSquare, FileText, AlertCircle, CheckCircle2, Clock, Trash2, CheckCheck, X } from 'lucide-react';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { useAuth } from '../../contexts/AuthContext';
 import SEOHead from '../../components/SEOHead';
 import { useNavigate } from 'react-router-dom';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const AdminNotificationsPage = () => {
   const { user } = useAuth();
@@ -193,7 +194,7 @@ const AdminNotificationsPage = () => {
                           {notification.message}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {new Date(notification.created_at).toLocaleString()}
+                          {formatDateTimeMST(notification.created_at)}
                         </p>
                       </div>
                       {!notification.is_read && (

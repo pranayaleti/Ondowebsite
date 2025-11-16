@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { portalAPI } from '../../utils/auth';
+import { portalAPI } from '../../utils/auth.js';
 import { Megaphone, Loader, Plus, X, Eye } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 import EmailTemplatePreview from '../../components/EmailTemplatePreview';
+import { formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
 const CampaignsPage = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -127,7 +128,7 @@ const CampaignsPage = () => {
                     <div>
                       <h3 className="text-xl font-bold text-white">{campaign.name}</h3>
                       <p className="text-sm text-gray-400">
-                        Created: {new Date(campaign.created_at).toLocaleDateString()}
+                        Created: {formatDateTimeUserTimezone(campaign.created_at)}
                       </p>
                       {campaign.template_name && (
                         <p className="text-xs text-cyan-400 mt-1">
@@ -136,15 +137,30 @@ const CampaignsPage = () => {
                       )}
                     </div>
                   </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      campaign.status === 'active'
-                        ? 'bg-green-500/20 text-green-400'
-                        : 'bg-gray-500/20 text-gray-400'
-                    }`}
-                  >
-                    {campaign.status}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    {campaign.email_template_id && (
+                      <button
+                        onClick={() => {
+                          setPreviewTemplateId(campaign.email_template_id);
+                          setShowPreview(true);
+                        }}
+                        className="px-3 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors flex items-center gap-1.5"
+                        title="Preview email template"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span className="hidden sm:inline">Preview</span>
+                      </button>
+                    )}
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        campaign.status === 'active'
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-gray-500/20 text-gray-400'
+                      }`}
+                    >
+                      {campaign.status}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

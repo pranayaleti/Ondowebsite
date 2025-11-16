@@ -6,7 +6,7 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { Link } from 'react-router-dom';
-import { SERVICE_AREAS } from '../utils/unifiedData';
+import { SERVICE_AREAS } from '../utils/unifiedData.js';
 import { getCanonicalUrl } from '../constants/companyInfo';
 
 const SitemapPage = () => {

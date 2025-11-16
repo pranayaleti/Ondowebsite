@@ -2,9 +2,9 @@ import { useEffect, useState, useRef } from 'react';
 import { companyInfo } from "../constants/companyInfo";
 import { X, Calendar, CheckCircle, AlertCircle, Loader, ChevronDown, ChevronUp } from 'lucide-react';
 import SelectField from './SelectField';
-import analyticsTracker from '../utils/analytics';
-import { API_URL } from '../utils/apiConfig';
-import { isValidEmail, formatPhoneNumber } from '../utils/security';
+import analyticsTracker from '../utils/analytics.js';
+import { API_URL } from '../utils/apiConfig.js';
+import { isValidEmail, formatPhoneNumber } from '../utils/security.js';
 
 const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) => {
   const [formData, setFormData] = useState({

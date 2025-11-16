@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { portalAPI } from '../../utils/auth';
+import { portalAPI } from '../../utils/auth.js';
 import { FolderOpen, Loader, Upload, X, Image as ImageIcon, FileText, File, Trash2, Plus, CheckCircle2, AlertCircle, Download, CheckSquare, Square, Folder, ChevronDown, ChevronUp } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
 const AssetsPage = () => {
   const [assets, setAssets] = useState([]);
@@ -1434,7 +1435,7 @@ const AssetsPage = () => {
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    Uploaded: {new Date(asset.created_at).toLocaleDateString()}
+                    Uploaded: {formatDateTimeUserTimezone(asset.created_at)}
                   </p>
                 </div>
               );

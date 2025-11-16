@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ticketAPI } from '../../utils/auth';
+import { ticketAPI } from '../../utils/auth.js';
 import { companyInfo } from '../../constants/companyInfo';
 import { 
   MessageSquare, 
@@ -16,6 +16,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateUserTimezone, formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
 const TicketsPage = () => {
   const [tickets, setTickets] = useState([]);
@@ -234,7 +235,7 @@ const TicketsPage = () => {
                 {ticketDetails.ticket.priority} priority
               </span>
               <span className="text-sm text-gray-400">
-                Created {new Date(ticketDetails.ticket.created_at).toLocaleDateString()}
+                Created {formatDateTimeUserTimezone(ticketDetails.ticket.created_at)}
               </span>
               <span className="flex items-center gap-2 text-sm text-gray-300">
                 <UserCheck className="w-4 h-4 text-orange-400" />
@@ -277,7 +278,7 @@ const TicketsPage = () => {
                       )}
                     </div>
                     <span className="text-xs text-gray-400">
-                      {new Date(message.created_at).toLocaleString()}
+                      {formatDateTimeUserTimezone(message.created_at)}
                     </span>
                   </div>
                   <p className="text-gray-300 whitespace-pre-wrap">{message.message}</p>
@@ -405,7 +406,7 @@ const TicketsPage = () => {
                     <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        Created {new Date(ticket.created_at).toLocaleDateString()}
+                        Created {formatDateTimeUserTimezone(ticket.created_at)}
                       </span>
                       <span className="flex items-center gap-1">
                         <MessageSquare className="w-3 h-3" />
@@ -428,7 +429,7 @@ const TicketsPage = () => {
                       )}
                       {ticket.due_date && (
                         <span className="px-2 py-1 bg-orange-500/20 text-orange-400 rounded text-xs">
-                          Due: {new Date(ticket.due_date).toLocaleDateString()}
+                          Due: {formatDateTimeUserTimezone(ticket.due_date)}
                         </span>
                       )}
                       {ticket.assigned_name && (
