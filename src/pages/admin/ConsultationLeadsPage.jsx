@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { 
   MessageSquare, Loader, Search, Filter, Calendar, Mail, Phone, Building2, 
   Globe, MapPin, Clock, Tag, Edit, Save, X, CheckCircle, AlertCircle,
   DollarSign, TrendingUp, FileText, Eye, ExternalLink
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const ConsultationLeadsPage = () => {
   const [leads, setLeads] = useState([]);
@@ -106,7 +107,7 @@ const ConsultationLeadsPage = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return formatDateTimeMST(dateString, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ThumbsUp, ThumbsDown, MessageSquare, X, CheckCircle, AlertCircle, List, Send, Calendar, Loader2 } from 'lucide-react';
-import { API_URL } from '../utils/apiConfig';
+import { API_URL } from '../utils/apiConfig.js';
 import { useAuth } from '../contexts/AuthContext';
+import { formatDateTimeUserTimezone } from '../utils/dateFormat.js';
 
 const FeedbackWidget = () => {
   const { isAuthenticated } = useAuth();
@@ -369,7 +370,7 @@ const FeedbackWidget = () => {
                           </span>
                           <span className="text-xs text-gray-500 flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
-                            {new Date(feedback.created_at).toLocaleDateString()}
+                            {formatDateTimeUserTimezone(feedback.created_at)}
                           </span>
                         </div>
                         {feedback.description && (

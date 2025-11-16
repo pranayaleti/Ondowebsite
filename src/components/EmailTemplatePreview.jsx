@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Eye, Mail, FileText, Loader } from 'lucide-react';
-import { portalAPI, adminAPI } from '../utils/auth';
+import { portalAPI, adminAPI } from '../utils/auth.js';
 
 const EmailTemplatePreview = ({ templateId, isOpen, onClose, isAdmin = false }) => {
   const [template, setTemplate] = useState(null);

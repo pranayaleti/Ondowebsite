@@ -5,6 +5,7 @@ import BlogCard from '../components/BlogCard';
 import ShareButtons from '../components/ShareButtons';
 import ConsultationWidget from '../components/ConsultationWidget';
 import { getCanonicalUrl } from '../constants/companyInfo';
+import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -66,7 +67,7 @@ const BlogPostPage = () => {
   }
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return formatDateUserTimezone(dateString, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

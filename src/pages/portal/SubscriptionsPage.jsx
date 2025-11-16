@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { portalAPI } from '../../utils/auth';
+import { portalAPI } from '../../utils/auth.js';
 import { CreditCard, Loader, CheckCircle2, Star, X, AlertCircle } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 import { pricingOptions } from '../../constants/data';
+import { formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
 // Transform pricingOptions to subscription format
 const transformPricingToSubscription = (pricingOptions) => {
@@ -275,7 +276,7 @@ const SubscriptionsPage = () => {
 
                     <div className="flex items-center justify-between mt-4">
                       <p className="text-xs text-gray-500">
-                        Started: {new Date(subscription.created_at).toLocaleDateString()}
+                        Started: {formatDateTimeUserTimezone(subscription.created_at)}
                       </p>
                       <button
                         onClick={() => handleCancelClick(subscription.id)}

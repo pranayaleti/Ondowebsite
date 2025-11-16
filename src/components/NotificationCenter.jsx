@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { portalAPI, adminAPI } from '../utils/auth';
+import { portalAPI, adminAPI } from '../utils/auth.js';
 import { useAuth } from '../contexts/AuthContext';
 
 const NotificationCenter = () => {

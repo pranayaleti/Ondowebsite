@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { 
   Users, 
   Megaphone, 
@@ -22,6 +22,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateMST, formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -111,7 +112,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <span className="text-xs text-gray-400">
-                {new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                {formatDateMST(item.date, { month: 'short', day: 'numeric' })}
               </span>
             </div>
           );
@@ -320,7 +321,7 @@ const AdminDashboard = () => {
                     )}
                   </div>
                   <span className="text-xs text-gray-500">
-                    {new Date(recentSubscriptions[0].created_at).toLocaleDateString()}
+                    {formatDateTimeMST(recentSubscriptions[0].created_at)}
                   </span>
                 </div>
               )}
@@ -332,7 +333,7 @@ const AdminDashboard = () => {
                     <p className="text-xs text-gray-400">{recentCampaigns[0].user_name}</p>
                   </div>
                   <span className="text-xs text-gray-500">
-                    {new Date(recentCampaigns[0].created_at).toLocaleDateString()}
+                    {formatDateTimeMST(recentCampaigns[0].created_at)}
                   </span>
                 </div>
               )}
@@ -344,7 +345,7 @@ const AdminDashboard = () => {
                     <p className="text-xs text-gray-400">{recentUsers[0].name}</p>
                   </div>
                   <span className="text-xs text-gray-500">
-                    {new Date(recentUsers[0].created_at).toLocaleDateString()}
+                    {formatDateTimeMST(recentUsers[0].created_at)}
                   </span>
                 </div>
               )}
@@ -361,7 +362,7 @@ const AdminDashboard = () => {
                     )}
                   </div>
                   <span className="text-xs text-gray-500">
-                    {new Date(recentConsultationLeads[0].created_at).toLocaleDateString()}
+                    {formatDateTimeMST(recentConsultationLeads[0].created_at)}
                   </span>
                 </div>
               )}
@@ -378,7 +379,7 @@ const AdminDashboard = () => {
                     </p>
                   </div>
                   <span className="text-xs text-gray-500">
-                    {new Date(recentAIConversations[0].started_at).toLocaleDateString()}
+                    {formatDateTimeMST(recentAIConversations[0].started_at)}
                   </span>
                 </div>
               )}
@@ -437,7 +438,7 @@ const AdminDashboard = () => {
                       )}
                       <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(lead.created_at).toLocaleDateString()}
+                        {formatDateTimeMST(lead.created_at)}
                       </p>
                     </div>
                   </div>
@@ -518,7 +519,7 @@ const AdminDashboard = () => {
                       )}
                       <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
-                        {new Date(feedback.created_at).toLocaleDateString()}
+                        {formatDateTimeMST(feedback.created_at)}
                       </p>
                     </div>
                   </div>
@@ -573,7 +574,7 @@ const AdminDashboard = () => {
                       <p className="text-sm text-gray-400">{user.email}</p>
                       <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                         <Calendar className="w-3 h-3" />
-                        Joined {new Date(user.created_at).toLocaleDateString()}
+                        Joined {formatDateTimeMST(user.created_at)}
                       </p>
                     </div>
                   </div>

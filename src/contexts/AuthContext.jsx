@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
-import { authAPI, tokenStorage } from '../utils/auth';
+import { authAPI, tokenStorage } from '../utils/auth.js';
 
 const defaultAuthContext = {
   user: null,

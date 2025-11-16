@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/auth';
-import { API_URL } from '../../utils/apiConfig';
+import { adminAPI } from '../../utils/auth.js';
+import { API_URL } from '../../utils/apiConfig.js';
 import { FileText, Download, Eye, Loader, AlertCircle, DollarSign, Calendar, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Save, X, User, Mail } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const InvoicesPage = () => {
   const [invoices, setInvoices] = useState([]);
@@ -294,21 +295,13 @@ const InvoicesPage = () => {
                           </div>
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
-                            <span>Created {new Date(invoice.created_at).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}</span>
+                            <span>Created {formatDateTimeMST(invoice.created_at)}</span>
                           </div>
                           {dueDate && (
                             <div className="flex items-center gap-2">
                               <Calendar className="w-4 h-4" />
                               <span className={isOverdue ? 'text-red-400' : 'text-gray-400'}>
-                                Due {dueDate.toLocaleDateString('en-US', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric'
-                                })}
+                                Due {formatDateTimeMST(dueDate)}
                               </span>
                             </div>
                           )}

@@ -7,6 +7,7 @@ const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import ContactInfo from '../components/ContactInfo';
 import { getCanonicalUrl } from '../constants/companyInfo';
+import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const PrivacyPolicyPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,7 +30,7 @@ const PrivacyPolicyPage = () => {
                 Privacy <span className="text-orange-500">Policy</span>
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-gray-300 drop-shadow-md">
-                Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                Last Updated: {formatDateUserTimezone(new Date(), { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
           </div>

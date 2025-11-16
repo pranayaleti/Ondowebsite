@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { pricingOptions } from "../constants/data";
-import analyticsTracker from "../utils/analytics";
-import { API_URL } from "../utils/apiConfig";
+import analyticsTracker from "../utils/analytics.js";
+import { API_URL } from "../utils/apiConfig.js";
 
 const Pricing = ({ onConsult }) => {
   const cards = pricingOptions; // show all pricing options

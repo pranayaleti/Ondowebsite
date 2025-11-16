@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { API_BASE } from '../utils/apiConfig';
+import { API_BASE } from '../utils/apiConfig.js';
 import SEOHead from '../components/SEOHead';
 import { Mail, Lock, ArrowRight, Loader, CheckCircle } from 'lucide-react';
 import { companyInfo } from '../constants/companyInfo';

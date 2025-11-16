@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import SEOHead from '../components/SEOHead';
 import { Mail, Lock, User, ArrowRight, Loader, ChevronDown, ChevronUp, Building2, Phone, Globe, MapPin } from 'lucide-react';
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
-import { isValidEmail, formatPhoneNumber } from '../utils/security';
+import { isValidEmail, formatPhoneNumber } from '../utils/security.js';
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({

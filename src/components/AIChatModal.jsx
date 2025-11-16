@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { X, Send, Loader, Bot, User, Home, ThumbsUp, ThumbsDown, RefreshCw, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
-import analyticsTracker from '../utils/analytics';
-import { API_URL } from '../utils/apiConfig';
+import analyticsTracker from '../utils/analytics.js';
+import { API_URL } from '../utils/apiConfig.js';
 import { companyInfo } from '../constants/companyInfo';
 import { useAuth } from '../contexts/AuthContext';
+import { formatDateWithWeekdayUser, formatDateTimeUserTimezone } from '../utils/dateFormat.js';
 
 const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const { user, isAuthenticated } = useAuth();
@@ -490,7 +491,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
 
   const formatTime = (timestamp) => {
     // Display in user's local timezone
-    return new Date(timestamp).toLocaleString('en-US', {
+    return formatDateTimeUserTimezone(timestamp, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -706,22 +707,8 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         <div className="px-4 py-2 bg-gray-50 text-center">
           <p className="text-xs text-gray-500">
             {messages.length > 0 && messages[0].timestamp
-              ? new Date(messages[0].timestamp).toLocaleString('en-US', {
-                  weekday: 'long',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true,
-                })
-              : new Date().toLocaleString('en-US', {
-                  weekday: 'long',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true,
-                })}
+              ? formatDateWithWeekdayUser(messages[0].timestamp)
+              : formatDateWithWeekdayUser(new Date())}
           </p>
         </div>
 

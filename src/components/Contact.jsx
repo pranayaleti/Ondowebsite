@@ -1,6 +1,6 @@
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
-import { sanitizeInput, validateFormData, validationRules, rateLimiter, generateCSRFToken } from "../utils/security";
+import { sanitizeInput, validateFormData, validationRules, rateLimiter, generateCSRFToken } from "../utils/security.js";
 import { companyInfo } from "../constants/companyInfo";
 
 const Contact = ({ onOpenConsultation }) => {

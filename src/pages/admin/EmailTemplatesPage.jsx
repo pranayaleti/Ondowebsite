@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { Mail, Plus, Edit, Trash2, Eye, Loader, Search, X, Save, XCircle } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 import EmailTemplatePreview from '../../components/EmailTemplatePreview';

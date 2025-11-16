@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { Megaphone, Loader, Search, Filter, Calendar, User, Mail, Plus, X, Eye } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
 import EmailTemplatePreview from '../../components/EmailTemplatePreview';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const AdminCampaignsPage = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -266,11 +267,7 @@ const AdminCampaignsPage = () => {
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
                           <span>
-                            Created {new Date(campaign.created_at).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
+                            Created {formatDateTimeMST(campaign.created_at)}
                           </span>
                         </div>
                         {campaign.template_name && (
@@ -282,19 +279,34 @@ const AdminCampaignsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <span
-                    className={`px-4 py-2 rounded-full text-sm font-medium ${
-                      campaign.status === 'active'
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                        : campaign.status === 'paused'
-                        ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                        : campaign.status === 'completed'
-                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                        : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
-                    }`}
-                  >
-                    {campaign.status}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    {campaign.email_template_id && (
+                      <button
+                        onClick={() => {
+                          setPreviewTemplateId(campaign.email_template_id);
+                          setShowPreview(true);
+                        }}
+                        className="px-3 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors flex items-center gap-1.5"
+                        title="Preview email template"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span className="hidden sm:inline">Preview</span>
+                      </button>
+                    )}
+                    <span
+                      className={`px-4 py-2 rounded-full text-sm font-medium ${
+                        campaign.status === 'active'
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                          : campaign.status === 'paused'
+                          ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                          : campaign.status === 'completed'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                      }`}
+                    >
+                      {campaign.status}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

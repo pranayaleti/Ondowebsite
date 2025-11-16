@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { memo, useMemo } from "react";
-import { SERVICE_AREAS } from "../utils/unifiedData";
+import { SERVICE_AREAS } from "../utils/unifiedData.js";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
 import FeedbackWidget from "./FeedbackWidget";

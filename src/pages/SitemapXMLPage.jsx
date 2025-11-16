@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { generateSitemap } from '../utils/sitemapGenerator';
+import { generateSitemap } from '../utils/sitemapGenerator.js';
 
 /**
  * Component that serves the XML sitemap for search engines

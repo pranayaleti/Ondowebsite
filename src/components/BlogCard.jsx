@@ -1,10 +1,11 @@
 import { useMemo, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const BlogCard = memo(({ post, featured = false }) => {
   const formattedDate = useMemo(() => {
-    return new Date(post.publishDate).toLocaleDateString('en-US', {
+    return formatDateUserTimezone(post.publishDate, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

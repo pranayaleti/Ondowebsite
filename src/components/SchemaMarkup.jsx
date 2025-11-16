@@ -1,4 +1,4 @@
-import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData';
+import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData.js';
 import { companyInfo, getPostalAddressSchema, getContactPointSchema, getOpeningHoursSchema } from '../constants/companyInfo';
 
 // Comprehensive JSON-LD schema markup for Ondosoft

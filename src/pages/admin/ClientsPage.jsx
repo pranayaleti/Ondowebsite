@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { companyInfo } from '../../constants/companyInfo';
-import { adminAPI } from '../../utils/auth';
-import { formatPhoneNumber } from '../../utils/security';
+import { adminAPI } from '../../utils/auth.js';
+import { formatPhoneNumber } from '../../utils/security.js';
 import { 
   Users, Loader, Search, Filter, Calendar, Mail, Phone, Building2, 
   Globe, MapPin, Clock, Tag, Edit, Save, X, CheckCircle, AlertCircle, Plus 
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const ClientsPage = () => {
   const [users, setUsers] = useState([]);
@@ -453,7 +454,7 @@ const ClientsPage = () => {
                         {user.last_login && (
                           <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4" />
-                            Last login: {new Date(user.last_login).toLocaleDateString()}
+                            Last login: {formatDateTimeMST(user.last_login)}
                           </div>
                         )}
                         {user.signup_source && (
@@ -465,11 +466,7 @@ const ClientsPage = () => {
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-500 mt-2">
                         <Calendar className="w-3 h-3" />
-                        Joined {new Date(user.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        Joined {formatDateTimeMST(user.created_at)}
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { adminAPI } from '../../utils/auth';
+import { adminAPI } from '../../utils/auth.js';
 import { 
   MessageSquare, 
   Loader, 
@@ -21,6 +21,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeMST } from '../../utils/dateFormat.js';
 
 const AIConversationsPage = () => {
   const [conversations, setConversations] = useState([]);
@@ -83,7 +84,7 @@ const AIConversationsPage = () => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
+    return formatDateTimeMST(dateString, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -406,62 +407,90 @@ const AIConversationsPage = () => {
                 </div>
 
                 {/* Analytics Events */}
-                {selectedConversation.analytics && selectedConversation.analytics.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-bold text-white mb-4">Analytics Events & Feedback</h3>
-                    <div className="space-y-2">
-                      {selectedConversation.analytics.map((event, idx) => {
-                        const eventData = typeof event.event_data === 'string' 
-                          ? JSON.parse(event.event_data) 
-                          : event.event_data;
-                        
-                        return (
-                          <div key={idx} className="bg-gray-900/50 rounded-lg p-3 text-sm border border-gray-700">
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-white font-medium capitalize">
-                                {event.event_type === 'feedback' 
-                                  ? (eventData.feedback === 'positive' ? '👍 Thumbs Up' : '👎 Thumbs Down')
-                                  : event.event_type === 'link_click'
-                                  ? '🔗 Link Clicked'
-                                  : event.event_type}
-                              </p>
-                              <p className="text-gray-400 text-xs">
-                                {formatDate(event.timestamp)}
-                              </p>
+                {selectedConversation.analytics && selectedConversation.analytics.length > 0 && (() => {
+                  // Group events by type and timestamp to avoid duplicates
+                  const groupedEvents = selectedConversation.analytics.reduce((acc, event) => {
+                    const eventData = typeof event.event_data === 'string' 
+                      ? JSON.parse(event.event_data) 
+                      : event.event_data;
+                    
+                    const eventKey = `${event.event_type}_${event.timestamp}_${JSON.stringify(eventData)}`;
+                    
+                    if (!acc[eventKey]) {
+                      acc[eventKey] = {
+                        event,
+                        eventData,
+                        count: 1
+                      };
+                    } else {
+                      acc[eventKey].count++;
+                    }
+                    
+                    return acc;
+                  }, {});
+                  
+                  const uniqueEvents = Object.values(groupedEvents);
+                  
+                  return (
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-4">Analytics Events & Feedback</h3>
+                      <div className="space-y-2">
+                        {uniqueEvents.map((grouped, idx) => {
+                          const { event, eventData, count } = grouped;
+                          
+                          return (
+                            <div key={idx} className="bg-gray-900/50 rounded-lg p-3 text-sm border border-gray-700">
+                              <div className="flex items-center justify-between mb-2">
+                                <p className="text-white font-medium capitalize">
+                                  {event.event_type === 'feedback' 
+                                    ? (eventData.feedback === 'positive' ? '👍 Thumbs Up' : '👎 Thumbs Down')
+                                    : event.event_type === 'link_click'
+                                    ? '🔗 Link Clicked'
+                                    : event.event_type}
+                                  {count > 1 && (
+                                    <span className="ml-2 px-2 py-0.5 bg-gray-700 rounded text-xs">
+                                      {count}x
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="text-gray-400 text-xs">
+                                  {formatDate(event.timestamp)}
+                                </p>
+                              </div>
+                              
+                              {event.event_type === 'feedback' && eventData.messageContent && (
+                                <div className="mt-2 p-2 bg-gray-800/50 rounded text-xs">
+                                  <p className="text-gray-300 mb-1">Message:</p>
+                                  <p className="text-gray-400 whitespace-pre-wrap">{eventData.messageContent}</p>
+                                </div>
+                              )}
+                              
+                              {event.event_type === 'link_click' && eventData.linkUrl && (
+                                <div className="mt-2 p-2 bg-gray-800/50 rounded text-xs">
+                                  <p className="text-gray-300 mb-1">Link:</p>
+                                  <a 
+                                    href={eventData.linkUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-orange-400 hover:text-orange-300 underline break-all"
+                                  >
+                                    {eventData.linkUrl}
+                                  </a>
+                                </div>
+                              )}
+                              
+                              {eventData.messageId && (
+                                <p className="text-gray-500 text-xs mt-1">
+                                  Message ID: {eventData.messageId}
+                                </p>
+                              )}
                             </div>
-                            
-                            {event.event_type === 'feedback' && eventData.messageContent && (
-                              <div className="mt-2 p-2 bg-gray-800/50 rounded text-xs">
-                                <p className="text-gray-300 mb-1">Message:</p>
-                                <p className="text-gray-400 whitespace-pre-wrap">{eventData.messageContent}</p>
-                              </div>
-                            )}
-                            
-                            {event.event_type === 'link_click' && eventData.linkUrl && (
-                              <div className="mt-2 p-2 bg-gray-800/50 rounded text-xs">
-                                <p className="text-gray-300 mb-1">Link:</p>
-                                <a 
-                                  href={eventData.linkUrl} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="text-orange-400 hover:text-orange-300 underline break-all"
-                                >
-                                  {eventData.linkUrl}
-                                </a>
-                              </div>
-                            )}
-                            
-                            {eventData.messageId && (
-                              <p className="text-gray-500 text-xs mt-1">
-                                Message ID: {eventData.messageId}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
           </div>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { portalAPI } from '../../utils/auth';
-import { API_URL } from '../../utils/apiConfig';
+import { portalAPI } from '../../utils/auth.js';
+import { API_URL } from '../../utils/apiConfig.js';
 import { FileText, Download, Eye, Loader, AlertCircle, DollarSign, Calendar, CheckCircle, XCircle, Clock, Plus, Trash2, X } from 'lucide-react';
 import SEOHead from '../../components/SEOHead';
+import { formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
 const InvoicesPage = () => {
   const [invoices, setInvoices] = useState([]);
@@ -252,12 +253,12 @@ const InvoicesPage = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 text-gray-300">
-                          {new Date(invoice.created_at).toLocaleDateString()}
+                          {formatDateTimeUserTimezone(invoice.created_at)}
                         </td>
                         <td className="px-6 py-4">
                           {dueDate ? (
                             <span className={isOverdue ? 'text-red-400' : 'text-gray-300'}>
-                              {dueDate.toLocaleDateString()}
+                              {formatDateTimeUserTimezone(dueDate)}
                             </span>
                           ) : (
                             <span className="text-gray-500">N/A</span>

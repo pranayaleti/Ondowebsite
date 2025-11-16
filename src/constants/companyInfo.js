@@ -1,6 +1,6 @@
 export const companyInfo = {
   name: "Ondosoft",
-  email: "contact@ondosoft.com",
+  email: "pranay1917@gmail.com",
   calendlyUrl: "https://calendly.com/scheduleondo",
   timezoneAbbr: "MST",
   timezoneIANA: "America/Denver",
@@ -76,7 +76,7 @@ export const companyInfo = {
     display: "4.9/5",
   },
   // Sales email (separate from contact email)
-  salesEmail: "sales@ondosoft.com",
+  salesEmail: "pranay1917@gmail.com",
   // Form placeholders
   placeholders: {
     email: "your@email.com",
