@@ -1,5 +1,5 @@
 // Service Worker for Ondosoft.com - Enhanced Caching Strategy
-const CACHE_VERSION = 'v2.1.0';
+const CACHE_VERSION = 'v2.1.1';
 const CACHE_NAME = `ondosoft-${CACHE_VERSION}`;
 const STATIC_CACHE = `ondosoft-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `ondosoft-dynamic-${CACHE_VERSION}`;
@@ -8,26 +8,14 @@ const API_CACHE = `ondosoft-api-${CACHE_VERSION}`;
 const FONT_CACHE = `ondosoft-fonts-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
+// Note: Only include assets that are guaranteed to exist and won't be blocked
 const STATIC_ASSETS = [
   '/',
+  '/index.html',
   '/logo.png',
-  '/assets/code.jpg',
-  '/assets/user1.jpg',
-  '/assets/user2.jpg',
-  '/assets/user3.jpg',
-  '/assets/user4.jpg',
-  '/assets/user5.jpg',
-  '/assets/user6.jpg',
   '/manifest.json',
   '/robots.txt',
-  '/sitemap.xml',
-  '/index.html'
-];
-
-// Critical CSS and JS files
-const CRITICAL_ASSETS = [
-  '/index.css',
-  '/src/index.css'
+  '/sitemap.xml'
 ];
 
 // Cache duration settings (in milliseconds)
@@ -45,14 +33,35 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('Caching static assets...');
-        return cache.addAll(STATIC_ASSETS);
+        // Cache assets individually to handle failures gracefully
+        // This prevents one failed asset from breaking the entire service worker
+        return Promise.allSettled(
+          STATIC_ASSETS.map((url) => {
+            return fetch(url)
+              .then((response) => {
+                if (response.ok) {
+                  return cache.put(url, response);
+                } else {
+                  console.warn(`Failed to cache ${url}: ${response.status} ${response.statusText}`);
+                  return Promise.resolve();
+                }
+              })
+              .catch((error) => {
+                // Log but don't fail - some assets might be blocked or unavailable
+                console.warn(`Could not cache ${url}:`, error.message);
+                return Promise.resolve();
+              });
+          })
+        );
       })
       .then(() => {
-        console.log('Static assets cached successfully');
+        console.log('Static assets caching completed');
         return self.skipWaiting();
       })
       .catch((error) => {
-        console.error('Failed to cache static assets:', error);
+        console.error('Service Worker installation error:', error);
+        // Still skip waiting even if caching fails
+        return self.skipWaiting();
       })
   );
 });

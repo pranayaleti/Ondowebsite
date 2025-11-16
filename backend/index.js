@@ -1730,58 +1730,86 @@ const allowedOrigins = [
   process.env.FRONTEND_URL
 ].filter(Boolean); // Remove undefined values
 
+// Log allowed origins in production for debugging
+if (process.env.NODE_ENV === 'production') {
+  console.log('CORS Allowed Origins:', allowedOrigins);
+}
+
 // Handle preflight OPTIONS requests FIRST - before any other middleware
 app.options('*', (req, res) => {
-  const origin = req.headers.origin;
-  
-  // In production, only allow specific origins
-  if (process.env.NODE_ENV === 'production') {
-    if (origin && allowedOrigins.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-      res.header('Access-Control-Max-Age', '86400');
+  try {
+    const origin = req.headers.origin;
+    
+    // In production, only allow specific origins
+    if (process.env.NODE_ENV === 'production') {
+      if (origin && allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+        res.header('Access-Control-Max-Age', '86400');
+        return res.sendStatus(200);
+      } else {
+        // Log rejected origin for debugging
+        if (origin) {
+          console.warn(`CORS: Origin not allowed: ${origin}. Allowed origins:`, allowedOrigins);
+        }
+        // Origin not allowed - return 403 but still send CORS headers to prevent browser errors
+        res.header('Access-Control-Allow-Origin', origin || '*');
+        return res.sendStatus(403);
+      }
+    } else {
+      // In development, allow all origins
+      if (origin) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+        res.header('Access-Control-Max-Age', '86400');
+      }
+      return res.sendStatus(200);
     }
-  } else {
-    // In development, allow all origins
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-      res.header('Access-Control-Max-Age', '86400');
-    }
+  } catch (error) {
+    console.error('OPTIONS handler error:', error);
+    // Even on error, try to send a response to prevent hanging requests
+    return res.sendStatus(200);
   }
-  
-  res.sendStatus(200);
 });
 
 // Enable CORS for all other routes
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // In production, only allow specific origins
-  if (process.env.NODE_ENV === 'production') {
-    if (origin && allowedOrigins.includes(origin)) {
+  try {
+    const origin = req.headers.origin;
+    
+    // Skip CORS for same-origin requests
+    if (!origin) {
+      return next();
+    }
+    
+    // In production, only allow specific origins
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+        res.header('Access-Control-Expose-Headers', 'Set-Cookie');
+      }
+      // If origin not allowed, don't set CORS headers (browser will block)
+    } else {
+      // In development, allow all origins
       res.header('Access-Control-Allow-Origin', origin);
       res.header('Access-Control-Allow-Credentials', 'true');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
       res.header('Access-Control-Expose-Headers', 'Set-Cookie');
     }
-  } else {
-    // In development, allow all origins
-    if (origin) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-      res.header('Access-Control-Expose-Headers', 'Set-Cookie');
-    }
+    
+    next();
+  } catch (error) {
+    console.error('CORS middleware error:', error);
+    next();
   }
-  
-  next();
 });
 
 app.use(express.json({ limit: '50mb' }));

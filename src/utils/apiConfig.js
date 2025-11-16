@@ -60,8 +60,10 @@ export const getAPIBase = () => {
   // In development, use environment variable or default to localhost
   // This can be overridden with VITE_API_BASE environment variable
   const devBase = import.meta.env.VITE_API_BASE || 'http://localhost:5001';
-  if (devBase === 'http://localhost:5001') {
-    console.warn('⚠️  Using default API base URL. Set VITE_API_BASE environment variable if needed.');
+  // Note: Using localhost:5001 is the expected default for development
+  // Only log if VITE_API_BASE is explicitly set to something other than default
+  if (import.meta.env.VITE_API_BASE && import.meta.env.VITE_API_BASE !== 'http://localhost:5001') {
+    console.log('🔧 Using custom API base URL:', devBase);
   }
   return devBase;
 };
@@ -72,21 +74,18 @@ export const API_URL = getAPIUrl();
 // Export the API base URL as a constant for direct use
 export const API_BASE = getAPIBase();
 
-// Debug logging (only in development or if there's an issue)
-if (import.meta.env.DEV || API_URL.includes('your-backend-url') || API_URL.includes('placeholder')) {
-  console.warn('🔧 API Configuration:', {
+// Debug logging (only show if there's an actual issue)
+if (API_URL.includes('your-backend-url') || API_URL.includes('placeholder')) {
+  console.error('❌ ERROR: VITE_API_URL contains a placeholder value!');
+  console.error('📝 To fix: Set VITE_API_URL environment variable to your actual backend URL');
+  console.error('   Example: VITE_API_URL=https://ondowebsite.onrender.com/api');
+  console.error('   Or: VITE_API_URL=https://ondowebsite.onrender.com (will auto-add /api)');
+  console.warn('🔧 Current API Configuration:', {
     API_URL,
     API_BASE,
     VITE_API_URL: import.meta.env.VITE_API_URL || 'not set',
     PROD: import.meta.env.PROD,
     MODE: import.meta.env.MODE
   });
-  
-  if (API_URL.includes('your-backend-url') || API_URL.includes('placeholder')) {
-    console.error('❌ ERROR: VITE_API_URL contains a placeholder value!');
-    console.error('📝 To fix: Set VITE_API_URL environment variable to your actual backend URL');
-    console.error('   Example: VITE_API_URL=https://ondowebsite.onrender.com/api');
-    console.error('   Or: VITE_API_URL=https://ondowebsite.onrender.com (will auto-add /api)');
-  }
 }
 
