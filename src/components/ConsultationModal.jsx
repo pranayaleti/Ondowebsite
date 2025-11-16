@@ -103,11 +103,15 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
           });
         } catch (error) {
           // Non-blocking: log error but don't interrupt user flow
-          console.warn('Failed to save draft to backend:', error);
+          if (import.meta.env.DEV) {
+            console.warn('Failed to save draft to backend:', error);
+          }
         }
       }
     } catch (error) {
-      console.warn('Failed to save draft:', error);
+      if (import.meta.env.DEV) {
+        console.warn('Failed to save draft:', error);
+      }
     }
   };
 
@@ -282,14 +286,36 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
         });
       } catch (apiError) {
         // Non-blocking: log error but don't interrupt user flow
-        console.warn('Failed to save consultation to backend:', apiError);
+        if (import.meta.env.DEV) {
+          console.warn('Failed to save consultation to backend:', apiError);
+        }
       }
 
       // Save locally for a lightweight record
       const key = 'consultation_leads';
-      const existing = JSON.parse(localStorage.getItem(key) || '[]');
-      existing.push(payload);
-      localStorage.setItem(key, JSON.stringify(existing));
+      try {
+        const stored = localStorage.getItem(key);
+        let existing = [];
+        if (stored) {
+          try {
+            existing = JSON.parse(stored);
+          } catch (parseError) {
+            if (import.meta.env.DEV) {
+              console.warn('Failed to parse stored consultation leads:', parseError);
+            }
+            existing = [];
+          }
+        }
+        if (Array.isArray(existing)) {
+          existing.push(payload);
+          localStorage.setItem(key, JSON.stringify(existing));
+        }
+      } catch (storageError) {
+        // Non-blocking: log error but don't interrupt user flow
+        if (import.meta.env.DEV) {
+          console.warn('Failed to save consultation to localStorage:', storageError);
+        }
+      }
 
       // Optional webhook to your backend/automation (Zapier, Make, Cloud Function, etc.)
       if (companyInfo.leadWebhookUrl) {
@@ -301,7 +327,9 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
           });
         } catch (err) {
           // Non-blocking: ignore webhook failure
-          console.warn('Lead webhook failed', err);
+          if (import.meta.env.DEV) {
+            console.warn('Lead webhook failed', err);
+          }
         }
       }
 
@@ -352,12 +380,16 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
             });
           } catch (error) {
             // Non-blocking
-            console.warn('Failed to clear draft:', error);
+            if (import.meta.env.DEV) {
+              console.warn('Failed to clear draft:', error);
+            }
           }
         }
       } catch (error) {
         // Non-blocking
-        console.warn('Failed to clear draft:', error);
+        if (import.meta.env.DEV) {
+          console.warn('Failed to clear draft:', error);
+        }
       }
 
       // Reset form in the background
@@ -401,7 +433,9 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
           try {
             draftData = JSON.parse(localDraft);
           } catch (e) {
-            console.warn('Failed to parse local draft:', e);
+            if (import.meta.env.DEV) {
+              console.warn('Failed to parse local draft:', e);
+            }
           }
         }
 
@@ -431,7 +465,9 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
             }
           } catch (error) {
             // Non-blocking: if backend fails, use localStorage data
-            console.warn('Failed to load draft from backend:', error);
+            if (import.meta.env.DEV) {
+              console.warn('Failed to load draft from backend:', error);
+            }
           }
         }
 
@@ -452,7 +488,9 @@ const ConsultationModal = ({ isOpen, onClose, preset, utmMedium = 'pricing' }) =
           }));
         }
       } catch (error) {
-        console.warn('Failed to load draft:', error);
+        if (import.meta.env.DEV) {
+          console.warn('Failed to load draft:', error);
+        }
       } finally {
         setIsLoadingDraft(false);
       }

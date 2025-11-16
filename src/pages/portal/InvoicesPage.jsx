@@ -237,7 +237,18 @@ const InvoicesPage = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-700">
                   {invoices.map((invoice) => {
-                    const items = invoice.items ? (typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items) : [];
+                    let items = [];
+                    if (invoice.items) {
+                      try {
+                        items = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
+                        if (!Array.isArray(items)) items = [];
+                      } catch (e) {
+                        if (import.meta.env.DEV) {
+                          console.warn('Failed to parse invoice items:', e);
+                        }
+                        items = [];
+                      }
+                    }
                     const total = parseFloat(invoice.total_amount || invoice.amount || 0);
                     const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
                     const isOverdue = dueDate && dueDate < new Date() && invoice.status !== 'paid';

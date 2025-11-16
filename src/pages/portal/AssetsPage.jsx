@@ -49,17 +49,18 @@ const AssetsPage = () => {
       setLoading(true);
       setError(null);
       const data = await portalAPI.getAssets();
-      if (process.env.NODE_ENV === 'development') {
+      // Debug logging only in development
+      if (import.meta.env.DEV) {
         console.log('Fetched assets:', data.assets);
         // Log each asset's URL to debug
         if (data.assets && data.assets.length > 0) {
           data.assets.forEach((asset, index) => {
             console.log(`Asset ${index}:`, {
-              name: asset.name,
-              type: asset.type,
-              urlLength: asset.url?.length,
-              urlPreview: asset.url?.substring(0, 100),
-              hasUrl: !!asset.url
+              name: asset?.name,
+              type: asset?.type,
+              urlLength: asset?.url?.length,
+              urlPreview: asset?.url?.substring(0, 100),
+              hasUrl: !!asset?.url
             });
           });
         }
@@ -85,15 +86,12 @@ const AssetsPage = () => {
   };
 
   const handleFileSelect = async (e) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('File select event:', e.target.files);
     }
     const files = Array.from(e.target.files || []);
     
     if (files.length === 0) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('No file selected');
-      }
       setError('No file selected. Please try again.');
       return;
     }
@@ -112,7 +110,9 @@ const AssetsPage = () => {
           processedFiles.push(fileData);
         }
       } catch (err) {
-        console.error(`Error processing file ${file.name}:`, err);
+        if (import.meta.env.DEV) {
+          console.error(`Error processing file ${file.name}:`, err);
+        }
       }
     }
     
@@ -128,10 +128,8 @@ const AssetsPage = () => {
   // Async version of processFile that returns a promise
   const processFileAsync = (file) => {
     return new Promise((resolve, reject) => {
-      if (process.env.NODE_ENV === 'development') {
-        if (process.env.NODE_ENV === 'development') {
-      console.log('Processing file:', file.name, file.type, file.size, 'bytes');
-    }
+      if (import.meta.env.DEV) {
+        console.log('Processing file:', file.name, file.type, file.size, 'bytes');
       }
       
       // Validate file object
@@ -232,7 +230,7 @@ const AssetsPage = () => {
   };
 
   const processFile = (file) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('Processing file:', file.name, file.type, file.size, 'bytes');
     }
     
@@ -300,7 +298,7 @@ const AssetsPage = () => {
       category = 'document';
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log('File type:', fileType, 'Category:', category);
     }
 
@@ -309,11 +307,11 @@ const AssetsPage = () => {
     let blobUrl = null;
     try {
       blobUrl = URL.createObjectURL(file);
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('Created blob URL:', blobUrl);
       }
     } catch (blobErr) {
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.warn('Could not create blob URL:', blobErr);
       }
     }
@@ -324,7 +322,7 @@ const AssetsPage = () => {
       // Set a timeout to detect if reading takes too long
       const timeout = setTimeout(() => {
         if (reader.readyState === FileReader.LOADING) {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.warn('FileReader taking too long, aborting...');
           }
           reader.abort();
@@ -336,7 +334,7 @@ const AssetsPage = () => {
         clearTimeout(timeout);
         try {
           const result = e.target.result;
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log('File read complete, setting form data. Data URL length:', result?.length || 0);
           }
           
@@ -361,7 +359,7 @@ const AssetsPage = () => {
           });
           setError(null); // Clear any previous errors
         } catch (err) {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.error('Error processing file result:', err);
           }
           setError('Failed to process file. Please try a different file.');
@@ -373,7 +371,7 @@ const AssetsPage = () => {
       
       reader.onerror = (error) => {
         clearTimeout(timeout);
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.error('FileReader error event:', error);
           console.error('FileReader error details:', {
             error: reader.error,
@@ -395,18 +393,18 @@ const AssetsPage = () => {
                               errorCode === 0 || 
                               reader.error?.name === 'NotReadableError';
         
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log('Error code:', errorCode, 'Error name:', reader.error?.name, 'Is NotReadable:', isNotReadable);
         }
         
         if (isNotReadable) {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log('NotReadableError detected, trying ArrayBuffer fallback...');
           }
           
           // Validate file is still accessible
           if (!file || file.size === 0) {
-            if (process.env.NODE_ENV === 'development') {
+            if (import.meta.env.DEV) {
               console.error('File is no longer valid for fallback');
             }
             if (blobUrl) {
@@ -437,7 +435,7 @@ const AssetsPage = () => {
                 const base64 = btoa(binary);
                 const dataUrl = `data:${file.type || 'application/octet-stream'};base64,${base64}`;
                 
-                if (process.env.NODE_ENV === 'development') {
+                if (import.meta.env.DEV) {
                   console.log('File read via ArrayBuffer fallback, setting form data. Data URL length:', dataUrl.length);
                 }
                 // Extract filename without extension for better default name
@@ -456,7 +454,7 @@ const AssetsPage = () => {
                   URL.revokeObjectURL(blobUrl);
                 }
               } catch (convertErr) {
-                if (process.env.NODE_ENV === 'development') {
+                if (import.meta.env.DEV) {
                   console.error('Error converting ArrayBuffer to base64:', convertErr);
                 }
                 if (blobUrl) {
@@ -467,7 +465,7 @@ const AssetsPage = () => {
             };
             
             arrayBufferReader.onerror = (err) => {
-              if (process.env.NODE_ENV === 'development') {
+              if (import.meta.env.DEV) {
                 console.error('ArrayBuffer reader also failed:', err);
                 console.error('ArrayBuffer reader error details:', {
                   error: arrayBufferReader.error,
@@ -491,13 +489,13 @@ const AssetsPage = () => {
               );
             };
             
-            if (process.env.NODE_ENV === 'development') {
+            if (import.meta.env.DEV) {
               console.log('Attempting to read file as ArrayBuffer...');
             }
             arrayBufferReader.readAsArrayBuffer(file);
             return; // Exit early, fallback will handle it
           } catch (fallbackErr) {
-            if (process.env.NODE_ENV === 'development') {
+            if (import.meta.env.DEV) {
               console.error('Failed to set up ArrayBuffer fallback:', fallbackErr);
             }
             // Continue to show error message below
@@ -534,7 +532,7 @@ const AssetsPage = () => {
       
       reader.onabort = () => {
         clearTimeout(timeout);
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.error('FileReader aborted');
         }
         if (blobUrl) {
@@ -544,7 +542,7 @@ const AssetsPage = () => {
       };
       
       reader.onprogress = (e) => {
-        if (e.lengthComputable && process.env.NODE_ENV === 'development') {
+        if (e.lengthComputable && import.meta.env.DEV) {
           const percentLoaded = Math.round((e.loaded / e.total) * 100);
           console.log(`File reading progress: ${percentLoaded}% (${e.loaded}/${e.total} bytes)`);
         }
@@ -556,7 +554,7 @@ const AssetsPage = () => {
       }
       
       // Start reading the file
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('Starting to read file as data URL...', {
           fileSize: file.size,
           fileType: file.type,
@@ -575,7 +573,7 @@ const AssetsPage = () => {
         // Use readAsDataURL for images and small files
         reader.readAsDataURL(file);
       } catch (readErr) {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.error('Error calling readAsDataURL, trying ArrayBuffer fallback:', readErr);
         }
         
@@ -594,7 +592,7 @@ const AssetsPage = () => {
               const base64 = btoa(binary);
               const dataUrl = `data:${file.type || 'application/octet-stream'};base64,${base64}`;
               
-              if (process.env.NODE_ENV === 'development') {
+              if (import.meta.env.DEV) {
                 console.log('File read via ArrayBuffer fallback, setting form data');
               }
               setUploadFormData({
@@ -611,7 +609,7 @@ const AssetsPage = () => {
                 URL.revokeObjectURL(blobUrl);
               }
             } catch (convertErr) {
-              if (process.env.NODE_ENV === 'development') {
+              if (import.meta.env.DEV) {
                 console.error('Error converting ArrayBuffer to base64:', convertErr);
               }
               if (blobUrl) {
@@ -622,7 +620,7 @@ const AssetsPage = () => {
           };
           
           arrayBufferReader.onerror = (err) => {
-            if (process.env.NODE_ENV === 'development') {
+            if (import.meta.env.DEV) {
               console.error('ArrayBuffer reader also failed:', err);
             }
             if (blobUrl) {
@@ -633,7 +631,7 @@ const AssetsPage = () => {
           
           arrayBufferReader.readAsArrayBuffer(file);
         } catch (fallbackErr) {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.error('Fallback also failed:', fallbackErr);
           }
           if (blobUrl) {
@@ -644,7 +642,9 @@ const AssetsPage = () => {
       }
       
     } catch (err) {
-      console.error('Error setting up FileReader:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error setting up FileReader:', err);
+      }
       if (blobUrl) {
         URL.revokeObjectURL(blobUrl);
       }
@@ -667,12 +667,13 @@ const AssetsPage = () => {
     e.stopPropagation();
     setDragActive(false);
     
-    console.log('Drop event:', e.dataTransfer.files);
+    if (import.meta.env.DEV) {
+      console.log('Drop event:', e.dataTransfer.files);
+    }
     
     const files = Array.from(e.dataTransfer.files || []);
     
     if (files.length === 0) {
-      console.error('No files in drop event');
       setError('No file detected. Please try again.');
       return;
     }
@@ -739,10 +740,12 @@ const AssetsPage = () => {
           
           await portalAPI.uploadAsset(assetData);
           uploadedCount++;
-        } catch (err) {
+      } catch (err) {
+        if (import.meta.env.DEV) {
           console.error(`Failed to upload file ${fileData.name}:`, err);
-          failedCount++;
         }
+        failedCount++;
+      }
       }
       
       if (uploadedCount > 0) {
@@ -772,7 +775,9 @@ const AssetsPage = () => {
       }
       await fetchAssets();
     } catch (err) {
-      console.error('Upload error:', err);
+      if (import.meta.env.DEV) {
+        console.error('Upload error:', err);
+      }
       setError(err.message || 'Failed to upload assets. Please try again.');
     } finally {
       setUploading(false);
@@ -881,7 +886,9 @@ const AssetsPage = () => {
         // Small delay between downloads to avoid browser blocking
         await new Promise(resolve => setTimeout(resolve, 100));
       } catch (err) {
-        console.error(`Failed to download ${asset.name}:`, err);
+        if (import.meta.env.DEV) {
+          console.error(`Failed to download ${asset?.name || 'asset'}:`, err);
+        }
       }
     }
 
@@ -914,7 +921,9 @@ const AssetsPage = () => {
           await portalAPI.deleteAsset(assetId);
           deletedCount++;
         } catch (err) {
-          console.error(`Failed to delete asset ${assetId}:`, err);
+          if (import.meta.env.DEV) {
+            console.error(`Failed to delete asset ${assetId}:`, err);
+          }
           failedCount++;
         }
       }
@@ -945,7 +954,7 @@ const AssetsPage = () => {
   };
 
   const handleDownload = (asset) => {
-    if (!asset.url) {
+    if (!asset?.url) {
       setError('No file available for download');
       return;
     }
@@ -973,7 +982,7 @@ const AssetsPage = () => {
       }
       
       // Use renamed name with appropriate extension
-      const downloadName = asset.name + extension;
+      const downloadName = (asset?.name || 'asset') + extension;
       link.download = downloadName;
       
       // Append to body, click, and remove
@@ -981,7 +990,9 @@ const AssetsPage = () => {
       link.click();
       document.body.removeChild(link);
     } catch (err) {
-      console.error('Download error:', err);
+      if (import.meta.env.DEV) {
+        console.error('Download error:', err);
+      }
       setError('Failed to download file. Please try again.');
     }
   };
@@ -1161,15 +1172,15 @@ const AssetsPage = () => {
                     <div className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {projectAssets.map((asset) => {
-              const AssetIcon = getAssetIcon(asset.type, asset.category);
-              // Debug: Log asset data
-              if (asset.category === 'image' || asset.category === 'logo') {
+              const AssetIcon = getAssetIcon(asset?.type, asset?.category);
+              // Debug: Log asset data (only in development)
+              if (import.meta.env.DEV && (asset?.category === 'image' || asset?.category === 'logo')) {
                 console.log('Rendering image asset:', {
-                  id: asset.id,
-                  name: asset.name,
-                  urlExists: !!asset.url,
-                  urlType: asset.url?.substring(0, 20),
-                  urlLength: asset.url?.length
+                  id: asset?.id,
+                  name: asset?.name,
+                  urlExists: !!asset?.url,
+                  urlType: asset?.url?.substring(0, 20),
+                  urlLength: asset?.url?.length
                 });
               }
               const isSelected = selectedAssets.has(asset.id);
@@ -1200,9 +1211,9 @@ const AssetsPage = () => {
                         <AssetIcon className="w-6 h-6 text-orange-400" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-white mb-1">{asset.name}</h3>
+                        <h3 className="text-lg font-bold text-white mb-1">{asset?.name || 'Unnamed Asset'}</h3>
                         <div className="flex items-center gap-2 flex-wrap">
-                          {asset.category && (
+                          {asset?.category && (
                             <span className="px-2 py-1 rounded text-xs bg-purple-500/20 text-purple-400">
                               {asset.category}
                             </span>
@@ -1221,77 +1232,93 @@ const AssetsPage = () => {
                     )}
                   </div>
 
-                  {asset.url && (
+                  {asset?.url && (
                     <div className="mb-4">
-                      {(asset.category === 'image' || asset.category === 'logo') ? (
+                      {(asset?.category === 'image' || asset?.category === 'logo') ? (
                         <div className="w-full h-48 rounded-lg mb-2 overflow-hidden bg-gray-900/50 flex items-center justify-center relative group cursor-pointer"
                           onClick={() => {
                             // Open preview on click
                             const newWindow = window.open();
                             if (newWindow) {
-                              newWindow.document.write(`
-                                <html>
-                                  <head>
-                                    <title>${asset.name}</title>
-                                    <style>
-                                      body {
-                                        margin: 0;
-                                        padding: 20px;
-                                        background: #1a1a1a;
-                                        color: white;
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        min-height: 100vh;
-                                      }
-                                      img {
-                                        max-width: 100%;
-                                        max-height: 100vh;
-                                        object-fit: contain;
-                                      }
-                                    </style>
-                                  </head>
-                                  <body>
-                                    <img src="${asset.url}" alt="${asset.name}" />
-                                  </body>
-                                </html>
-                              `);
+                              const safeName = (asset?.name || 'Asset').replace(/[<>"']/g, '');
+                              const safeUrl = (asset?.url || '').replace(/[<>"']/g, '');
+                              // Use safer DOM manipulation instead of document.write
+                              newWindow.document.open();
+                              newWindow.document.write('<!DOCTYPE html><html><head><title></title></head><body></body></html>');
+                              newWindow.document.close();
+                              newWindow.document.title = safeName;
+                              const style = newWindow.document.createElement('style');
+                              style.textContent = `
+                                body {
+                                  margin: 0;
+                                  padding: 20px;
+                                  background: #1a1a1a;
+                                  color: white;
+                                  display: flex;
+                                  justify-content: center;
+                                  align-items: center;
+                                  min-height: 100vh;
+                                }
+                                img {
+                                  max-width: 100%;
+                                  max-height: 100vh;
+                                  object-fit: contain;
+                                }
+                              `;
+                              newWindow.document.head.appendChild(style);
+                              const img = newWindow.document.createElement('img');
+                              img.src = safeUrl;
+                              img.alt = safeName;
+                              newWindow.document.body.appendChild(img);
                             }
                           }}
                         >
-                          {asset.url && asset.url.startsWith('data:') ? (
+                          {asset?.url && asset.url.startsWith('data:') ? (
                             <img
                               key={`img-${asset.id}`}
                               src={asset.url}
-                              alt={asset.name}
+                              alt={asset?.name || 'Asset'}
                               className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
                               style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', width: '100%', height: '100%' }}
                               loading="lazy"
                               onError={(e) => {
-                                console.error('Image load error for asset:', asset.name);
-                                console.error('URL length:', asset.url?.length);
-                                console.error('URL starts with data:', asset.url?.startsWith('data:'));
-                                console.error('URL preview (first 200 chars):', asset.url?.substring(0, 200));
+                                if (import.meta.env.DEV) {
+                                  console.error('Image load error for asset:', asset?.name || 'Unknown');
+                                  console.error('URL length:', asset?.url?.length);
+                                  console.error('URL starts with data:', asset?.url?.startsWith('data:'));
+                                  console.error('URL preview (first 200 chars):', asset?.url?.substring(0, 200));
+                                }
                                 // Replace with placeholder
                                 e.target.style.display = 'none';
                                 const parent = e.target.parentElement;
                                 const existingPlaceholder = parent.querySelector('.image-placeholder');
-                                if (!existingPlaceholder) {
+                                if (!existingPlaceholder && parent) {
                                   const placeholder = document.createElement('div');
                                   placeholder.className = 'image-placeholder w-full h-full flex flex-col items-center justify-center gap-2';
-                                  placeholder.innerHTML = `
-                                    <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <span class="text-gray-500 text-xs">Image failed to load</span>
-                                  `;
+                                  // Use React-safe approach instead of innerHTML
+                                  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                  svg.setAttribute('class', 'w-12 h-12 text-gray-500');
+                                  svg.setAttribute('fill', 'none');
+                                  svg.setAttribute('stroke', 'currentColor');
+                                  svg.setAttribute('viewBox', '0 0 24 24');
+                                  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                                  path.setAttribute('stroke-linecap', 'round');
+                                  path.setAttribute('stroke-linejoin', 'round');
+                                  path.setAttribute('stroke-width', '2');
+                                  path.setAttribute('d', 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z');
+                                  svg.appendChild(path);
+                                  placeholder.appendChild(svg);
+                                  const span = document.createElement('span');
+                                  span.className = 'text-gray-500 text-xs';
+                                  span.textContent = 'Image failed to load';
+                                  placeholder.appendChild(span);
                                   parent.appendChild(placeholder);
                                 }
                               }}
                               onLoad={(e) => {
                                 // Only log in development
-                                if (process.env.NODE_ENV === 'development') {
-                                  console.log('Image loaded successfully:', asset.name);
+                                if (import.meta.env.DEV) {
+                                  console.log('Image loaded successfully:', asset?.name || 'Unknown');
                                   console.log('Image dimensions:', e.target.naturalWidth, 'x', e.target.naturalHeight);
                                 }
                                 // Remove any existing placeholder
@@ -1302,11 +1329,11 @@ const AssetsPage = () => {
                                 }
                               }}
                             />
-                          ) : asset.url ? (
+                          ) : asset?.url ? (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                               <ImageIcon className="w-12 h-12 text-gray-500" />
                               <span className="text-gray-500 text-xs">Invalid image URL format</span>
-                              <span className="text-gray-600 text-xs">URL: {asset.url?.substring(0, 50)}...</span>
+                              <span className="text-gray-600 text-xs">URL: {asset.url.substring(0, 50)}...</span>
                             </div>
                           ) : (
                             <div className="w-full h-full flex flex-col items-center justify-center gap-2">
@@ -1318,34 +1345,37 @@ const AssetsPage = () => {
                             <span className="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded">Click to view full size</span>
                           </div>
                         </div>
-                      ) : asset.category === 'document' && asset.url && asset.url.includes('pdf') ? (
+                      ) : asset?.category === 'document' && asset?.url && asset.url.includes('pdf') ? (
                         <div className="w-full h-48 rounded-lg mb-2 overflow-hidden bg-gray-900/50 flex items-center justify-center relative group cursor-pointer"
                           onClick={() => {
                             // Open PDF preview
                             const newWindow = window.open();
-                            if (newWindow) {
-                              newWindow.document.write(`
-                                <html>
-                                  <head>
-                                    <title>${asset.name}</title>
-                                    <style>
-                                      body {
-                                        margin: 0;
-                                        padding: 0;
-                                        background: #1a1a1a;
-                                      }
-                                      iframe {
-                                        width: 100%;
-                                        height: 100vh;
-                                        border: none;
-                                      }
-                                    </style>
-                                  </head>
-                                  <body>
-                                    <iframe src="${asset.url}" type="application/pdf"></iframe>
-                                  </body>
-                                </html>
-                              `);
+                            if (newWindow && asset?.url) {
+                              const safeName = (asset?.name || 'Document').replace(/[<>"']/g, '');
+                              const safeUrl = asset.url.replace(/[<>"']/g, '');
+                              // Use safer DOM manipulation instead of document.write
+                              newWindow.document.open();
+                              newWindow.document.write('<!DOCTYPE html><html><head><title></title></head><body></body></html>');
+                              newWindow.document.close();
+                              newWindow.document.title = safeName;
+                              const style = newWindow.document.createElement('style');
+                              style.textContent = `
+                                body {
+                                  margin: 0;
+                                  padding: 0;
+                                  background: #1a1a1a;
+                                }
+                                iframe {
+                                  width: 100%;
+                                  height: 100vh;
+                                  border: none;
+                                }
+                              `;
+                              newWindow.document.head.appendChild(style);
+                              const iframe = newWindow.document.createElement('iframe');
+                              iframe.src = safeUrl;
+                              iframe.type = 'application/pdf';
+                              newWindow.document.body.appendChild(iframe);
                             }
                           }}
                         >
@@ -1359,20 +1389,20 @@ const AssetsPage = () => {
                         <div className="w-full h-48 bg-gray-900/50 rounded-lg mb-2 flex items-center justify-center">
                           <div className="flex flex-col items-center gap-2">
                             <FileText className="w-16 h-16 text-gray-500" />
-                            <span className="text-gray-400 text-sm">{asset.category || 'File'}</span>
+                            <span className="text-gray-400 text-sm">{asset?.category || 'File'}</span>
                           </div>
                         </div>
                       )}
                     </div>
                   )}
 
-                  {asset.description && (
+                  {asset?.description && (
                     <p className="text-sm text-gray-400 mb-3 line-clamp-2">{asset.description}</p>
                   )}
 
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{formatFileSize(asset.file_size)}</span>
-                    {asset.url && (
+                    <span>{formatFileSize(asset?.file_size)}</span>
+                    {asset?.url && (
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => handleDownload(asset)}
@@ -1385,45 +1415,69 @@ const AssetsPage = () => {
                         <button
                           onClick={() => {
                             // Open in new window for viewing
+                            if (!asset?.url) {
+                              setError('No file available for preview');
+                              return;
+                            }
                             const newWindow = window.open();
                             if (newWindow) {
-                              newWindow.document.write(`
-                                <html>
-                                  <head>
-                                    <title>${asset.name}</title>
-                                    <style>
-                                      body {
-                                        margin: 0;
-                                        padding: 20px;
-                                        background: #1a1a1a;
-                                        color: white;
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        min-height: 100vh;
-                                      }
-                                      img {
-                                        max-width: 100%;
-                                        max-height: 100vh;
-                                        object-fit: contain;
-                                      }
-                                      iframe {
-                                        width: 100%;
-                                        height: 100vh;
-                                        border: none;
-                                      }
-                                    </style>
-                                  </head>
-                                  <body>
-                                    ${(asset.category === 'image' || asset.category === 'logo')
-                                      ? `<img src="${asset.url}" alt="${asset.name}" />`
-                                      : asset.category === 'document' && asset.url.includes('pdf')
-                                      ? `<iframe src="${asset.url}" type="application/pdf"></iframe>`
-                                      : `<p>Preview not available. <a href="${asset.url}" download="${asset.name}" style="color: #f97316;">Download</a> to view.</p>`
-                                    }
-                                  </body>
-                                </html>
-                              `);
+                              const safeName = (asset?.name || 'Asset').replace(/[<>"']/g, '');
+                              const safeUrl = asset.url.replace(/[<>"']/g, '');
+                              // Use safer DOM manipulation instead of document.write
+                              newWindow.document.open();
+                              newWindow.document.write('<!DOCTYPE html><html><head><title></title></head><body></body></html>');
+                              newWindow.document.close();
+                              newWindow.document.title = safeName;
+                              const style = newWindow.document.createElement('style');
+                              style.textContent = `
+                                body {
+                                  margin: 0;
+                                  padding: 20px;
+                                  background: #1a1a1a;
+                                  color: white;
+                                  display: flex;
+                                  justify-content: center;
+                                  align-items: center;
+                                  min-height: 100vh;
+                                }
+                                img {
+                                  max-width: 100%;
+                                  max-height: 100vh;
+                                  object-fit: contain;
+                                }
+                                iframe {
+                                  width: 100%;
+                                  height: 100vh;
+                                  border: none;
+                                }
+                                a {
+                                  color: #f97316;
+                                }
+                              `;
+                              newWindow.document.head.appendChild(style);
+                              
+                              if (asset?.category === 'image' || asset?.category === 'logo') {
+                                const img = newWindow.document.createElement('img');
+                                img.src = safeUrl;
+                                img.alt = safeName;
+                                newWindow.document.body.appendChild(img);
+                              } else if (asset?.category === 'document' && safeUrl.includes('pdf')) {
+                                const iframe = newWindow.document.createElement('iframe');
+                                iframe.src = safeUrl;
+                                iframe.type = 'application/pdf';
+                                newWindow.document.body.appendChild(iframe);
+                              } else {
+                                const p = newWindow.document.createElement('p');
+                                p.textContent = 'Preview not available. ';
+                                const a = newWindow.document.createElement('a');
+                                a.href = safeUrl;
+                                a.download = safeName;
+                                a.textContent = 'Download';
+                                a.style.color = '#f97316';
+                                p.appendChild(a);
+                                p.appendChild(newWindow.document.createTextNode(' to view.'));
+                                newWindow.document.body.appendChild(p);
+                              }
                             }
                           }}
                           className="text-orange-500 hover:text-orange-400 transition-colors"
@@ -1434,9 +1488,11 @@ const AssetsPage = () => {
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Uploaded: {formatDateTimeUserTimezone(asset.created_at)}
-                  </p>
+                  {asset?.created_at && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Uploaded: {formatDateTimeUserTimezone(asset.created_at)}
+                    </p>
+                  )}
                 </div>
               );
                         })}

@@ -2,12 +2,20 @@ import { useEffect } from 'react';
 
 const PerformanceMonitor = () => {
   useEffect(() => {
+    // Store observers for cleanup
+    let lcpObserver = null;
+    let fidObserver = null;
+    let clsObserver = null;
+    let fcpObserver = null;
+    let loadHandler1 = null;
+    let loadHandler2 = null;
+
     // Initialize performance monitoring
     const initPerformanceMonitoring = () => {
       // Web Vitals monitoring
       if (typeof window !== 'undefined' && 'PerformanceObserver' in window) {
         // LCP (Largest Contentful Paint) monitoring
-        const lcpObserver = new PerformanceObserver((list) => {
+        lcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           const lastEntry = entries[entries.length - 1];
           
@@ -28,7 +36,7 @@ const PerformanceMonitor = () => {
         }
 
         // FID (First Input Delay) monitoring
-        const fidObserver = new PerformanceObserver((list) => {
+        fidObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
             const fid = entry.processingStart - entry.startTime;
@@ -51,7 +59,7 @@ const PerformanceMonitor = () => {
 
         // CLS (Cumulative Layout Shift) monitoring
         let clsValue = 0;
-        const clsObserver = new PerformanceObserver((list) => {
+        clsObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
             if (!entry.hadRecentInput) {
@@ -75,7 +83,7 @@ const PerformanceMonitor = () => {
         }
 
         // FCP (First Contentful Paint) monitoring
-        const fcpObserver = new PerformanceObserver((list) => {
+        fcpObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach((entry) => {
             if (window.gtag) {
@@ -117,9 +125,10 @@ const PerformanceMonitor = () => {
       };
 
       // Monitor after page load
-      window.addEventListener('load', () => {
+      loadHandler1 = () => {
         setTimeout(monitorResourceTiming, 1000);
-      });
+      };
+      window.addEventListener('load', loadHandler1);
 
       // Navigation timing
       const navigationTiming = () => {
@@ -146,9 +155,10 @@ const PerformanceMonitor = () => {
       };
 
       // Run navigation timing after load
-      window.addEventListener('load', () => {
+      loadHandler2 = () => {
         setTimeout(navigationTiming, 100);
-      });
+      };
+      window.addEventListener('load', loadHandler2);
     };
 
     // Initialize performance monitoring
@@ -156,7 +166,16 @@ const PerformanceMonitor = () => {
 
     // Cleanup function
     return () => {
-      // Cleanup observers if needed
+      // Cleanup load event listeners
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('load', loadHandler1);
+        window.removeEventListener('load', loadHandler2);
+      }
+      // Disconnect observers if they exist
+      if (lcpObserver) lcpObserver.disconnect();
+      if (fidObserver) fidObserver.disconnect();
+      if (clsObserver) clsObserver.disconnect();
+      if (fcpObserver) fcpObserver.disconnect();
     };
   }, []);
 

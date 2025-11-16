@@ -70,13 +70,13 @@ export const registerServiceWorker = () => {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log('SW registered: ', registration);
           }
         })
         .catch((registrationError) => {
           // Only log in development to avoid console errors
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log('SW registration failed: ', registrationError);
           }
         });
@@ -144,7 +144,7 @@ export const initPerformanceMonitoring = () => {
       const lastEntry = entries[entries.length - 1];
       
       // Only log in development
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('LCP:', lastEntry.startTime);
       }
       
@@ -171,7 +171,7 @@ export const initPerformanceMonitoring = () => {
         const fid = entry.processingStart - entry.startTime;
         
         // Only log in development
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.log('FID:', fid);
         }
         
@@ -201,7 +201,7 @@ export const initPerformanceMonitoring = () => {
           clsValue += entry.value;
           
           // Only log in development
-          if (process.env.NODE_ENV === 'development') {
+          if (import.meta.env.DEV) {
             console.log('CLS:', entry.value);
           }
         }

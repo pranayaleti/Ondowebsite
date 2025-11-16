@@ -508,9 +508,22 @@ export const portalAPI = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      let errorData = {};
+      try {
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          errorData = await response.json();
+        }
+      } catch (e) {
+        // Ignore JSON parse errors
+      }
       const errorMessage = errorData.error || `Failed to fetch email template (${response.status})`;
       throw new Error(errorMessage);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Invalid response format from server');
     }
 
     return response.json();
@@ -780,9 +793,22 @@ export const adminAPI = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      let errorData = {};
+      try {
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          errorData = await response.json();
+        }
+      } catch (e) {
+        // Ignore JSON parse errors
+      }
       const errorMessage = errorData.error || `Failed to fetch email template (${response.status})`;
       throw new Error(errorMessage);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Invalid response format from server');
     }
 
     return response.json();

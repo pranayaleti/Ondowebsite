@@ -89,7 +89,18 @@ const InvoicesPage = () => {
     try {
       setError(null);
       const invoice = invoices.find(inv => inv.id === invoiceId);
-      const items = formData.items.length > 0 ? formData.items : (invoice.items ? (typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items) : []);
+      let items = formData.items.length > 0 ? formData.items : [];
+      if (items.length === 0 && invoice?.items) {
+        try {
+          items = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
+          if (!Array.isArray(items)) items = [];
+        } catch (e) {
+          if (import.meta.env.DEV) {
+            console.warn('Failed to parse invoice items:', e);
+          }
+          items = [];
+        }
+      }
       const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.quantity || 1) * parseFloat(item.price || 0)), 0) || parseFloat(formData.amount || invoice.amount || 0);
       const tax = parseFloat(formData.tax || invoice.tax || 0);
       const total = subtotal + tax;
@@ -138,7 +149,18 @@ const InvoicesPage = () => {
 
   const handleEditInvoice = (invoice) => {
     setEditingInvoice(invoice.id);
-    const items = invoice.items ? (typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items) : [];
+    let items = [];
+    if (invoice.items) {
+      try {
+        items = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
+        if (!Array.isArray(items)) items = [];
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          console.warn('Failed to parse invoice items:', e);
+        }
+        items = [];
+      }
+    }
     setFormData({
       user_id: invoice.user_id,
       amount: invoice.amount || '',

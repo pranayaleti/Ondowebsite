@@ -29,3 +29,10 @@ export const supabase = supabaseKey ? createClient(supabaseUrl, supabaseKey) : n
 //   .select('*')
 //   .limit(10);
 
+export const supabaseMcp = supabaseKey ? createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  },
+}) : null; 

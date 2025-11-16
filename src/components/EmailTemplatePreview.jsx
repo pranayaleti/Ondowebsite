@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { X, Eye, Mail, FileText, Loader } from 'lucide-react';
 import { portalAPI, adminAPI } from '../utils/auth.js';
+import { sanitizeHtml, escapeHtml } from '../utils/security.js';
 
 const EmailTemplatePreview = ({ templateId, isOpen, onClose, isAdmin = false }) => {
   const [template, setTemplate] = useState(null);
@@ -31,7 +32,9 @@ const EmailTemplatePreview = ({ templateId, isOpen, onClose, isAdmin = false }) 
         throw new Error(`Invalid template ID: ${templateId}`);
       }
       
-      console.log('Fetching template with ID:', templateIdNum, 'isAdmin:', isAdmin);
+      if (import.meta.env.DEV) {
+        console.log('Fetching template with ID:', templateIdNum, 'isAdmin:', isAdmin);
+      }
       const data = await api.getEmailTemplate(templateIdNum);
       
       if (!data || !data.template) {
@@ -39,9 +42,11 @@ const EmailTemplatePreview = ({ templateId, isOpen, onClose, isAdmin = false }) 
       }
       
       // Verify we got the correct template
-      console.log('Received template:', data.template.name, 'ID:', data.template.id);
-      if (data.template.id !== templateIdNum) {
-        console.warn('Template ID mismatch! Expected:', templateIdNum, 'Got:', data.template.id);
+      if (import.meta.env.DEV) {
+        console.log('Received template:', data.template.name, 'ID:', data.template.id);
+        if (data.template.id !== templateIdNum) {
+          console.warn('Template ID mismatch! Expected:', templateIdNum, 'Got:', data.template.id);
+        }
       }
       
       setTemplate(data.template);
@@ -101,12 +106,17 @@ const EmailTemplatePreview = ({ templateId, isOpen, onClose, isAdmin = false }) 
       let html = data.template.body_html || '';
       Object.keys(sampleData).forEach(key => {
         const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
-        html = html.replace(regex, sampleData[key]);
+        // Escape HTML in sample data to prevent XSS
+        const safeValue = escapeHtml(String(sampleData[key]));
+        html = html.replace(regex, safeValue);
       });
       
-      setPreviewHtml(html);
+      // Sanitize the final HTML before setting
+      setPreviewHtml(sanitizeHtml(html));
     } catch (err) {
-      console.error('Error fetching template:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching template:', err);
+      }
       // Provide more detailed error message
       if (err.message.includes('404') || err.message.includes('not found')) {
         setError('Template not found. It may have been deleted or is inactive.');

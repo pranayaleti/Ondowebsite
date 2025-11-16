@@ -45,10 +45,44 @@ class AnalyticsTracker {
     this.setupErrorTracking();
     
     // Track page unload
-    window.addEventListener('beforeunload', () => {
+    this.beforeUnloadHandler = () => {
       this.trackPageExit();
       this.flushBatch(); // Flush any pending events
-    });
+    };
+    window.addEventListener('beforeunload', this.beforeUnloadHandler);
+  }
+
+  // Cleanup method to remove event listeners
+  cleanup() {
+    if (!this.initialized) return;
+    
+    // Remove beforeunload listener
+    if (this.beforeUnloadHandler) {
+      window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+      this.beforeUnloadHandler = null;
+    }
+    
+    // Remove popstate listener
+    if (this.popstateHandler) {
+      window.removeEventListener('popstate', this.popstateHandler);
+      this.popstateHandler = null;
+    }
+    
+    // Restore original history methods
+    if (this.originalPushState) {
+      history.pushState = this.originalPushState;
+    }
+    if (this.originalReplaceState) {
+      history.replaceState = this.originalReplaceState;
+    }
+    
+    // Clear batch timer
+    if (this.batchTimer) {
+      clearTimeout(this.batchTimer);
+      this.batchTimer = null;
+    }
+    
+    this.initialized = false;
   }
 
   // Track page views
@@ -219,25 +253,27 @@ class AnalyticsTracker {
       }
     };
     
-    // Override pushState and replaceState
-    const originalPushState = history.pushState;
-    const originalReplaceState = history.replaceState;
+    // Store original methods for cleanup
+    this.originalPushState = history.pushState;
+    this.originalReplaceState = history.replaceState;
     
+    // Override pushState and replaceState
     history.pushState = function(...args) {
-      originalPushState.apply(history, args);
+      this.originalPushState.apply(history, args);
       trackPathChange();
-    };
+    }.bind(this);
     
     history.replaceState = function(...args) {
-      originalReplaceState.apply(history, args);
+      this.originalReplaceState.apply(history, args);
       trackPathChange();
-    };
+    }.bind(this);
     
     // Track popstate (back/forward)
-    window.addEventListener('popstate', () => {
+    this.popstateHandler = () => {
       trackPathChange();
       this.trackNavigation(lastPath, window.location.pathname, 'back');
-    });
+    };
+    window.addEventListener('popstate', this.popstateHandler);
   }
 
   // Setup scroll tracking
@@ -398,13 +434,13 @@ class AnalyticsTracker {
       });
       
       if (!response.ok) {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.error('Analytics tracking failed:', response.statusText);
         }
       }
     } catch (error) {
       // Silently fail - don't interrupt user experience
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.error('Analytics tracking error:', error);
       }
     }
@@ -424,13 +460,13 @@ class AnalyticsTracker {
       });
       
       if (!response.ok) {
-        if (process.env.NODE_ENV === 'development') {
+        if (import.meta.env.DEV) {
           console.error('Analytics batch tracking failed:', response.statusText);
         }
       }
     } catch (error) {
       // Silently fail - don't interrupt user experience
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.error('Analytics batch tracking error:', error);
       }
     }

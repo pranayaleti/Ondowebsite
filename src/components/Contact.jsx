@@ -105,7 +105,9 @@ const Contact = ({ onOpenConsultation }) => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // In a real app, you would send this to your backend
-      console.log('Form submitted:', formData);
+      if (import.meta.env.DEV) {
+        console.log('Form submitted:', formData);
+      }
       
       setSubmitStatus('success');
       setFormData({

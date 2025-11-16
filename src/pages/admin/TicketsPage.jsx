@@ -96,7 +96,9 @@ const AdminTicketsPage = () => {
       const data = await adminAPI.getUsers();
       setUsers(data.users || []);
     } catch (err) {
-      console.error('Error fetching users for ticket assignment:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error fetching users for ticket assignment:', err);
+      }
       setUsersError(err.message || 'Failed to load users');
     } finally {
       setUsersLoading(false);
@@ -313,8 +315,8 @@ const AdminTicketsPage = () => {
         payload.budget = null;
       }
 
-      // Debug logging (remove in production)
-      if (process.env.NODE_ENV === 'development') {
+      // Debug logging (only in development)
+      if (import.meta.env.DEV) {
         console.log('Creating ticket with payload:', payload);
       }
 
@@ -322,7 +324,9 @@ const AdminTicketsPage = () => {
       handleCloseCreateModal();
       fetchTickets();
     } catch (err) {
-      console.error('Error creating ticket:', err);
+      if (import.meta.env.DEV) {
+        console.error('Error creating ticket:', err);
+      }
       const errorMessage = err.message || 'Failed to create ticket. Please try again.';
       setCreateError(errorMessage);
     } finally {

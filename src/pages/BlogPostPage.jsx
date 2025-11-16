@@ -6,6 +6,7 @@ import ShareButtons from '../components/ShareButtons';
 import ConsultationWidget from '../components/ConsultationWidget';
 import { getCanonicalUrl } from '../constants/companyInfo';
 import { formatDateUserTimezone } from '../utils/dateFormat.js';
+import { sanitizeHtml } from '../utils/security.js';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -100,21 +101,21 @@ const BlogPostPage = () => {
       if (trimmed.startsWith('# ')) {
         flushList();
         const text = trimmed.substring(2);
-        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        const highlightedText = sanitizeHtml(text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         elements.push(
           <h1 key={index} className="text-3xl font-bold text-white mt-12 mb-6 pt-8 border-t border-gray-700/50 first:mt-0 first:pt-0 first:border-t-0" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
       } else if (trimmed.startsWith('## ')) {
         flushList();
         const text = trimmed.substring(3);
-        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        const highlightedText = sanitizeHtml(text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         elements.push(
           <h2 key={index} className="text-2xl font-bold text-white mt-10 mb-5 pt-6 border-t border-gray-700/30" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
       } else if (trimmed.startsWith('### ')) {
         flushList();
         const text = trimmed.substring(4);
-        const highlightedText = text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        const highlightedText = sanitizeHtml(text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         elements.push(
           <h3 key={index} className="text-xl font-semibold text-white mt-8 mb-4" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
@@ -122,14 +123,14 @@ const BlogPostPage = () => {
       // Handle sub-headings (like "Key Principle:", "Implementation:")
       else if (trimmed.match(/^[A-Z][a-z\s]+:/) && trimmed.endsWith(':')) {
         flushList();
-        const text = trimmed.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        const text = sanitizeHtml(trimmed.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         elements.push(
           <h4 key={index} className="text-lg font-semibold text-orange-400 mt-6 mb-3" dangerouslySetInnerHTML={{ __html: text }} />
         );
       }
       // Handle list items
       else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-        const itemText = trimmed.substring(2).replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        const itemText = sanitizeHtml(trimmed.substring(2).replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         currentList.push(itemText);
       }
       // Handle bold paragraphs (standalone)
@@ -149,7 +150,7 @@ const BlogPostPage = () => {
       // Handle regular paragraphs
       else {
         flushList();
-        const highlightedParagraph = trimmed.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>');
+        const highlightedParagraph = sanitizeHtml(trimmed.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         elements.push(
           <p key={index} className="text-gray-300 leading-relaxed mb-5 text-base" dangerouslySetInnerHTML={{ __html: highlightedParagraph }} />
         );

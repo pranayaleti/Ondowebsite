@@ -25,17 +25,25 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const hasCheckedSessionRef = useRef(false);
+  const isCheckingSessionRef = useRef(false);
 
   useEffect(() => {
     // Only check session once on mount
-    if (!hasCheckedSessionRef.current) {
+    if (!hasCheckedSessionRef.current && !isCheckingSessionRef.current) {
       hasCheckedSessionRef.current = true;
+      isCheckingSessionRef.current = true;
       checkSession();
     }
   }, []);
 
   const checkSession = async () => {
+    // Prevent multiple simultaneous session checks
+    if (isCheckingSessionRef.current && hasCheckedSessionRef.current) {
+      return;
+    }
+    
     try {
+      isCheckingSessionRef.current = true;
       const data = await authAPI.getSession();
       if (data && data.user) {
         setUser(data.user);
@@ -44,10 +52,13 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
-      console.error('Session check failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('Session check failed:', error);
+      }
       setUser(null);
     } finally {
       setLoading(false);
+      isCheckingSessionRef.current = false;
     }
   };
 

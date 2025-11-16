@@ -26,13 +26,9 @@ const ScriptOptimizer = () => {
     // Load Google Tag Manager with lazy loading
     const loadGTM = () => {
       const gtmScript = document.createElement('script');
-      gtmScript.innerHTML = `
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-XXXXXXX');
-      `;
+      // Use textContent instead of innerHTML for security
+      const gtmCode = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');`;
+      gtmScript.textContent = gtmCode;
       gtmScript.async = true;
       gtmScript.defer = true;
       document.head.appendChild(gtmScript);
@@ -41,18 +37,9 @@ const ScriptOptimizer = () => {
     // Load Facebook Pixel with lazy loading
     const loadFacebookPixel = () => {
       const fbScript = document.createElement('script');
-      fbScript.innerHTML = `
-        !function(f,b,e,v,n,t,s)
-        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window, document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', 'YOUR_PIXEL_ID');
-        fbq('track', 'PageView');
-      `;
+      // Use textContent instead of innerHTML for security
+      const fbCode = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', 'YOUR_PIXEL_ID');fbq('track', 'PageView');`;
+      fbScript.textContent = fbCode;
       fbScript.async = true;
       fbScript.defer = true;
       document.head.appendChild(fbScript);
@@ -61,16 +48,9 @@ const ScriptOptimizer = () => {
     // Load Hotjar with lazy loading
     const loadHotjar = () => {
       const hjScript = document.createElement('script');
-      hjScript.innerHTML = `
-        (function(h,o,t,j,a,r){
-          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-          h._hjSettings={hjid:YOUR_HOTJAR_ID,hjsv:6};
-          a=o.getElementsByTagName('head')[0];
-          r=o.createElement('script');r.async=1;
-          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-          a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-      `;
+      // Use textContent instead of innerHTML for security
+      const hjCode = `(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:YOUR_HOTJAR_ID,hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');`;
+      hjScript.textContent = hjCode;
       hjScript.async = true;
       hjScript.defer = true;
       document.head.appendChild(hjScript);
@@ -120,7 +100,7 @@ const ScriptOptimizer = () => {
     window.addEventListener('load', () => {
       setTimeout(() => {
         // Only load these in production
-        if (process.env.NODE_ENV === 'production') {
+        if (import.meta.env.PROD) {
           loadGTM();
           loadFacebookPixel();
           loadHotjar();
@@ -131,7 +111,7 @@ const ScriptOptimizer = () => {
     // Cleanup function
     return () => {
       // Cleanup if needed
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log('Script optimizer cleanup');
       }
     };

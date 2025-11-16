@@ -227,7 +227,20 @@ const SubscriptionsPage = () => {
                 const status = String(s.status || '').toLowerCase().trim();
                 return status === 'active';
               }).map((subscription) => {
-                const features = subscription.features ? JSON.parse(subscription.features) : [];
+                let features = [];
+                if (subscription.features) {
+                  try {
+                    features = typeof subscription.features === 'string' 
+                      ? JSON.parse(subscription.features) 
+                      : subscription.features;
+                    if (!Array.isArray(features)) features = [];
+                  } catch (e) {
+                    if (import.meta.env.DEV) {
+                      console.warn('Failed to parse subscription features:', e);
+                    }
+                    features = [];
+                  }
+                }
                 return (
                   <div
                     key={subscription.id}
@@ -300,7 +313,20 @@ const SubscriptionsPage = () => {
           {availablePlans.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {availablePlans.map((plan, index) => {
-                const features = plan.features ? JSON.parse(plan.features) : [];
+                let features = [];
+                if (plan.features) {
+                  try {
+                    features = typeof plan.features === 'string' 
+                      ? JSON.parse(plan.features) 
+                      : plan.features;
+                    if (!Array.isArray(features)) features = [];
+                  } catch (e) {
+                    if (import.meta.env.DEV) {
+                      console.warn('Failed to parse plan features:', e);
+                    }
+                    features = [];
+                  }
+                }
                 const isPopular = index === 1; // Full Stack Development
                 return (
                   <div

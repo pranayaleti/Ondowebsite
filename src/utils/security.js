@@ -104,6 +104,7 @@ export const generateCSRFToken = () => {
 
 // XSS protection
 export const escapeHtml = (text) => {
+  if (typeof text !== 'string') return text;
   const map = {
     '&': '&amp;',
     '<': '&lt;',
@@ -112,6 +113,64 @@ export const escapeHtml = (text) => {
     "'": '&#039;'
   };
   return text.replace(/[&<>"']/g, m => map[m]);
+};
+
+// Sanitize HTML for dangerouslySetInnerHTML usage
+// This is a basic sanitizer - for production, consider using DOMPurify
+export const sanitizeHtml = (html) => {
+  if (typeof html !== 'string') return '';
+  
+  // First escape all HTML entities
+  let sanitized = escapeHtml(html);
+  
+  // Then allow only safe HTML tags and attributes
+  // Remove all script tags and event handlers
+  sanitized = sanitized
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/on\w+\s*=\s*[^\s>]*/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:text\/html/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '');
+  
+  // Allow only safe HTML tags: span, p, div, strong, em, b, i, u, br, h1-h6, ul, ol, li, a (with safe href)
+  const allowedTags = ['span', 'p', 'div', 'strong', 'em', 'b', 'i', 'u', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a'];
+  const allowedAttributes = ['class', 'id', 'href', 'target', 'rel'];
+  
+  // Remove any tags not in whitelist
+  sanitized = sanitized.replace(/<(\/?)([^>]+)>/g, (match, closing, tagContent) => {
+    const tagName = tagContent.split(/\s/)[0].toLowerCase();
+    if (allowedTags.includes(tagName)) {
+      // Remove dangerous attributes
+      let safeTag = tagContent.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+      safeTag = safeTag.replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '');
+      // Only allow safe attributes
+      const attrRegex = /(\w+)\s*=\s*["']([^"']*)["']/g;
+      let safeAttrs = '';
+      let attrMatch;
+      while ((attrMatch = attrRegex.exec(tagContent)) !== null) {
+        if (allowedAttributes.includes(attrMatch[1].toLowerCase())) {
+          // Additional check for href - only allow http/https
+          if (attrMatch[1].toLowerCase() === 'href') {
+            const href = attrMatch[2];
+            if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('/') || href.startsWith('#')) {
+              safeAttrs += ` ${attrMatch[1]}="${escapeHtml(attrMatch[2])}"`;
+            }
+          } else {
+            safeAttrs += ` ${attrMatch[1]}="${escapeHtml(attrMatch[2])}"`;
+          }
+        }
+      }
+      return `<${closing}${tagName}${safeAttrs}>`;
+    }
+    return ''; // Remove disallowed tags
+  });
+  
+  return sanitized;
 };
 
 // Security headers for meta tags

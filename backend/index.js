@@ -765,6 +765,23 @@ const createIndexes = async () => {
   }
 };
 
+// Helper function to safely validate column names (prevent SQL injection)
+const isValidColumnName = (name) => {
+  // Only allow alphanumeric characters and underscores
+  return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name);
+};
+
+// Helper function to safely validate column types (prevent SQL injection)
+const isValidColumnType = (type) => {
+  // Whitelist of allowed column types
+  const allowedTypes = [
+    'VARCHAR', 'TEXT', 'INTEGER', 'BIGINT', 'DECIMAL', 'NUMERIC',
+    'BOOLEAN', 'TIMESTAMP', 'DATE', 'TIME', 'JSONB', 'BYTEA'
+  ];
+  // Check if type starts with an allowed type
+  return allowedTypes.some(allowed => type.toUpperCase().startsWith(allowed.toUpperCase()));
+};
+
 // Add new columns to users table if they don't exist
 const addUserColumns = async () => {
   try {
@@ -806,6 +823,16 @@ const addUserColumns = async () => {
       `, [column]);
       
       if (checkColumn.rows.length === 0) {
+        // Validate column name and type
+        if (!isValidColumnName(column)) {
+          console.error(`Invalid column name: ${column}`);
+          continue;
+        }
+        if (!isValidColumnType(columnType)) {
+          console.error(`Invalid column type: ${columnType} for column: ${column}`);
+          continue;
+        }
+
         await pool.query(`ALTER TABLE users ADD COLUMN ${column} ${columnType}`);
         console.log(`Added column: ${column}`);
       }
@@ -830,6 +857,16 @@ const addTicketColumns = async () => {
     ];
     
     for (const column of columns) {
+      // Validate column name and type
+      if (!isValidColumnName(column.name)) {
+        console.error(`Invalid column name: ${column.name}`);
+        continue;
+      }
+      if (!isValidColumnType(column.type)) {
+        console.error(`Invalid column type: ${column.type} for column: ${column.name}`);
+        continue;
+      }
+
       // Check if column exists
       const checkColumn = await pool.query(`
         SELECT column_name 
@@ -858,6 +895,16 @@ const addSubscriptionColumns = async () => {
     ];
     
     for (const column of columns) {
+      // Validate column name and type
+      if (!isValidColumnName(column.name)) {
+        console.error(`Invalid column name: ${column.name}`);
+        continue;
+      }
+      if (!isValidColumnType(column.type)) {
+        console.error(`Invalid column type: ${column.type} for column: ${column.name}`);
+        continue;
+      }
+
       // Check if column exists
       const checkColumn = await pool.query(`
         SELECT column_name 
@@ -886,6 +933,16 @@ const addAssetColumns = async () => {
     ];
     
     for (const column of columns) {
+      // Validate column name and type
+      if (!isValidColumnName(column.name)) {
+        console.error(`Invalid column name: ${column.name}`);
+        continue;
+      }
+      if (!isValidColumnType(column.type)) {
+        console.error(`Invalid column type: ${column.type} for column: ${column.name}`);
+        continue;
+      }
+
       // Check if column exists
       const checkColumn = await pool.query(`
         SELECT column_name 
@@ -926,6 +983,16 @@ const addInvoiceColumns = async () => {
       `, [column.name]);
       
       if (checkColumn.rows.length === 0) {
+        // Validate column name and type
+        if (!isValidColumnName(column.name)) {
+          console.error(`Invalid column name: ${column.name}`);
+          continue;
+        }
+        if (!isValidColumnType(column.type)) {
+          console.error(`Invalid column type: ${column.type} for column: ${column.name}`);
+          continue;
+        }
+
         try {
           await pool.query(`ALTER TABLE invoices ADD COLUMN ${column.name} ${column.type}`);
           console.log(`Added column to invoices: ${column.name}`);
@@ -966,6 +1033,16 @@ const addConsultationLeadsColumns = async () => {
       `, [column.name]);
       
       if (checkColumn.rows.length === 0) {
+        // Validate column name and type
+        if (!isValidColumnName(column.name)) {
+          console.error(`Invalid column name: ${column.name}`);
+          continue;
+        }
+        if (!isValidColumnType(column.type)) {
+          console.error(`Invalid column type: ${column.type} for column: ${column.name}`);
+          continue;
+        }
+
         try {
           await pool.query(`ALTER TABLE consultation_leads ADD COLUMN ${column.name} ${column.type}`);
           console.log(`Added column to consultation_leads: ${column.name}`);
@@ -1007,6 +1084,16 @@ const addCampaignColumns = async () => {
       `, [column.name]);
       
       if (checkColumn.rows.length === 0) {
+        // Validate column name and type
+        if (!isValidColumnName(column.name)) {
+          console.error(`Invalid column name: ${column.name}`);
+          continue;
+        }
+        if (!isValidColumnType(column.type)) {
+          console.error(`Invalid column type: ${column.type} for column: ${column.name}`);
+          continue;
+        }
+
         try {
           // Add column first
           await pool.query(`ALTER TABLE campaigns ADD COLUMN ${column.name} ${column.type}`);
@@ -4501,7 +4588,9 @@ app.post('/api/consultation/submit', async (req, res) => {
       try {
         qaResponsesParsed = typeof qaResponses === 'string' ? JSON.parse(qaResponses) : qaResponses;
       } catch (parseError) {
-        console.warn('Failed to parse qaResponses:', parseError);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Failed to parse qaResponses:', parseError);
+        }
         qaResponsesParsed = null;
       }
     }
@@ -4528,11 +4617,13 @@ app.post('/api/consultation/submit', async (req, res) => {
       createdAt: result.rows[0].created_at
     });
   } catch (error) {
-    console.error('Consultation submission error:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Consultation submission error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack
+      });
+    }
     res.status(500).json({ 
       error: 'Internal server error',
       message: process.env.NODE_ENV === 'development' ? error.message : undefined

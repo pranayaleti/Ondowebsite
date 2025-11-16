@@ -41,7 +41,8 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     if (!isOpen && conversationId) {
       endConversation();
     }
-  }, [isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, conversationId]);
 
   const endConversation = async () => {
     if (!conversationId) return;
@@ -53,7 +54,9 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         credentials: 'include',
       });
     } catch (error) {
-      console.error('Error ending conversation:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error ending conversation:', error);
+      }
     }
   };
 
@@ -87,21 +90,48 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           setConversationId(data.conversation.id);
           
           // Convert database messages to chat format
-          const formattedMessages = data.messages.map((msg) => ({
-            id: msg.id,
-            role: msg.role,
-            content: msg.content,
-            timestamp: new Date(msg.created_at),
-            quickReplies: msg.quick_replies ? JSON.parse(msg.quick_replies) : undefined,
-            buttonClicks: msg.button_clicks ? JSON.parse(msg.button_clicks) : undefined,
-          }));
+          const formattedMessages = data.messages.map((msg) => {
+            let quickReplies = undefined;
+            let buttonClicks = undefined;
+            
+            if (msg.quick_replies) {
+              try {
+                quickReplies = JSON.parse(msg.quick_replies);
+              } catch (e) {
+                if (import.meta.env.DEV) {
+                  console.warn('Failed to parse quick_replies:', e);
+                }
+              }
+            }
+            
+            if (msg.button_clicks) {
+              try {
+                buttonClicks = JSON.parse(msg.button_clicks);
+              } catch (e) {
+                if (import.meta.env.DEV) {
+                  console.warn('Failed to parse button_clicks:', e);
+                }
+              }
+            }
+            
+            return {
+              id: msg.id,
+              role: msg.role,
+              content: msg.content,
+              timestamp: new Date(msg.created_at),
+              quickReplies,
+              buttonClicks,
+            };
+          });
 
           setMessages(formattedMessages);
           return true; // History loaded
         }
       }
     } catch (error) {
-      console.error('Error loading conversation history:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error loading conversation history:', error);
+      }
     }
     return false; // No history found
   };
@@ -205,7 +235,9 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         setConversationStarted(true);
       }
     } catch (error) {
-      console.error('Error initializing conversation:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error initializing conversation:', error);
+      }
       // Still show welcome message even if backend fails
       const userName = isAuthenticated && user ? user.name : null;
       const welcomeContent = userName
@@ -251,7 +283,9 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         }),
       });
     } catch (error) {
-      console.error('Error saving message:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error saving message:', error);
+      }
     }
   };
 
@@ -333,7 +367,9 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         body: JSON.stringify(info),
       });
     } catch (error) {
-      console.error('Error updating conversation info:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error updating conversation info:', error);
+      }
     }
   };
 
@@ -453,7 +489,9 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         await saveMessage(conversationId, aiMessage);
       }
     } catch (error) {
-      console.error('Error generating AI response:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error generating AI response:', error);
+      }
       const errorMessage = {
         id: Date.now(),
         role: 'assistant',
@@ -485,7 +523,9 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         }),
       });
     } catch (error) {
-      console.error('Error saving feedback:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error saving feedback:', error);
+      }
     }
   };
 
@@ -530,7 +570,11 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
                     linkUrl: part,
                     timestamp: new Date().toISOString(),
                   }),
-                }).catch(err => console.error('Error tracking link click:', err));
+                }).catch(err => {
+                  if (import.meta.env.DEV) {
+                    console.error('Error tracking link click:', err);
+                  }
+                });
               }
             }}
           >
