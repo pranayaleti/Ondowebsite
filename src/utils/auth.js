@@ -1189,36 +1189,6 @@ export const adminAPI = {
     return response.json();
   },
 
-  async getFeedback(status = null, limit = 100, offset = 0) {
-    const params = new URLSearchParams();
-    if (status) params.append('status', status);
-    params.append('limit', limit);
-    params.append('offset', offset);
-
-    const response = await authenticatedFetch(`${API_URL}/admin/feedback?${params.toString()}`, {
-      method: 'GET',
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch feedback');
-    }
-
-    return response.json();
-  },
-
-  async updateFeedback(feedbackId, updates) {
-    const response = await authenticatedFetch(`${API_URL}/admin/feedback/${feedbackId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updates),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to update feedback');
-    }
-
-    return response.json();
-  },
 };
 
 // Ticket API functions

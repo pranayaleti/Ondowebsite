@@ -5140,6 +5140,28 @@ app.post('/api/ai-chat/conversations', async (req, res) => {
       return res.status(400).json({ error: 'Session ID is required' });
     }
 
+    // Check if there's already an active conversation for this session
+    // within the last 5 minutes to prevent duplicates
+    const existingConversation = await pool.query(
+      `SELECT id, started_at FROM ai_conversations 
+       WHERE session_id = $1 
+       AND status = 'active'
+       AND started_at > (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver' - INTERVAL '5 minutes')
+       ORDER BY started_at DESC
+       LIMIT 1`,
+      [sessionId]
+    );
+
+    if (existingConversation.rows.length > 0) {
+      // Return existing conversation instead of creating a new one
+      return res.json({
+        success: true,
+        conversationId: existingConversation.rows[0].id,
+        startedAt: existingConversation.rows[0].started_at,
+        existing: true,
+      });
+    }
+
     // Get IP address
     const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 

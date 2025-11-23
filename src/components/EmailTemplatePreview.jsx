@@ -99,8 +99,7 @@ const EmailTemplatePreview = ({ templateId, isOpen, onClose, isAdmin = false }) 
         benefit_1: 'Real-time data visualization',
         benefit_2: 'Customizable reports',
         benefit_3: 'Export data in multiple formats',
-        feature_url: 'https://ondosoft.com/features/analytics',
-        feedback_url: 'https://ondosoft.com/feedback'
+        feature_url: 'https://ondosoft.com/features/analytics'
       };
 
       let html = data.template.body_html || '';

@@ -168,7 +168,10 @@ const AdminDashboard = () => {
             <p className="text-sm text-gray-400">Total Campaigns</p>
           </Link>
 
-          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 cursor-default">
+          <Link
+            to="/admin/clients"
+            className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 backdrop-blur-sm rounded-xl p-6 border border-orange-500/30 hover:border-orange-500/50 transition-colors cursor-pointer block"
+          >
             <div className="flex items-center justify-between mb-4">
               <CreditCard className="w-8 h-8 text-orange-400" />
               <span className="text-xs text-gray-400">{stats.activeSubscriptions} active</span>
@@ -177,7 +180,7 @@ const AdminDashboard = () => {
               {stats.totalSubscriptions}
             </h3>
             <p className="text-sm text-gray-400">Subscriptions</p>
-          </div>
+          </Link>
 
           <Link
             to="/admin/analytics"

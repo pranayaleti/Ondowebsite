@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { X, Send, Loader, Bot, User, Home, ThumbsUp, ThumbsDown, RefreshCw, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Send, Loader, Bot, User, Home, RefreshCw, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
 import analyticsTracker from '../utils/analytics.js';
 import { API_URL } from '../utils/apiConfig.js';
 import { companyInfo } from '../constants/companyInfo';
@@ -25,21 +25,26 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const inputRef = useRef(null);
   const modalRef = useRef(null);
   const resizeHandleRef = useRef(null);
+  const isInitializingRef = useRef(false);
 
   const AI_NAME = 'Arjun';
   const AI_TITLE = 'AI Assistant';
 
   // Initialize session and conversation
   useEffect(() => {
-    if (isOpen && !conversationStarted) {
+    if (isOpen && !conversationStarted && !isInitializingRef.current) {
       initializeConversation();
     }
   }, [isOpen, conversationStarted]);
 
   // End conversation when modal closes
   useEffect(() => {
-    if (!isOpen && conversationId) {
-      endConversation();
+    if (!isOpen) {
+      if (conversationId) {
+        endConversation();
+      }
+      // Reset initialization flag when modal closes so it can be initialized again
+      isInitializingRef.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, conversationId]);
@@ -137,6 +142,13 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   };
 
   const initializeConversation = async () => {
+    // Prevent multiple simultaneous initialization calls
+    if (isInitializingRef.current) {
+      return;
+    }
+    
+    isInitializingRef.current = true;
+    
     try {
       const sessionId = analyticsTracker.sessionId || generateSessionId();
       setSessionId(sessionId);
@@ -147,6 +159,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       if (historyLoaded) {
         // History loaded, conversation already has messages
         setConversationStarted(true);
+        isInitializingRef.current = false;
         return;
       }
 
@@ -258,6 +271,8 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       };
       setMessages([welcomeMessage]);
       setConversationStarted(true);
+    } finally {
+      isInitializingRef.current = false;
     }
   };
 
@@ -504,30 +519,6 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     }
   };
 
-  const handleFeedback = async (messageId, feedback) => {
-    if (!conversationId) return;
-
-    try {
-      // Find the message to get its content
-      const message = messages.find(m => m.id === messageId);
-      
-      await fetch(`${API_URL}/ai-chat/conversations/${conversationId}/feedback`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          messageId,
-          feedback,
-          messageContent: message?.content || '',
-          timestamp: new Date().toISOString(),
-        }),
-      });
-    } catch (error) {
-      if (import.meta.env.DEV) {
-        console.error('Error saving feedback:', error);
-      }
-    }
-  };
 
   const formatTime = (timestamp) => {
     // Display in user's local timezone
@@ -559,23 +550,8 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
             rel="noopener noreferrer"
             className="text-orange-600 hover:text-orange-700 underline font-medium break-all"
             onClick={() => {
-              // Track link clicks in analytics
-              if (conversationId) {
-                fetch(`${API_URL}/ai-chat/conversations/${conversationId}/feedback`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include',
-                  body: JSON.stringify({
-                    eventType: 'link_click',
-                    linkUrl: part,
-                    timestamp: new Date().toISOString(),
-                  }),
-                }).catch(err => {
-                  if (import.meta.env.DEV) {
-                    console.error('Error tracking link click:', err);
-                  }
-                });
-              }
+              // Track link clicks in analytics (optional - can be removed if not needed)
+              // Link click tracking removed per user request
             }}
           >
             {part}
@@ -794,26 +770,6 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
                         {reply.label}
                       </button>
                     ))}
-                  </div>
-                )}
-                {message.role === 'assistant' && (
-                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-200">
-                    <button
-                      onClick={() => handleFeedback(message.id, 'positive')}
-                      className="text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded p-1 transition-all"
-                      aria-label="Helpful"
-                      title="This was helpful"
-                    >
-                      <ThumbsUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleFeedback(message.id, 'negative')}
-                      className="text-gray-400 hover:text-red-600 hover:bg-red-50 rounded p-1 transition-all"
-                      aria-label="Not helpful"
-                      title="This was not helpful"
-                    >
-                      <ThumbsDown className="w-4 h-4" />
-                    </button>
                   </div>
                 )}
                 <p className="text-xs mt-1 opacity-70">
