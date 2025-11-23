@@ -85,14 +85,8 @@ if (typeof window !== 'undefined') {
 if (typeof window !== 'undefined') {
   // Use requestIdleCallback or setTimeout to defer non-critical resource hints
   const setupResources = () => {
-    // Preload logo (critical)
-    const logoLink = document.createElement('link');
-    logoLink.rel = 'preload';
-    logoLink.as = 'image';
-    logoLink.href = '/logo.png';
-    logoLink.fetchPriority = 'high';
-    document.head.appendChild(logoLink);
-
+    // Logo is already preloaded in index.html, no need to duplicate
+    
     // Only add DNS prefetch/preconnect if fonts are actually being used
     // Check if fonts are loaded via stylesheet
     const hasFontUsage = document.querySelector('link[href*="fonts.googleapis.com"]');

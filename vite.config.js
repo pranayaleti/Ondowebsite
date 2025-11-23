@@ -22,12 +22,10 @@ export default defineConfig({
               id.includes('/pages/ForgotPasswordPage') || id.includes('/pages/ResetPasswordPage')) {
             return 'auth';
           }
-          // Core React libraries - split React from ReactDOM for better tree-shaking
-          if (id.includes('node_modules/react/') && !id.includes('react-dom')) {
-            return 'vendor-react-core';
-          }
-          if (id.includes('node_modules/react-dom')) {
-            return 'vendor-react-dom';
+          // Core React libraries - keep React and ReactDOM together
+          // ReactDOM requires React internals, so they must be in the same chunk
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
           }
           // Routing
           if (id.includes('node_modules/react-router-dom')) {
