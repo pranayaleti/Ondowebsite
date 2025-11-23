@@ -95,15 +95,31 @@ const AppRoutes = () => {
   // Initialize performance optimizations
   useEffect(() => {
     initPerformanceOptimizations();
-    // Initialize analytics tracking
-    analyticsTracker.init();
+    // Defer analytics initialization to avoid blocking critical path
+    // Use requestIdleCallback or setTimeout to ensure it doesn't block rendering
+    const initAnalytics = () => {
+      analyticsTracker.init();
+    };
+    
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initAnalytics, { timeout: 3000 });
+    } else {
+      // Fallback: wait for page to be interactive
+      if (document.readyState === 'complete') {
+        setTimeout(initAnalytics, 100);
+      } else {
+        window.addEventListener('load', () => {
+          setTimeout(initAnalytics, 100);
+        });
+      }
+    }
   }, []);
 
-  // Prefetch likely next routes on idle
+  // Prefetch likely next routes on idle (but NOT admin/portal routes)
   useEffect(() => {
     if ('requestIdleCallback' in window) {
       const prefetchRoutes = () => {
-        // Prefetch common routes
+        // Only prefetch public routes - admin/portal routes should load on-demand
         const commonRoutes = [
           () => import('./pages/ServicesPage'),
           () => import('./pages/ContactPage'),

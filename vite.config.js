@@ -9,9 +9,25 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Core React libraries
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'vendor-react';
+          // Admin pages - separate chunk, only loaded when needed
+          if (id.includes('/pages/admin/') || id.includes('/components/admin/')) {
+            return 'admin';
+          }
+          // Portal pages - separate chunk, only loaded when needed
+          if (id.includes('/pages/portal/') || id.includes('/components/portal/')) {
+            return 'portal';
+          }
+          // Auth pages - separate chunk
+          if (id.includes('/pages/SignInPage') || id.includes('/pages/SignUpPage') || 
+              id.includes('/pages/ForgotPasswordPage') || id.includes('/pages/ResetPasswordPage')) {
+            return 'auth';
+          }
+          // Core React libraries - split React from ReactDOM for better tree-shaking
+          if (id.includes('node_modules/react/') && !id.includes('react-dom')) {
+            return 'vendor-react-core';
+          }
+          if (id.includes('node_modules/react-dom')) {
+            return 'vendor-react-dom';
           }
           // Routing
           if (id.includes('node_modules/react-router-dom')) {
@@ -28,14 +44,6 @@ export default defineConfig({
           // Other node_modules
           if (id.includes('node_modules')) {
             return 'vendor-other';
-          }
-          // Admin pages
-          if (id.includes('/pages/admin/')) {
-            return 'admin';
-          }
-          // Portal pages
-          if (id.includes('/pages/portal/')) {
-            return 'portal';
           }
         },
         // Optimize chunk file names
@@ -59,7 +67,11 @@ export default defineConfig({
     esbuild: {
       drop: ['console', 'debugger'],
       legalComments: 'none',
-      treeShaking: true
+      treeShaking: true,
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true,
+      target: 'es2020'
     },
     // Enable compression
     reportCompressedSize: true,

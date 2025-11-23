@@ -33,10 +33,7 @@ class AnalyticsTracker {
     if (this.initialized) return;
     this.initialized = true;
     
-    // Track initial page view
-    this.trackPageView(window.location.pathname);
-    
-    // Set up event listeners
+    // Set up event listeners first (non-blocking)
     this.setupClickTracking();
     this.setupNavigationTracking();
     this.setupScrollTracking();
@@ -50,6 +47,18 @@ class AnalyticsTracker {
       this.flushBatch(); // Flush any pending events
     };
     window.addEventListener('beforeunload', this.beforeUnloadHandler);
+    
+    // Defer initial page view tracking to avoid blocking critical path
+    // Use requestIdleCallback or setTimeout to ensure non-blocking
+    const trackInitialPageView = () => {
+      this.trackPageView(window.location.pathname);
+    };
+    
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(trackInitialPageView, { timeout: 2000 });
+    } else {
+      setTimeout(trackInitialPageView, 100);
+    }
   }
 
   // Cleanup method to remove event listeners

@@ -1819,14 +1819,26 @@ app.use(cookieParser());
 // Comprehensive Caching Headers Middleware
 const setCacheHeaders = (req, res, next) => {
   const url = req.path;
+  const ONE_YEAR = 31536000; // 1 year in seconds
+  const ONE_YEAR_MS = 31536000000; // 1 year in milliseconds
   
-  // Static assets - long cache
+  // Check if asset has a hash in filename (immutable assets)
+  // Pattern: filename-[hash].ext or filename.[hash].ext
+  const hasHash = /[-.][a-f0-9]{8,}/i.test(url) || /\/assets\//.test(url);
+  
+  // Images and fonts - long cache (1 year, immutable)
   if (url.match(/\.(jpg|jpeg|png|gif|ico|svg|webp|woff|woff2|ttf|eot|otf)$/i)) {
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.setHeader('Expires', new Date(Date.now() + 31536000000).toUTCString());
+    res.setHeader('Cache-Control', 'public, max-age=' + ONE_YEAR + ', immutable');
+    res.setHeader('Expires', new Date(Date.now() + ONE_YEAR_MS).toUTCString());
     res.setHeader('ETag', `"${Date.now()}"`);
   }
-  // CSS and JS files - medium cache
+  // Hashed CSS and JS files (from build with content hash) - 1 year cache, immutable
+  else if ((url.match(/\.(css|js)$/i)) && hasHash) {
+    res.setHeader('Cache-Control', 'public, max-age=' + ONE_YEAR + ', immutable');
+    res.setHeader('Expires', new Date(Date.now() + ONE_YEAR_MS).toUTCString());
+    res.setHeader('ETag', `"${Date.now()}"`);
+  }
+  // Non-hashed CSS and JS files - shorter cache with revalidation
   else if (url.match(/\.(css|js)$/i)) {
     res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
     res.setHeader('Expires', new Date(Date.now() + 86400000).toUTCString());
@@ -1934,7 +1946,43 @@ app.use(trackRequest);
 // Serve static files from the dist directory (frontend build)
 const distPath = path.join(__dirname, '..', 'dist');
 app.use(express.static(distPath, {
-  maxAge: '1y', // Cache static assets for 1 year
+  // Use setHeaders to apply our cache strategy per file type
+  setHeaders: (res, path, stat) => {
+    const url = path;
+    const ONE_YEAR = 31536000; // 1 year in seconds
+    const ONE_YEAR_MS = 31536000000; // 1 year in milliseconds
+    
+    // Check if asset has a hash in filename (immutable assets)
+    const hasHash = /[-.][a-f0-9]{8,}/i.test(url) || /\/assets\//.test(url);
+    
+    // Images and fonts - 1 year cache, immutable
+    if (url.match(/\.(jpg|jpeg|png|gif|ico|svg|webp|woff|woff2|ttf|eot|otf)$/i)) {
+      res.setHeader('Cache-Control', `public, max-age=${ONE_YEAR}, immutable`);
+      res.setHeader('Expires', new Date(Date.now() + ONE_YEAR_MS).toUTCString());
+    }
+    // Hashed CSS and JS files - 1 year cache, immutable
+    else if ((url.match(/\.(css|js)$/i)) && hasHash) {
+      res.setHeader('Cache-Control', `public, max-age=${ONE_YEAR}, immutable`);
+      res.setHeader('Expires', new Date(Date.now() + ONE_YEAR_MS).toUTCString());
+    }
+    // Non-hashed CSS and JS - 1 day cache
+    else if (url.match(/\.(css|js)$/i)) {
+      res.setHeader('Cache-Control', 'public, max-age=86400, must-revalidate');
+      res.setHeader('Expires', new Date(Date.now() + 86400000).toUTCString());
+    }
+    // HTML files - 1 hour cache
+    else if (url.match(/\.(html|htm)$/i)) {
+      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+      res.setHeader('Expires', new Date(Date.now() + 3600000).toUTCString());
+    }
+    // Default - 1 year for other static assets
+    else {
+      res.setHeader('Cache-Control', `public, max-age=${ONE_YEAR}, immutable`);
+      res.setHeader('Expires', new Date(Date.now() + ONE_YEAR_MS).toUTCString());
+    }
+    
+    res.setHeader('Vary', 'Accept-Encoding');
+  },
   etag: true,
   lastModified: true,
   fallthrough: true // Allow requests to fall through to next middleware if file not found

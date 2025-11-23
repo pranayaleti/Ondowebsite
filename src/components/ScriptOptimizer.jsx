@@ -132,11 +132,16 @@ const ScriptOptimizer = () => {
 
     // Load critical scripts immediately
     const loadCriticalScripts = () => {
-      // Load font stylesheet directly (avoiding preload warnings)
+      // Load only Poppins font (consolidated from Inter + Poppins)
+      // Defer font loading to avoid blocking critical path
       const fontStyle = document.createElement('link');
       fontStyle.rel = 'stylesheet';
-      fontStyle.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+      fontStyle.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
       fontStyle.crossOrigin = 'anonymous';
+      fontStyle.media = 'print'; // Load as print first, then switch to all
+      fontStyle.onload = function() {
+        this.media = 'all';
+      };
       document.head.appendChild(fontStyle);
     };
 

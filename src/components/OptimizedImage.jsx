@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, memo } from 'react';
 
 const OptimizedImage = memo(({ 
   src, 
-  alt, 
+  alt = '', 
   width, 
   height, 
   className = '', 

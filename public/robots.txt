@@ -29,8 +29,8 @@ Disallow: /*?*_ga=*
 
 # Disallow file types that shouldn't be indexed
 Disallow: /*.json$
-Disallow: /*.xml$?*
-Disallow: /*.txt$?*
+Disallow: /*.xml$
+Disallow: /*.txt$
 Disallow: /sw.js
 Disallow: /service-worker.js
 
