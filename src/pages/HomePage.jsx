@@ -106,7 +106,7 @@ const HomePage = () => {
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Why Choose <span className="text-orange-500">Ondosoft</span> - Best Freelancing Site Near Me?
+                Why Choose <span className="text-orange-500">Ondosoft</span>?
               </h2>
               <p className="text-xl text-neutral-300 max-w-3xl mx-auto leading-relaxed">
                 <strong>Ondosoft</strong> is the best freelancing site and #1 software development platform. 

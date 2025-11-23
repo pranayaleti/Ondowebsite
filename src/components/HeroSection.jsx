@@ -31,7 +31,7 @@ const HeroSection = ({ onOpenConsultation }) => {
             <span className="text-white">Ondosoft - Best</span>
             <br />
             <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text drop-shadow-lg">
-              Freelancing Site Near Me
+              Freelancing Site Near You
             </span>
           </h1>
           

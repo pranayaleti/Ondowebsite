@@ -33,9 +33,10 @@
       *{box-sizing:border-box}body{margin:0;padding:0;font-family:Poppins,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;background-color:#000;color:#fff}html{background-color:#000;scroll-behavior:smooth}.navbar{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid rgba(229,231,235,.8)}.hero-section{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#000 0%,#1f2937 100%);position:relative;overflow:hidden}.hero-content{max-width:1200px;margin:0 auto;padding:0 1rem;text-align:center}.hero-title{font-size:clamp(2.5rem,5vw,4rem);font-weight:700;line-height:1.1;margin-bottom:1.5rem;color:#fff}.hero-subtitle{font-size:clamp(1.125rem,2vw,1.25rem);color:#d1d5db;margin-bottom:2rem;max-width:600px;margin-left:auto;margin-right:auto}.cta-button{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 2rem;font-size:1.125rem;font-weight:600;text-decoration:none;border-radius:.5rem;transition:all .3s ease;border:2px solid transparent;cursor:pointer;min-height:48px}.cta-primary{background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:#fff;box-shadow:0 4px 14px rgba(249,115,22,.3)}.loading-spinner{display:inline-block;width:1.25rem;height:1.25rem;border:2px solid transparent;border-top:2px solid currentColor;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#root{min-height:100vh}
     </style>
     
-    <!-- Preload main CSS for async loading -->
-    <link rel="preload" href="/assets/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="/assets/index.css" /></noscript>
+    <!-- Preload main CSS for async loading - only in production -->
+    <!-- In development, Vite handles CSS automatically -->
+    <!-- <link rel="preload" href="/assets/index.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="/assets/index.css" /></noscript> -->
     
     <!-- Preload critical resources -->
     <link rel="preload" href="/logo.png" as="image" />

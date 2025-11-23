@@ -19,12 +19,20 @@ if (typeof window !== 'undefined') {
     const message = event.message || '';
     const target = event.target;
     
+    // In development, log all errors first to help debug
+    if (import.meta.env.DEV) {
+      console.log('🔍 Error caught:', { filename, message, target: target?.tagName });
+    }
+    
     // Quick checks first (most common case)
     if (message.includes(BLOCKED_STR) || message.includes('Failed to load')) {
       // Check for Cloudflare Insights
       if (filename.includes(CLOUDFLARE_STR) || 
           filename.includes(BEACON_STR) ||
           (target?.tagName === 'SCRIPT' && target?.src?.includes(CLOUDFLARE_STR))) {
+        if (import.meta.env.DEV) {
+          console.log('✅ Suppressing Cloudflare Insights error (expected)');
+        }
         event.preventDefault();
         event.stopPropagation();
         return false;
@@ -34,9 +42,17 @@ if (typeof window !== 'undefined') {
     // Suppress 404 errors for source maps (e.g., admin:1, portal:1) - these are non-critical
     if (message.includes('404') && (filename.match(/:\d+$/) || filename.includes('.map') || 
         (target?.tagName === 'SCRIPT' && target?.src?.includes('.map')))) {
+      if (import.meta.env.DEV) {
+        console.log('✅ Suppressing source map 404 error (non-critical)');
+      }
       event.preventDefault();
       event.stopPropagation();
       return false;
+    }
+    
+    // In development, don't suppress other errors - let them show
+    if (import.meta.env.DEV) {
+      console.warn('⚠️ Unhandled error (not suppressed):', { filename, message });
     }
   }, true);
 
@@ -157,9 +173,28 @@ if ('serviceWorker' in navigator) {
 // Render app immediately - don't block on other initialization
 const root = document.getElementById('root');
 if (root) {
-  ReactDOM.createRoot(root).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  try {
+    ReactDOM.createRoot(root).render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+    // Log successful mount in development
+    if (import.meta.env.DEV) {
+      console.log('✅ React app mounted successfully');
+    }
+  } catch (error) {
+    console.error('❌ Failed to mount React app:', error);
+    // Show error in the UI
+    root.innerHTML = `
+      <div style="padding: 2rem; color: white; background: #000; min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <h1 style="color: #f97316; margin-bottom: 1rem;">Failed to Load Application</h1>
+        <p style="color: #ccc; margin-bottom: 1rem;">${error.message}</p>
+        <pre style="background: #1a1a1a; padding: 1rem; border-radius: 0.5rem; overflow: auto; max-width: 800px; color: #f97316;">${error.stack}</pre>
+        <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #f97316; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Reload Page</button>
+      </div>
+    `;
+  }
+} else {
+  console.error('❌ Root element not found! Make sure index.html has <div id="root"></div>');
 }
