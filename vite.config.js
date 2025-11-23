@@ -22,22 +22,18 @@ export default defineConfig({
               id.includes('/pages/ForgotPasswordPage') || id.includes('/pages/ResetPasswordPage')) {
             return 'auth';
           }
-          // Core React libraries - keep React and ReactDOM together
-          // ReactDOM requires React internals, so they must be in the same chunk
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom')) {
+          // Core React libraries - keep React, ReactDOM, and all React-dependent libraries together
+          // ReactDOM and React-dependent libraries (react-router-dom, react-helmet-async) 
+          // require React internals, so they must be in the same chunk to ensure React is available
+          if (id.includes('node_modules/react/') || 
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react-router-dom') ||
+              id.includes('node_modules/react-helmet-async')) {
             return 'vendor-react';
-          }
-          // Routing
-          if (id.includes('node_modules/react-router-dom')) {
-            return 'vendor-router';
           }
           // UI components
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-ui';
-          }
-          // SEO and meta
-          if (id.includes('node_modules/react-helmet-async')) {
-            return 'vendor-seo';
           }
           // Other node_modules
           if (id.includes('node_modules')) {
