@@ -27,13 +27,35 @@ const PortalDashboard = () => {
     fetchDashboardData();
   }, []);
 
+  // Debug: Log when component mounts and state changes
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('PortalDashboard mounted, loading:', loading, 'error:', error);
+    }
+  }, [loading, error]);
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const data = await portalAPI.getDashboard();
+      setError(null);
+      
+      // Add timeout to prevent infinite loading (reduced from 30s to 15s)
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout. Please check your connection and try again.')), 15000);
+      });
+      
+      const dataPromise = portalAPI.getDashboard();
+      const data = await Promise.race([dataPromise, timeoutPromise]);
+      
       setDashboardData(data);
     } catch (err) {
-      setError(err.message);
+      console.error('Dashboard fetch error:', err);
+      const errorMessage = err.message || 'Failed to load dashboard. Please try refreshing the page.';
+      setError(errorMessage);
+      // Log more details in development
+      if (import.meta.env.DEV) {
+        console.error('Full error details:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -43,8 +65,9 @@ const PortalDashboard = () => {
     return (
       <>
         <SEOHead title="Dashboard" />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader className="w-12 h-12 animate-spin text-orange-500" />
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <Loader className="w-12 h-12 animate-spin text-orange-500 mb-4" />
+          <p className="text-gray-400">Loading dashboard...</p>
         </div>
       </>
     );
@@ -54,8 +77,17 @@ const PortalDashboard = () => {
     return (
       <>
         <SEOHead title="Dashboard" />
-        <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400">
-          Error: {error}
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-6 text-red-400">
+            <h2 className="text-xl font-bold mb-2">Error Loading Dashboard</h2>
+            <p className="mb-4">{error}</p>
+            <button
+              onClick={fetchDashboardData}
+              className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </>
     );

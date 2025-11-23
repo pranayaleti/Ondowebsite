@@ -275,27 +275,43 @@ export const authAPI = {
         return null;
       }
 
-      const response = await fetch(`${API_URL}/auth/session`, {
-        headers: getAuthHeaders(),
-        credentials: 'include',
-      });
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      if (!response.ok) {
-        // If 401, remove token as it's invalid
-        if (response.status === 401) {
-          tokenStorage.remove();
+      try {
+        const response = await fetch(`${API_URL}/auth/session`, {
+          headers: getAuthHeaders(),
+          credentials: 'include',
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          // If 401, remove token as it's invalid
+          if (response.status === 401) {
+            tokenStorage.remove();
+          }
+          return null;
         }
-        return null;
-      }
 
-      // Check content type before parsing JSON
-      const contentType = response.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
-        // If not JSON, return null (session not valid)
-        return null;
-      }
+        // Check content type before parsing JSON
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          // If not JSON, return null (session not valid)
+          return null;
+        }
 
-      return response.json();
+        return response.json();
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          console.debug('Session check timed out');
+          return null;
+        }
+        throw fetchError;
+      }
     } catch (error) {
       // Silently handle network errors for session check
       // This prevents errors when the server is not running

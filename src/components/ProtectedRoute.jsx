@@ -5,11 +5,13 @@ import { FullScreenLoader } from './LoadingSpinner';
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
   const { user, loading, isAuthenticated, isAdmin } = useAuth();
 
-  if (loading) {
+  // If we have a user, we're authenticated - don't wait for loading to finish
+  // This prevents the loading screen from showing after successful signin
+  if (loading && !user) {
     return <FullScreenLoader message="Loading..." />;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !user) {
     return <Navigate to="/auth/signin" replace />;
   }
 

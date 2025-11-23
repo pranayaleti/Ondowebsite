@@ -3,7 +3,6 @@ import { memo, useMemo } from "react";
 import { SERVICE_AREAS } from "../utils/unifiedData.js";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
-import FeedbackWidget from "./FeedbackWidget";
 
 const Footer = () => {
   const location = useLocation();
@@ -68,7 +67,7 @@ const Footer = () => {
           <div className="pr-8">
             <h3 className="text-xl font-bold mb-3">Ondosoft</h3>
             <p className="text-sm leading-relaxed">
-              Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. Ondosoft is a nationwide software development company specializing in freelancing, full stack development, and SaaS solutions for businesses nationwide. We serve clients across all 50 states.
+              Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. We serve clients across all 50 states.
             </p>
           </div>
 
@@ -76,6 +75,16 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-3">Quick Links</h4>
             <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/services" className="hover:underline">
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link to="/portfolio" className="hover:underline">
+                  Portfolio
+                </Link>
+              </li>
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link to={link.href} className="hover:underline">
@@ -183,7 +192,6 @@ const Footer = () => {
           </ul>
         </div>
       </footer>
-      <FeedbackWidget />
     </>
   );
 };

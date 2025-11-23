@@ -68,11 +68,16 @@ const SignInPage = () => {
 
     setLoading(true);
     try {
-      await signin(formData.email, formData.password);
-      // Navigation will happen via useEffect when isAuthenticated changes
+      const data = await signin(formData.email, formData.password);
+      // Immediately navigate after successful signin
+      // Don't wait for useEffect - it might be delayed
+      if (data?.user?.role === 'ADMIN') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (err) {
       setError(err.message || 'Access failed. Please check your credentials.');
-    } finally {
       setLoading(false);
     }
   };

@@ -14,7 +14,7 @@ const UnifiedChatWidget = () => {
   const autoPromptTimerRef = useRef(null);
   const dismissedRef = useRef(false);
 
-  // Auto-show prompt after 10 seconds
+  // Auto-show prompt after 120 seconds
   useEffect(() => {
     const dismissed = localStorage.getItem('ai_chat_prompt_dismissed');
     const hasInteracted = localStorage.getItem('ai_chat_interacted');
@@ -29,7 +29,7 @@ const UnifiedChatWidget = () => {
         setShowPrompt(true);
         setHasShownAutoPrompt(true);
       }
-    }, 10000);
+    }, 120000); // 120 seconds
 
     return () => {
       if (autoPromptTimerRef.current) {

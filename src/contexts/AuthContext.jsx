@@ -36,6 +36,13 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // Ensure loading is false if we have a user (e.g., after signin)
+  useEffect(() => {
+    if (user && loading) {
+      setLoading(false);
+    }
+  }, [user, loading]);
+
   const checkSession = async () => {
     // Prevent multiple simultaneous session checks
     if (isCheckingSessionRef.current && hasCheckedSessionRef.current) {
@@ -44,7 +51,19 @@ export const AuthProvider = ({ children }) => {
     
     try {
       isCheckingSessionRef.current = true;
+      
+      // Add a fallback timeout to ensure loading state doesn't hang forever
+      const timeoutId = setTimeout(() => {
+        if (isCheckingSessionRef.current) {
+          console.warn('Session check taking too long, setting loading to false');
+          setLoading(false);
+          isCheckingSessionRef.current = false;
+        }
+      }, 10000); // Reduced to 10 seconds to match getSession timeout
+      
       const data = await authAPI.getSession();
+      clearTimeout(timeoutId);
+      
       if (data && data.user) {
         setUser(data.user);
       } else {
@@ -57,6 +76,7 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(null);
     } finally {
+      // Always set loading to false, even if there was an error
       setLoading(false);
       isCheckingSessionRef.current = false;
     }
@@ -66,8 +86,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authAPI.signup(email, password, name, additionalData);
       setUser(data.user);
+      // Ensure loading is set to false after successful signup
+      setLoading(false);
       return data;
     } catch (error) {
+      // Ensure loading is set to false even on error
+      setLoading(false);
       throw error;
     }
   };
@@ -76,8 +100,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authAPI.signin(email, password);
       setUser(data.user);
+      // Ensure loading is set to false after successful signin
+      setLoading(false);
       return data;
     } catch (error) {
+      // Ensure loading is set to false even on error
+      setLoading(false);
       throw error;
     }
   };

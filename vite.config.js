@@ -109,7 +109,16 @@ export default defineConfig({
         secure: false,
         ws: true,
         configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
+          proxy.on('error', (err, req, res) => {
+            // Suppress errors for analytics requests - they fail gracefully in the client
+            if (req.url && req.url.includes('/api/analytics/track')) {
+              // Silently handle analytics proxy errors - client code handles failures gracefully
+              if (res && !res.headersSent) {
+                res.status(503).end();
+              }
+              return;
+            }
+            // Log errors for non-analytics requests
             console.log('⚠️  Proxy error:', err.message);
             console.log('💡 Make sure the backend server is running on port 5001');
             console.log('   Run: cd backend && node index.js');
@@ -128,6 +137,14 @@ export default defineConfig({
         onProxyReq: (proxyReq, req, res) => {
           // Add error handling
           proxyReq.on('error', (err) => {
+            // Suppress errors for analytics requests
+            if (req.url && req.url.includes('/api/analytics/track')) {
+              // Silently handle analytics proxy errors
+              if (!res.headersSent) {
+                res.status(503).end();
+              }
+              return;
+            }
             console.error('❌ Proxy request error:', err.message);
             if (!res.headersSent) {
               res.status(503).json({ 
@@ -137,6 +154,18 @@ export default defineConfig({
               });
             }
           });
+        },
+        onError: (err, req, res) => {
+          // Suppress errors for analytics requests
+          if (req.url && req.url.includes('/api/analytics/track')) {
+            // Silently handle analytics proxy errors
+            if (!res.headersSent) {
+              res.status(503).end();
+            }
+            return;
+          }
+          // For other requests, log the error
+          console.error('❌ Proxy error:', err.message);
         }
       }
     }
