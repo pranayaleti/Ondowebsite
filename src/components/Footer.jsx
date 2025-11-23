@@ -1,12 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { memo, useMemo } from "react";
 import { SERVICE_AREAS } from "../utils/unifiedData.js";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
 
 const Footer = () => {
-  const location = useLocation();
-  const isContactPage = location.pathname === '/contact';
   // Get service areas data from consolidated utility
   const { states, topCities } = SERVICE_AREAS;
   
@@ -61,7 +59,7 @@ const Footer = () => {
           __html: JSON.stringify(structuredData)
         }}
       />
-      <footer className={`text-gray-200 ${isContactPage ? 'py-12 md:py-16' : 'py-6 md:py-0'}`} role="contentinfo">
+      <footer className="text-gray-200 mt-12 md:mt-16 pt-8 md:pt-12 pb-4" role="contentinfo">
         <div className="container mx-auto grid md:grid-cols-4 gap-8 px-6">
           {/* Company Description */}
           <div className="pr-8">

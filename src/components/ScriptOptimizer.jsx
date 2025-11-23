@@ -2,58 +2,110 @@ import { useEffect } from 'react';
 
 const ScriptOptimizer = () => {
   useEffect(() => {
-    // Load analytics with lazyOnload strategy
+    // Load analytics with lazyOnload strategy (only if configured)
     const loadAnalytics = () => {
-      // Google Analytics with lazy loading
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID', {
-        send_page_view: false,
-        anonymize_ip: true,
-        allow_google_signals: false
-      });
-      
-      // Load GA script with lazyOnload strategy
-      const gaScript = document.createElement('script');
-      gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
-      gaScript.async = true;
-      gaScript.defer = true;
-      gaScript.loading = 'lazy';
-      document.head.appendChild(gaScript);
+      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+      if (!gaId || gaId === 'GA_MEASUREMENT_ID' || gaId.trim() === '') {
+        return; // Don't load if not configured
+      }
+
+      try {
+        // Google Analytics with lazy loading
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', gaId, {
+          send_page_view: false,
+          anonymize_ip: true,
+          allow_google_signals: false
+        });
+        
+        // Load GA script with lazyOnload strategy
+        const gaScript = document.createElement('script');
+        gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+        gaScript.async = true;
+        gaScript.defer = true;
+        gaScript.loading = 'lazy';
+        document.head.appendChild(gaScript);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('Google Analytics loading failed:', error);
+        }
+      }
     };
 
-    // Load Google Tag Manager with lazy loading
+    // Load Google Tag Manager with lazy loading (only if configured)
     const loadGTM = () => {
-      const gtmScript = document.createElement('script');
-      // Use textContent instead of innerHTML for security
-      const gtmCode = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');`;
-      gtmScript.textContent = gtmCode;
-      gtmScript.async = true;
-      gtmScript.defer = true;
-      document.head.appendChild(gtmScript);
+      const gtmId = import.meta.env.VITE_GTM_ID;
+      if (!gtmId || gtmId === 'GTM-XXXXXXX' || gtmId.trim() === '') {
+        return; // Don't load if not configured
+      }
+
+      try {
+        const gtmScript = document.createElement('script');
+        // Use textContent instead of innerHTML for security
+        const gtmCode = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`;
+        gtmScript.textContent = gtmCode;
+        gtmScript.async = true;
+        gtmScript.defer = true;
+        document.head.appendChild(gtmScript);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('GTM loading failed:', error);
+        }
+      }
     };
 
-    // Load Facebook Pixel with lazy loading
+    // Load Facebook Pixel with lazy loading (only if configured)
     const loadFacebookPixel = () => {
-      const fbScript = document.createElement('script');
-      // Use textContent instead of innerHTML for security
-      const fbCode = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', 'YOUR_PIXEL_ID');fbq('track', 'PageView');`;
-      fbScript.textContent = fbCode;
-      fbScript.async = true;
-      fbScript.defer = true;
-      document.head.appendChild(fbScript);
+      const pixelId = import.meta.env.VITE_FACEBOOK_PIXEL_ID;
+      if (!pixelId || pixelId === 'YOUR_PIXEL_ID' || pixelId.trim() === '') {
+        return; // Don't load if not configured
+      }
+
+      try {
+        const fbScript = document.createElement('script');
+        // Use textContent instead of innerHTML for security
+        const fbCode = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '${pixelId}');fbq('track', 'PageView');`;
+        fbScript.textContent = fbCode;
+        fbScript.async = true;
+        fbScript.defer = true;
+        // Add error handler to prevent console errors if blocked
+        fbScript.onerror = () => {
+          // Silently handle if blocked by ad blocker
+        };
+        document.head.appendChild(fbScript);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('Facebook Pixel loading failed:', error);
+        }
+      }
     };
 
-    // Load Hotjar with lazy loading
+    // Load Hotjar with lazy loading (only if configured)
     const loadHotjar = () => {
-      const hjScript = document.createElement('script');
-      // Use textContent instead of innerHTML for security
-      const hjCode = `(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:YOUR_HOTJAR_ID,hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');`;
-      hjScript.textContent = hjCode;
-      hjScript.async = true;
-      hjScript.defer = true;
-      document.head.appendChild(hjScript);
+      const hotjarId = import.meta.env.VITE_HOTJAR_ID;
+      if (!hotjarId || hotjarId === 'YOUR_HOTJAR_ID' || hotjarId.trim() === '') {
+        return; // Don't load if not configured
+      }
+
+      try {
+        const hjScript = document.createElement('script');
+        // Use textContent instead of innerHTML for security
+        const hjCode = `(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:${hotjarId},hjsv:6};a=o.getElementsByTagName('head')[0];r=o.createElement('script');r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');`;
+        hjScript.textContent = hjCode;
+        hjScript.async = true;
+        hjScript.defer = true;
+        // Add error handler to prevent console errors if blocked
+        hjScript.onerror = () => {
+          // Silently handle if blocked by ad blocker
+        };
+        document.head.appendChild(hjScript);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('Hotjar loading failed:', error);
+        }
+      }
     };
 
     // Load scripts with intersection observer for better performance
@@ -101,9 +153,13 @@ const ScriptOptimizer = () => {
       setTimeout(() => {
         // Only load these in production
         if (import.meta.env.PROD) {
-          loadGTM();
-          loadFacebookPixel();
-          loadHotjar();
+          // Only load GTM if configured (check for actual GTM ID)
+          const gtmId = import.meta.env.VITE_GTM_ID;
+          if (gtmId && gtmId !== 'GTM-XXXXXXX' && gtmId.trim() !== '') {
+            loadGTM();
+          }
+          loadFacebookPixel(); // Will only load if configured
+          loadHotjar(); // Will only load if configured
         }
       }, 2000);
     });
