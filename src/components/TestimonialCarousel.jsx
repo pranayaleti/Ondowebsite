@@ -163,7 +163,7 @@ const TestimonialCarousel = () => {
             className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl border border-gray-700"
             aria-label="Previous testimonial"
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-6 w-6" aria-hidden="true" />
           </button>
           
           <button
@@ -171,7 +171,7 @@ const TestimonialCarousel = () => {
             className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl border border-gray-700"
             aria-label="Next testimonial"
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-6 w-6" aria-hidden="true" />
           </button>
 
           {/* Dots Indicator */}
@@ -186,6 +186,7 @@ const TestimonialCarousel = () => {
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
+                aria-current={index === currentIndex ? 'true' : 'false'}
               />
             ))}
           </div>

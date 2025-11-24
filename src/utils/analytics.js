@@ -41,12 +41,14 @@ class AnalyticsTracker {
     this.setupVisibilityTracking();
     this.setupErrorTracking();
     
-    // Track page unload
-    this.beforeUnloadHandler = () => {
+    // Track page unload - Use pagehide instead of beforeunload for better cache support
+    // beforeunload prevents back/forward cache restoration
+    this.pageHideHandler = () => {
       this.trackPageExit();
       this.flushBatch(); // Flush any pending events
     };
-    window.addEventListener('beforeunload', this.beforeUnloadHandler);
+    // Use pagehide instead of beforeunload to allow bfcache
+    window.addEventListener('pagehide', this.pageHideHandler);
     
     // Defer initial page view tracking to avoid blocking critical path
     // Use requestIdleCallback or setTimeout to ensure non-blocking
@@ -65,10 +67,10 @@ class AnalyticsTracker {
   cleanup() {
     if (!this.initialized) return;
     
-    // Remove beforeunload listener
-    if (this.beforeUnloadHandler) {
-      window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-      this.beforeUnloadHandler = null;
+    // Remove pagehide listener
+    if (this.pageHideHandler) {
+      window.removeEventListener('pagehide', this.pageHideHandler);
+      this.pageHideHandler = null;
     }
     
     // Remove popstate listener
@@ -429,12 +431,16 @@ class AnalyticsTracker {
     }
     
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+      
       const response = await fetch(`${API_URL}/analytics/track`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
+        signal: controller.signal,
         body: JSON.stringify({
           type: eventType,
           data: eventData
@@ -442,42 +448,51 @@ class AnalyticsTracker {
         keepalive: immediate // Use keepalive for page exit events
       });
       
+      clearTimeout(timeoutId);
+      
       if (!response.ok) {
-        if (import.meta.env.DEV) {
-          console.error('Analytics tracking failed:', response.statusText);
-        }
+        // Silently fail - don't log errors for analytics failures
+        // Analytics should never interrupt user experience
+        return;
       }
     } catch (error) {
-      // Silently fail - don't interrupt user experience
-      if (import.meta.env.DEV) {
-        console.error('Analytics tracking error:', error);
-      }
+      // Silently fail - analytics errors should never be visible to users
+      // Network errors, timeouts, and connection failures are expected
+      // when backend is not available (e.g., in preview mode without backend)
+      // Do not log or throw - just return silently
+      return;
     }
   }
 
   // Send batch of events
   async sendBatch(events) {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+      
       const response = await fetch(`${API_URL}/analytics/track-batch`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
+        signal: controller.signal,
         body: JSON.stringify({ events }),
         keepalive: true
       });
       
+      clearTimeout(timeoutId);
+      
       if (!response.ok) {
-        if (import.meta.env.DEV) {
-          console.error('Analytics batch tracking failed:', response.statusText);
-        }
+        // Silently fail - don't log errors for analytics failures
+        return;
       }
     } catch (error) {
-      // Silently fail - don't interrupt user experience
-      if (import.meta.env.DEV) {
-        console.error('Analytics batch tracking error:', error);
-      }
+      // Silently fail - analytics errors should never be visible to users
+      // Network errors, timeouts, and connection failures are expected
+      // when backend is not available (e.g., in preview mode without backend)
+      // Do not log or throw - just return silently
+      return;
     }
   }
 

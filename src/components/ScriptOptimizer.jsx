@@ -130,23 +130,10 @@ const ScriptOptimizer = () => {
       }
     };
 
-    // Load critical scripts immediately
-    const loadCriticalScripts = () => {
-      // Load only Poppins font (consolidated from Inter + Poppins)
-      // Defer font loading to avoid blocking critical path
-      const fontStyle = document.createElement('link');
-      fontStyle.rel = 'stylesheet';
-      fontStyle.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
-      fontStyle.crossOrigin = 'anonymous';
-      fontStyle.media = 'print'; // Load as print first, then switch to all
-      fontStyle.onload = function() {
-        this.media = 'all';
-      };
-      document.head.appendChild(fontStyle);
-    };
+    // Fonts are now loaded in index.html for better performance
+    // No need to load fonts here as they're already in the HTML head
 
-    // Initialize script loading
-    loadCriticalScripts();
+    // Initialize script loading (fonts already loaded in HTML)
     
     // Load analytics scripts after user interaction
     setTimeout(() => {

@@ -3,11 +3,8 @@ import { useState, useEffect, memo, useCallback } from "react";
 import { ArrowRight, CheckCircle, Star, Zap } from "lucide-react";
 
 const HeroSection = ({ onOpenConsultation }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
+  // Remove animation delay for faster LCP - render immediately
+  const [isVisible] = useState(true);
 
   const handleConsultationClick = useCallback(() => {
     if (onOpenConsultation) {
@@ -35,7 +32,7 @@ const HeroSection = ({ onOpenConsultation }) => {
             </span>
           </h1>
           
-          <p className="text-xl text-neutral-300 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+          <p className="text-xl text-gray-200 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
             <strong className="text-orange-400 font-semibold">Ondosoft</strong> is the best freelancing site and #1 software development platform. 
             Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. 
             From startups to enterprises, we deliver scalable solutions that drive real business growth.
@@ -43,20 +40,20 @@ const HeroSection = ({ onOpenConsultation }) => {
           
           {/* Key Benefits */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto lg:mx-0">
-            <div className="flex items-center text-neutral-300">
-              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+            <div className="flex items-center text-gray-200">
+              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
               <span>Free Consultation & Strategy Session</span>
             </div>
-            <div className="flex items-center text-neutral-300">
-              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+            <div className="flex items-center text-gray-200">
+              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
               <span>13+ Years Experience</span>
             </div>
-            <div className="flex items-center text-neutral-300">
-              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+            <div className="flex items-center text-gray-200">
+              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
               <span>50+ Projects Delivered</span>
             </div>
-            <div className="flex items-center text-neutral-300">
-              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+            <div className="flex items-center text-gray-200">
+              <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
               <span>24/7 Support & Maintenance</span>
             </div>
           </div>
@@ -113,44 +110,44 @@ const HeroSection = ({ onOpenConsultation }) => {
         
         {/* Right Column - Visual Elements */}
         <div className="flex-1 max-w-lg mx-auto lg:mx-0">
-          <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="opacity-100">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 p-6 rounded-xl border border-orange-500/30 backdrop-blur-sm hover:border-orange-500/50 transition-all duration-300">
                 <div className="text-orange-400 mb-3">
                   <Zap className="h-8 w-8" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">Fast Delivery</h3>
-                <p className="text-neutral-300 text-sm leading-relaxed">
+                <p className="text-gray-200 text-sm leading-relaxed">
                   40% faster than industry average with agile development
                 </p>
               </div>
               
               <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 p-6 rounded-xl border border-orange-500/30 backdrop-blur-sm hover:border-orange-500/50 transition-all duration-300">
                 <div className="text-orange-400 mb-3">
-                  <CheckCircle className="h-8 w-8" />
+                  <CheckCircle className="h-8 w-8" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">Quality Assured</h3>
-                <p className="text-neutral-300 text-sm leading-relaxed">
+                <p className="text-gray-200 text-sm leading-relaxed">
                   Enterprise-grade security and testing standards
                 </p>
               </div>
               
               <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 p-6 rounded-xl border border-orange-500/30 backdrop-blur-sm hover:border-orange-500/50 transition-all duration-300">
                 <div className="text-orange-400 mb-3">
-                  <Star className="h-8 w-8" />
+                  <Star className="h-8 w-8" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">Expert Team</h3>
-                <p className="text-neutral-300 text-sm leading-relaxed">
+                <p className="text-gray-200 text-sm leading-relaxed">
                   Senior developers with proven track records
                 </p>
               </div>
               
               <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 p-6 rounded-xl border border-orange-500/30 backdrop-blur-sm hover:border-orange-500/50 transition-all duration-300">
                 <div className="text-orange-400 mb-3">
-                  <ArrowRight className="h-8 w-8" />
+                  <ArrowRight className="h-8 w-8" aria-hidden="true" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">Scalable Solutions</h3>
-                <p className="text-neutral-300 text-sm leading-relaxed">
+                <p className="text-gray-200 text-sm leading-relaxed">
                   Built to grow with your business needs
                 </p>
               </div>

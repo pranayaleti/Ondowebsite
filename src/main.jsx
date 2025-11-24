@@ -1,130 +1,98 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
+// CSS import - will be loaded asynchronously by Vite in production
+// Critical CSS is already inlined in index.html
 import './index.css'
 
-// Handle blocked script errors (e.g., Cloudflare Insights blocked by ad blockers)
-// Also suppress 404 errors for source maps and other non-critical resources
-// Optimized for performance - lightweight checks only
+// Defer non-critical error handling to avoid blocking initial render
 if (typeof window !== 'undefined') {
-  // Cache common strings to avoid repeated checks
-  const CLOUDFLARE_STR = 'cloudflareinsights.com';
-  const BEACON_STR = 'beacon.min.js';
-  const BLOCKED_STR = 'ERR_BLOCKED_BY_CLIENT';
-  
-  // Suppress ERR_BLOCKED_BY_CLIENT errors ONLY for analytics/beacon scripts
-  // This should NOT interfere with API calls or other legitimate requests
-  window.addEventListener('error', (event) => {
-    const filename = event.filename || '';
-    const message = event.message || '';
-    const target = event.target;
+  // Use requestIdleCallback or setTimeout to defer error handling setup
+  const setupErrorHandling = () => {
+    // Cache common strings to avoid repeated checks
+    const CLOUDFLARE_STR = 'cloudflareinsights.com';
+    const BEACON_STR = 'beacon.min.js';
+    const BLOCKED_STR = 'ERR_BLOCKED_BY_CLIENT';
     
-    // In development, log all errors first to help debug
-    if (import.meta.env.DEV) {
-      console.log('🔍 Error caught:', { filename, message, target: target?.tagName });
-    }
-    
-    // Quick checks first (most common case)
-    if (message.includes(BLOCKED_STR) || message.includes('Failed to load')) {
-      // Check for Cloudflare Insights
-      if (filename.includes(CLOUDFLARE_STR) || 
-          filename.includes(BEACON_STR) ||
-          (target?.tagName === 'SCRIPT' && target?.src?.includes(CLOUDFLARE_STR))) {
+    // Suppress ERR_BLOCKED_BY_CLIENT errors ONLY for analytics/beacon scripts
+    // This should NOT interfere with API calls or other legitimate requests
+    window.addEventListener('error', (event) => {
+      const filename = event.filename || '';
+      const message = event.message || '';
+      const target = event.target;
+      
+      // In development, log all errors first to help debug
+      if (import.meta.env.DEV) {
+        console.log('🔍 Error caught:', { filename, message, target: target?.tagName });
+      }
+      
+      // Quick checks first (most common case)
+      if (message.includes(BLOCKED_STR) || message.includes('Failed to load')) {
+        // Check for Cloudflare Insights
+        if (filename.includes(CLOUDFLARE_STR) || 
+            filename.includes(BEACON_STR) ||
+            (target?.tagName === 'SCRIPT' && target?.src?.includes(CLOUDFLARE_STR))) {
+          if (import.meta.env.DEV) {
+            console.log('✅ Suppressing Cloudflare Insights error (expected)');
+          }
+          event.preventDefault();
+          event.stopPropagation();
+          return false;
+        }
+      }
+      
+      // Suppress 404 errors for source maps (e.g., admin:1, portal:1) - these are non-critical
+      if (message.includes('404') && (filename.match(/:\d+$/) || filename.includes('.map') || 
+          (target?.tagName === 'SCRIPT' && target?.src?.includes('.map')))) {
         if (import.meta.env.DEV) {
-          console.log('✅ Suppressing Cloudflare Insights error (expected)');
+          console.log('✅ Suppressing source map 404 error (non-critical)');
         }
         event.preventDefault();
         event.stopPropagation();
         return false;
       }
-    }
-    
-    // Suppress 404 errors for source maps (e.g., admin:1, portal:1) - these are non-critical
-    if (message.includes('404') && (filename.match(/:\d+$/) || filename.includes('.map') || 
-        (target?.tagName === 'SCRIPT' && target?.src?.includes('.map')))) {
+      
+      // In development, don't suppress other errors - let them show
       if (import.meta.env.DEV) {
-        console.log('✅ Suppressing source map 404 error (non-critical)');
+        console.warn('⚠️ Unhandled error (not suppressed):', { filename, message });
       }
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
-    }
-    
-    // In development, don't suppress other errors - let them show
-    if (import.meta.env.DEV) {
-      console.warn('⚠️ Unhandled error (not suppressed):', { filename, message });
-    }
-  }, true);
+    }, true);
 
-  // Handle unhandled promise rejections ONLY from blocked analytics requests
-  window.addEventListener('unhandledrejection', (event) => {
-    const reason = event.reason;
-    const errorMessage = reason?.message || reason?.toString() || '';
-    const errorSource = reason?.source || '';
-    const errorUrl = reason?.url || '';
-    
-    // Only suppress if it's specifically a Cloudflare Insights request
-    const isCloudflareRejection = 
-      (errorMessage.includes('ERR_BLOCKED_BY_CLIENT') ||
-       errorMessage.includes('cloudflareinsights.com') ||
-       errorMessage.includes('beacon.min.js') ||
-       errorSource?.includes('cloudflareinsights.com') ||
-       errorUrl?.includes('cloudflareinsights.com')) &&
-      // Make sure it's not an API call
-      !errorUrl?.includes('/api/') &&
-      !errorMessage?.includes('/api/');
-    
-    if (isCloudflareRejection) {
-      // Prevent the error from being logged
-      event.preventDefault();
-    }
-  });
-}
-
-// Preload critical resources - deferred to avoid blocking main thread
-if (typeof window !== 'undefined') {
-  // Use requestIdleCallback or setTimeout to defer non-critical resource hints
-  const setupResources = () => {
-    // Logo is already preloaded in index.html, no need to duplicate
-    
-    // Only add DNS prefetch/preconnect if fonts are actually being used
-    // Check if fonts are loaded via stylesheet
-    const hasFontUsage = document.querySelector('link[href*="fonts.googleapis.com"]');
-    
-    if (hasFontUsage) {
-      // DNS prefetch for external resources (non-blocking)
-      const dnsPrefetch = [
-        'https://fonts.googleapis.com',
-        'https://fonts.gstatic.com'
-      ];
-      dnsPrefetch.forEach(domain => {
-        const link = document.createElement('link');
-        link.rel = 'dns-prefetch';
-        link.href = domain;
-        document.head.appendChild(link);
-      });
-
-      // Preconnect to critical domains (non-blocking) - only if fonts are used
-      const preconnect = [
-        'https://fonts.gstatic.com' // Only preconnect to the actual font CDN
-      ];
-      preconnect.forEach(domain => {
-        const link = document.createElement('link');
-        link.rel = 'preconnect';
-        link.href = domain;
-        link.crossOrigin = 'anonymous';
-        document.head.appendChild(link);
-      });
-    }
+    // Handle unhandled promise rejections ONLY from blocked analytics requests
+    window.addEventListener('unhandledrejection', (event) => {
+      const reason = event.reason;
+      const errorMessage = reason?.message || reason?.toString() || '';
+      const errorSource = reason?.source || '';
+      const errorUrl = reason?.url || '';
+      
+      // Only suppress if it's specifically a Cloudflare Insights request
+      const isCloudflareRejection = 
+        (errorMessage.includes('ERR_BLOCKED_BY_CLIENT') ||
+         errorMessage.includes('cloudflareinsights.com') ||
+         errorMessage.includes('beacon.min.js') ||
+         errorSource?.includes('cloudflareinsights.com') ||
+         errorUrl?.includes('cloudflareinsights.com')) &&
+        // Make sure it's not an API call
+        !errorUrl?.includes('/api/') &&
+        !errorMessage?.includes('/api/');
+      
+      if (isCloudflareRejection) {
+        // Prevent the error from being logged
+        event.preventDefault();
+      }
+    });
   };
 
-  // Defer resource setup to avoid blocking initial render
+  // Defer error handling setup to avoid blocking critical path
   if ('requestIdleCallback' in window) {
-    requestIdleCallback(setupResources, { timeout: 100 });
+    requestIdleCallback(setupErrorHandling, { timeout: 1000 });
   } else {
-    setTimeout(setupResources, 0);
+    setTimeout(setupErrorHandling, 100);
   }
 }
+
+// Resource hints are now handled in index.html for better performance
+// This section removed to reduce blocking JavaScript
 
 // Register service worker for PWA functionality (only in production)
 // Note: StorageType.persistent deprecation warnings may come from browser internals or third-party libraries

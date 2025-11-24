@@ -124,14 +124,26 @@ const Navbar = () => {
               onClick={handleLogoClick}
               className="flex items-center"
             >
-              <div className="h-14 w-14 mr-3 rounded-full overflow-hidden shadow-lg">
+              <div className="h-14 w-14 mr-3 rounded-full overflow-hidden shadow-lg bg-white flex items-center justify-center">
                 <img 
                   src="/logo.png"
                   alt="Ondosoft logo - Full stack software development company specializing in React, Node.js, Python, and SaaS solutions"
                   width={56}
                   height={56}
-                  className="h-14 w-14 rounded-full object-cover"
+                  className="h-full w-full rounded-full object-contain"
                   loading="eager"
+                  fetchpriority="high"
+                  onLoad={() => console.log('Logo loaded successfully')}
+                  onError={(e) => {
+                    // Fallback if logo doesn't load
+                    console.error('Logo failed to load from /logo.png');
+                    console.error('Current location:', window.location.href);
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'h-full w-full bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg';
+                    fallback.textContent = 'O';
+                    e.target.parentElement.appendChild(fallback);
+                  }}
                 />
               </div>
               <span className="text-2xl font-bold text-gray-800">
@@ -212,14 +224,20 @@ const Navbar = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center">
-                    <div className="h-12 w-12 mr-3 rounded-full overflow-hidden">
+                    <div className="h-12 w-12 mr-3 rounded-full overflow-hidden bg-white flex items-center justify-center">
                       <img 
                         src="/logo.png"
                         alt="Ondosoft logo"
                         width={48}
                         height={48}
-                        className="h-12 w-12 rounded-full object-cover"
+                        className="h-full w-full rounded-full object-contain"
                         loading="eager"
+                        fetchpriority="high"
+                        onError={(e) => {
+                          // Fallback if logo doesn't load
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerHTML = '<div class="h-full w-full bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xs">O</div>';
+                        }}
                       />
                     </div>
                     <span className="text-xl font-bold text-white">OndoSoft</span>

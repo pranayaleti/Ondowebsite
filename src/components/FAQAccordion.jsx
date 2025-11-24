@@ -38,6 +38,7 @@ const FAQAccordion = ({ faqs }) => {
             onClick={() => toggleItem(index)}
             aria-expanded={openItems.has(index)}
             aria-controls={`faq-answer-${index}`}
+            aria-label={`${openItems.has(index) ? 'Collapse' : 'Expand'} question: ${faq.question}`}
           >
             <h3 className="text-lg font-semibold text-white pr-4">
               {faq.question}
@@ -60,7 +61,7 @@ const FAQAccordion = ({ faqs }) => {
             } overflow-hidden`}
           >
             <div className="px-6 pt-4 pb-4">
-              <p className="text-gray-300 leading-relaxed">
+              <p className="text-gray-200 leading-relaxed">
                 {faq.answer}
               </p>
             </div>

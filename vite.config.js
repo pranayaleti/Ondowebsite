@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base:'/',
   plugins: [react()],
+  publicDir: 'public',
   build: {
     rollupOptions: {
       output: {
@@ -22,20 +23,28 @@ export default defineConfig({
               id.includes('/pages/ForgotPasswordPage') || id.includes('/pages/ResetPasswordPage')) {
             return 'auth';
           }
-          // Core React libraries - keep React, ReactDOM, and all React-dependent libraries together
-          // ReactDOM and React-dependent libraries (react-router-dom, react-helmet-async) 
-          // require React internals, so they must be in the same chunk to ensure React is available
+          // Core React libraries - keep React, ReactDOM, and ALL React-dependent libraries together
+          // CRITICAL: All React-related code MUST be in vendor-react to prevent createContext errors
+          // This ensures React is always available when any React-dependent library loads
           if (id.includes('node_modules/react/') || 
               id.includes('node_modules/react-dom') ||
               id.includes('node_modules/react-router-dom') ||
-              id.includes('node_modules/react-helmet-async')) {
+              id.includes('node_modules/react-helmet-async') ||
+              id.includes('node_modules/lucide-react') ||
+              id.includes('node_modules/@types/react')) {
             return 'vendor-react';
           }
-          // UI components
-          if (id.includes('node_modules/lucide-react')) {
-            return 'vendor-ui';
+          // Check for any other potential React dependencies
+          // Some packages might have 'react' in their name or path
+          if (id.includes('node_modules') && (
+              id.toLowerCase().includes('react') ||
+              id.includes('jsx') ||
+              id.includes('scheduler') // React scheduler
+            )) {
+            return 'vendor-react';
           }
-          // Other node_modules
+          // Other node_modules (non-React dependencies only)
+          // IMPORTANT: If unsure whether a library uses React, put it in vendor-react to be safe
           if (id.includes('node_modules')) {
             return 'vendor-other';
           }
@@ -56,7 +65,7 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500, // Warn if chunks exceed 500KB
     minify: 'esbuild',
     esbuild: {
       drop: ['console', 'debugger'],
@@ -116,23 +125,25 @@ export default defineConfig({
         ws: true,
         configure: (proxy, _options) => {
           proxy.on('error', (err, req, res) => {
-            // Suppress errors for analytics requests - they fail gracefully in the client
+            // Suppress ALL errors for analytics requests - they fail gracefully in the client
+            // Don't log, don't respond - just silently ignore
             if (req.url && req.url.includes('/api/analytics/track')) {
               // Silently handle analytics proxy errors - client code handles failures gracefully
-              if (res && !res.headersSent) {
-                res.status(503).end();
-              }
+              // Don't send any response, don't log - just return
               return;
             }
-            // Log errors for non-analytics requests
-            console.log('⚠️  Proxy error:', err.message);
-            console.log('💡 Make sure the backend server is running on port 5001');
-            console.log('   Run: cd backend && node index.js');
+            // Only log errors for non-analytics requests
+            if (!req.url || !req.url.includes('/api/analytics')) {
+              console.log('⚠️  Proxy error:', err.message);
+              console.log('💡 Make sure the backend server is running on port 5001');
+              console.log('   Run: cd backend && node index.js');
+            }
           });
           // Only log non-analytics requests to reduce noise
           proxy.on('proxyReq', (proxyReq, req, _res) => {
             // Skip logging analytics tracking requests (they're very frequent)
-            if (!req.url.includes('/api/analytics/track')) {
+            // Also suppress any errors for analytics requests
+            if (!req.url || (!req.url.includes('/api/analytics/track') && !req.url.includes('/api/analytics'))) {
               console.log(`🔄 Proxying ${req.method} ${req.url} to http://localhost:5001${req.url}`);
             }
           });
@@ -146,13 +157,13 @@ export default defineConfig({
             // Suppress errors for analytics requests
             if (req.url && req.url.includes('/api/analytics/track')) {
               // Silently handle analytics proxy errors
-              if (!res.headersSent) {
+              if (res && typeof res.status === 'function' && !res.headersSent) {
                 res.status(503).end();
               }
               return;
             }
             console.error('❌ Proxy request error:', err.message);
-            if (!res.headersSent) {
+            if (res && typeof res.status === 'function' && !res.headersSent) {
               res.status(503).json({ 
                 error: 'Backend server is not available',
                 message: 'Please ensure the backend server is running on port 5001',
@@ -162,16 +173,15 @@ export default defineConfig({
           });
         },
         onError: (err, req, res) => {
-          // Suppress errors for analytics requests
-          if (req.url && req.url.includes('/api/analytics/track')) {
-            // Silently handle analytics proxy errors
-            if (!res.headersSent) {
-              res.status(503).end();
-            }
+          // Suppress ALL errors for analytics requests - don't log, don't respond
+          if (req && req.url && (req.url.includes('/api/analytics/track') || req.url.includes('/api/analytics'))) {
+            // Silently ignore - client handles failures gracefully
             return;
           }
-          // For other requests, log the error
-          console.error('❌ Proxy error:', err.message);
+          // For other requests, log the error only if it's not a connection refused for analytics
+          if (err && err.message && !err.message.includes('ECONNREFUSED') && !err.message.includes('analytics')) {
+            console.error('❌ Proxy error:', err.message);
+          }
         }
       }
     }

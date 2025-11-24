@@ -55,7 +55,7 @@ const BlogPostPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Post Not Found</h1>
-          <p className="text-gray-300 mb-8">The article you're looking for doesn't exist.</p>
+          <p className="text-gray-200 mb-8">The article you're looking for doesn't exist.</p>
           <Link 
             to="/blogs"
             className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
@@ -84,7 +84,7 @@ const BlogPostPage = () => {
     const flushList = () => {
       if (currentList.length > 0) {
         elements.push(
-          <ul key={`list-${listKey++}`} className="space-y-3 mb-6 ml-6 list-disc list-outside text-gray-300">
+          <ul key={`list-${listKey++}`} className="space-y-3 mb-6 ml-6 list-disc list-outside text-gray-200">
             {currentList.map((item, idx) => (
               <li key={idx} className="leading-relaxed pl-2">{item}</li>
             ))}
@@ -97,13 +97,13 @@ const BlogPostPage = () => {
     lines.forEach((line, index) => {
       const trimmed = line.trim();
       
-      // Handle headings
+      // Handle headings - use h2 for main content headings (h1 is reserved for page title)
       if (trimmed.startsWith('# ')) {
         flushList();
         const text = trimmed.substring(2);
         const highlightedText = sanitizeHtml(text.replace(/\*\*(.*?)\*\*/g, '<span class="text-orange-400 font-semibold">$1</span>'));
         elements.push(
-          <h1 key={index} className="text-3xl font-bold text-white mt-12 mb-6 pt-8 border-t border-gray-700/50 first:mt-0 first:pt-0 first:border-t-0" dangerouslySetInnerHTML={{ __html: highlightedText }} />
+          <h2 key={index} className="text-3xl font-bold text-white mt-12 mb-6 pt-8 border-t border-gray-700/50 first:mt-0 first:pt-0 first:border-t-0" dangerouslySetInnerHTML={{ __html: highlightedText }} />
         );
       } else if (trimmed.startsWith('## ')) {
         flushList();
@@ -200,7 +200,7 @@ const BlogPostPage = () => {
           </h1>
 
           {/* Meta */}
-          <div className="flex flex-wrap items-center gap-6 text-gray-300 mb-8">
+          <div className="flex flex-wrap items-center gap-6 text-gray-200 mb-8">
             <div className="flex items-center">
               <User className="h-4 w-4 mr-2 text-gray-400" />
               {post.author}
@@ -217,7 +217,7 @@ const BlogPostPage = () => {
 
           {/* Excerpt/Subtitle */}
           {post.excerpt && (
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-200 mb-8 leading-relaxed">
               {post.excerpt}
             </p>
           )}

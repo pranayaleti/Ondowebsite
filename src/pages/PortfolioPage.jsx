@@ -1,4 +1,4 @@
-import { useState, useRef, lazy, Suspense } from 'react';
+import { useState, useRef, lazy, Suspense, useEffect } from 'react';
 import SEOHead from '../components/SEOHead';
 import ConsultationWidget from '../components/ConsultationWidget';
 import { getCanonicalUrl } from '../constants/companyInfo';
@@ -13,10 +13,49 @@ import { checklistItems } from '../constants/data';
 const PortfolioPage = () => {
   const [selectedProject, setSelectedProject] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [isVideoInView, setIsVideoInView] = useState(false);
   const videoRef = useRef(null);
+  const videoContainerRef = useRef(null);
+
+  // Lazy load video when it comes into viewport
+  useEffect(() => {
+    if (!videoContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVideoInView(true);
+          // Delay video loading slightly to prioritize other content
+          setTimeout(() => {
+            setShouldLoadVideo(true);
+          }, 500);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: '100px', // Start loading when 100px away from viewport
+        threshold: 0.1
+      }
+    );
+
+    observer.observe(videoContainerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Auto-play video when it's loaded and in view
+  useEffect(() => {
+    if (shouldLoadVideo && videoRef.current && isVideoInView) {
+      videoRef.current.play().catch(() => {
+        // Auto-play failed (user preference), that's okay
+      });
+    }
+  }, [shouldLoadVideo, isVideoInView]);
 
   const toggleFullScreen = () => {
     const videoElement = videoRef.current;
+    if (!videoElement) return;
 
     if (!document.fullscreenElement) {
       // Enter fullscreen
@@ -211,18 +250,44 @@ const PortfolioPage = () => {
             </div>
 
             <div className="flex flex-col lg:flex-row justify-center items-center gap-12">
-              <div className="p-2 w-full lg:w-1/2">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  loop
-                  muted
-                  onClick={toggleFullScreen}
-                  className="rounded-lg w-full border border-orange-700 shadow-sm shadow-orange-400 mx-auto cursor-pointer"
-                >
-                  <source src={PMT} type="video/webm" />
-                  Your browser does not support the video tag.
-                </video>
+              <div ref={videoContainerRef} className="p-2 w-full lg:w-1/2">
+                {shouldLoadVideo ? (
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    onClick={toggleFullScreen}
+                    className="rounded-lg w-full border border-orange-700 shadow-sm shadow-orange-400 mx-auto cursor-pointer"
+                    onLoadedData={() => {
+                      // Video loaded, can now play
+                      if (videoRef.current && isVideoInView) {
+                        videoRef.current.play().catch(() => {});
+                      }
+                    }}
+                  >
+                    <source src={PMT} type="video/webm" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <div 
+                    className="rounded-lg w-full border border-orange-700 shadow-sm shadow-orange-400 mx-auto cursor-pointer bg-gradient-to-br from-orange-500/10 to-orange-600/10 flex items-center justify-center"
+                    style={{ aspectRatio: '16/9', minHeight: '300px' }}
+                    onClick={() => setShouldLoadVideo(true)}
+                  >
+                    <div className="text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-500/20 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                        </svg>
+                      </div>
+                      <p className="text-white font-semibold mb-2">Click to play video</p>
+                      <p className="text-neutral-400 text-sm">See our work in action</p>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="pt-12 w-full lg:w-1/2">
                 {checklistItems.map((item, index) => (

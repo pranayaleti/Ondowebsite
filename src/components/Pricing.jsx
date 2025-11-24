@@ -206,8 +206,10 @@ const Pricing = ({ onConsult }) => {
       }).catch(() => {}); // Silently fail on page exit
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    // Use pagehide instead of beforeunload to allow back/forward cache
+    // beforeunload prevents bfcache restoration
+    window.addEventListener('pagehide', handleBeforeUnload);
+    return () => window.removeEventListener('pagehide', handleBeforeUnload);
   }, []);
 
   // Track feature hover/interaction (optional - for more detailed tracking)

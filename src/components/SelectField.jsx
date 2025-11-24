@@ -58,6 +58,8 @@ const SelectField = ({ id, name, value, onChange, options, placeholder = 'Select
         }`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
+        aria-label={placeholder ? `${placeholder} dropdown` : 'Select option'}
+        aria-labelledby={id ? `${id}-label` : undefined}
       >
         <span className={value ? (isLight ? 'text-gray-900' : 'text-white') : (isLight ? 'text-gray-400' : 'text-gray-400')}>{label}</span>
         <svg className={`h-5 w-5 ${isLight ? 'text-gray-400' : 'text-gray-400'}`} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

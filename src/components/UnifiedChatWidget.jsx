@@ -131,16 +131,18 @@ const UnifiedChatWidget = () => {
               <button
                 onClick={handleScheduleMeeting}
                 className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm"
+                aria-label="Schedule a meeting with Ondosoft"
               >
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-4 h-4" aria-hidden="true" />
                 Schedule a meeting
               </button>
 
               <button
                 onClick={handleStartChat}
                 className="w-full bg-orange-500/90 hover:bg-orange-500 text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 text-sm"
+                aria-label="Start chat with AI Agent"
               >
-                <span>✨</span>
+                <span aria-hidden="true">✨</span>
                 Chat with AI Agent
               </button>
 

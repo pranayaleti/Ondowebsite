@@ -1,13 +1,13 @@
 import { useState, useMemo, memo, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
-import HeroCTA from "../components/HeroCTA";
-import TrustBadges from "../components/TrustBadges";
 import HiddenSEOSection from "../components/HiddenSEOSection";
 
-// Lazy load heavy components
+// Lazy load heavy components - defer non-critical sections for faster LCP
 const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
 const Footer = lazy(() => import("../components/Footer"));
+const HeroCTA = lazy(() => import("../components/HeroCTA"));
+const TrustBadges = lazy(() => import("../components/TrustBadges"));
 import { companyInfo, getPostalAddressSchema, getContactPointSchema, getCanonicalUrl } from "../constants/companyInfo";
 import { getAreaServedSchema } from "../utils/unifiedData.js";
 import { 
@@ -108,7 +108,7 @@ const HomePage = () => {
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Why Choose <span className="text-orange-500">Ondosoft</span>?
               </h2>
-              <p className="text-xl text-neutral-300 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
                 <strong>Ondosoft</strong> is the best freelancing site and #1 software development platform. 
                 We're not just another software development company. We're your strategic technology partner, 
                 delivering innovative solutions that drive real business results. Find freelancing near me with Ondosoft.
@@ -166,7 +166,7 @@ const HomePage = () => {
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Our <span className="text-orange-500">Development Services</span>
               </h2>
-              <p className="text-xl text-neutral-300 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
                 From small business websites to enterprise SaaS platforms, we build software that scales with your business
               </p>
             </div>
@@ -179,26 +179,31 @@ const HomePage = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-white">Custom Web Applications</h3>
                 </div>
-                <p className="text-neutral-300 mb-6 leading-relaxed">
+                <p className="text-gray-200 mb-6 leading-relaxed">
                   Build powerful web applications with React, Node.js, and modern frameworks. 
                   Perfect for businesses looking to digitize their operations.
                 </p>
                 <ul className="space-y-2 mb-6">
-                  <li className="flex items-center text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+                  <li className="flex items-center text-gray-200">
+                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
                     React & Next.js Development
                   </li>
-                  <li className="flex items-center text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+                  <li className="flex items-center text-gray-200">
+                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
                     Node.js & Express Backend
                   </li>
-                  <li className="flex items-center text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+                  <li className="flex items-center text-gray-200">
+                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
                     Database Design & Integration
                   </li>
                 </ul>
-                <button type="button" onClick={() => setIsModalOpen(true)} className="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform">
-                  Start Free Consultation <ArrowRight className="h-4 w-4 ml-2" />
+                <button 
+                  type="button" 
+                  onClick={() => setIsModalOpen(true)} 
+                  className="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform"
+                  aria-label="Start free consultation for custom web applications"
+                >
+                  Start Free Consultation <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
                 </button>
               </div>
               
@@ -209,21 +214,21 @@ const HomePage = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-white">SaaS Platform Development</h3>
                 </div>
-                <p className="text-neutral-300 mb-6 leading-relaxed">
+                <p className="text-gray-200 mb-6 leading-relaxed">
                   Launch your software-as-a-service platform with our end-to-end SaaS development expertise. 
                   From MVP to enterprise scale.
                 </p>
                 <ul className="space-y-2 mb-6">
-                  <li className="flex items-center text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+                  <li className="flex items-center text-gray-200">
+                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
                     Multi-tenant Architecture
                   </li>
-                  <li className="flex items-center text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+                  <li className="flex items-center text-gray-200">
+                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
                     Subscription Management
                   </li>
-                  <li className="flex items-center text-neutral-300">
-                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" />
+                  <li className="flex items-center text-gray-200">
+                    <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
                     API Development & Integration
                   </li>
                 </ul>
@@ -298,11 +303,15 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Hero CTA Section */}
-        <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
+        {/* Hero CTA Section - Lazy loaded for better initial performance */}
+        <Suspense fallback={<div className="h-32" />}>
+          <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
+        </Suspense>
 
-        {/* Trust Badges & Success Story */}
-        <TrustBadges />
+        {/* Trust Badges & Success Story - Lazy loaded for better initial performance */}
+        <Suspense fallback={<div className="h-32" />}>
+          <TrustBadges />
+        </Suspense>
 
         <Suspense fallback={<div className="h-32" />}>
           <Footer />

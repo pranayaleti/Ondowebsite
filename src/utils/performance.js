@@ -6,7 +6,7 @@ export const preloadCriticalResources = () => {
   // Preload hero image
   const heroImage = new Image();
   heroImage.src = '/logo.png';
-  heroImage.fetchPriority = 'high';
+  heroImage.fetchpriority = 'high';
   
   // Load critical fonts with font-display: swap
   const fontLink = document.createElement('link');

@@ -1,0 +1,3 @@
+# Exclude large backup files from being served
+logo.backup.png
+
