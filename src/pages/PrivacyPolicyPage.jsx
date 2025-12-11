@@ -6,11 +6,41 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import ContactInfo from '../components/ContactInfo';
-import { getCanonicalUrl } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const PrivacyPolicyPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/privacy-policy');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#privacy`,
+        "name": "Privacy Policy",
+        "url": canonical,
+        "description": "Ondosoft Privacy Policy covering data collection, use, and protection practices."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Privacy Policy",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -18,7 +48,8 @@ const PrivacyPolicyPage = () => {
         title="Privacy Policy | Ondosoft Software Development"
         description="Ondosoft's Privacy Policy - Learn how we collect, use, and protect your personal information. We are committed to maintaining your privacy and data security."
         keywords="privacy policy, data protection, GDPR, CCPA, personal information, data security, Ondosoft privacy"
-        canonicalUrl={getCanonicalUrl('/privacy-policy')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

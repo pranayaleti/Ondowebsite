@@ -11,6 +11,36 @@ import ContactInfo from '../components/ContactInfo';
 
 const LegalPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/legal');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#legal`,
+        "name": "Legal Information",
+        "url": canonical,
+        "description": "Legal documents and compliance information for Ondosoft."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Legal",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -18,7 +48,8 @@ const LegalPage = () => {
         title="Legal Information | Ondosoft Software Development"
         description="Ondosoft's Legal Information - Access our legal documents including privacy policy, terms of use, licensing, NDA information, and accessibility statement."
         keywords="legal information, legal documents, compliance, Ondosoft legal, business legal"
-        canonicalUrl={getCanonicalUrl('/legal')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

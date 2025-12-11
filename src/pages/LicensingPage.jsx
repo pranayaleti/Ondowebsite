@@ -9,6 +9,36 @@ import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const LicensingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/licensing');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#licensing`,
+        "name": "Licensing & Intellectual Property",
+        "url": canonical,
+        "description": "Ondosoft licensing, intellectual property, and open-source usage practices."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Licensing",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -16,7 +46,8 @@ const LicensingPage = () => {
         title="Licensing & Intellectual Property | Ondosoft Software Development"
         description="Ondosoft's Licensing Information - Learn about software licensing, intellectual property rights, open source usage, and licensing terms for our services and deliverables."
         keywords="licensing, intellectual property, software license, IP rights, open source, proprietary software, Ondosoft licensing"
-        canonicalUrl={getCanonicalUrl('/licensing')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

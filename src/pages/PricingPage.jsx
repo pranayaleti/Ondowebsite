@@ -13,25 +13,49 @@ const PricingPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [preset, setPreset] = useState(null);
   
+  const canonical = getCanonicalUrl('/pricing');
+
   // Generate structured data from pricing plans
   const pricingStructuredData = {
     "@context": "https://schema.org",
-    "@type": "Service",
-    "name": "Software Development Pricing",
-    "description": "Transparent pricing for software development, SaaS solutions, and freelancing services. Choose from small business websites to enterprise SaaS platforms.",
-    "provider": {
-      "@type": "Organization",
-      "name": companyInfo.name
-    },
-    "offers": pricingPlans
-      .filter(plan => plan.price !== null) // Only include plans with prices
-      .map(plan => ({
-        "@type": "Offer",
-        "name": plan.title,
-        "price": plan.price.toString(),
-        "priceCurrency": plan.currency,
-        "description": plan.description
-      }))
+    "@graph": [
+      {
+        "@type": "Service",
+        "@id": `${canonical}#pricing`,
+        "name": "Software Development Pricing",
+        "description": "Transparent pricing for software development, SaaS solutions, and freelancing services. Choose from small business websites to enterprise SaaS platforms.",
+        "provider": {
+          "@type": "Organization",
+          "name": companyInfo.name
+        },
+        "offers": pricingPlans
+          .filter(plan => plan.price !== null) // Only include plans with prices
+          .map(plan => ({
+            "@type": "Offer",
+            "name": plan.title,
+            "price": plan.price.toString(),
+            "priceCurrency": plan.currency,
+            "description": plan.description
+          }))
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Pricing",
+            "item": canonical
+          }
+        ]
+      }
+    ]
   };
 
   return (
@@ -40,7 +64,7 @@ const PricingPage = () => {
         title="Software Development Pricing | Ondosoft Freelancing & SaaS Solutions"
         description="Transparent pricing for software development services. Get quotes for React, Node.js, Python web apps, SaaS platforms, and freelancing solutions. Serving businesses across the USA. Starting from $1,200 for starter websites."
         keywords="software development pricing, hire developers cost, SaaS development pricing, freelancing rates, React development cost, Node.js pricing, web app development cost"
-        canonicalUrl={getCanonicalUrl('/pricing')}
+        canonicalUrl={canonical}
         structuredData={pricingStructuredData}
       />
       <div>

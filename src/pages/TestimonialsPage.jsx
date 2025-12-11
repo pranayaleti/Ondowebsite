@@ -1,7 +1,7 @@
 import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import ConsultationWidget from "../components/ConsultationWidget";
-import { getCanonicalUrl } from "../constants/companyInfo";
+import { getCanonicalUrl, companyInfo } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const Testimonials = lazy(() => import("../components/Testimonials"));
@@ -11,35 +11,58 @@ const Footer = lazy(() => import("../components/Footer"));
 const TestimonialsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
+  const canonical = getCanonicalUrl('/testimonials');
   const testimonialsStructuredData = {
     "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "Ondosoft Client Testimonials",
-    "description": "Real client reviews and testimonials for Ondosoft's software development, SaaS, and freelancing services",
-    "itemListElement": [
+    "@graph": [
       {
-        "@type": "Review",
-        "reviewBody": "OndoSoft built us a beautiful website that actually brings in customers! Our online orders increased by 300% in the first month. The best investment we've made for our business.",
-        "author": {
-          "@type": "Person",
-          "name": "Sarah Martinez"
-        },
-        "reviewRating": {
-          "@type": "Rating",
-          "ratingValue": "5"
-        }
+        "@type": "ItemList",
+        "@id": `${canonical}#testimonials`,
+        "name": "Ondosoft Client Testimonials",
+        "description": "Real client reviews and testimonials for Ondosoft's software development, SaaS, and freelancing services",
+        "itemListElement": [
+          {
+            "@type": "Review",
+            "reviewBody": "OndoSoft built us a beautiful website that actually brings in customers! Our online orders increased by 300% in the first month. The best investment we've made for our business.",
+            "author": {
+              "@type": "Person",
+              "name": "Sarah Martinez"
+            },
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5"
+            }
+          },
+          {
+            "@type": "Review",
+            "reviewBody": "We needed a custom web app for our startup and OndoSoft delivered exactly what we needed. Professional, fast, and affordable. They understood our vision and brought it to life perfectly.",
+            "author": {
+              "@type": "Person",
+              "name": "Mike Chen"
+            },
+            "reviewRating": {
+              "@type": "Rating",
+              "ratingValue": "5"
+            }
+          }
+        ]
       },
       {
-        "@type": "Review",
-        "reviewBody": "We needed a custom web app for our startup and OndoSoft delivered exactly what we needed. Professional, fast, and affordable. They understood our vision and brought it to life perfectly.",
-        "author": {
-          "@type": "Person",
-          "name": "Mike Chen"
-        },
-        "reviewRating": {
-          "@type": "Rating",
-          "ratingValue": "5"
-        }
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Testimonials",
+            "item": canonical
+          }
+        ]
       }
     ]
   };
@@ -50,7 +73,7 @@ const TestimonialsPage = () => {
         title="Client Testimonials | Ondosoft Software Development Reviews"
         description="Read real client testimonials and reviews for Ondosoft's software development, SaaS solutions, and freelancing services. See why businesses choose us for React, Node.js, and Python projects. 5-star rated development company."
         keywords="ondosoft reviews, software development testimonials, SaaS development reviews, freelancing testimonials, client feedback, developer reviews"
-        canonicalUrl={getCanonicalUrl('/testimonials')}
+        canonicalUrl={canonical}
         structuredData={testimonialsStructuredData}
       />
       <div>

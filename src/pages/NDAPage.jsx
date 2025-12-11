@@ -9,6 +9,36 @@ import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const NDAPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/nda');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#nda`,
+        "name": "NDA & Confidentiality",
+        "url": canonical,
+        "description": "Ondosoft NDA and confidentiality practices."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "NDA",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -16,7 +46,8 @@ const NDAPage = () => {
         title="NDA & Confidentiality | Ondosoft Software Development"
         description="Ondosoft's Non-Disclosure Agreement and confidentiality practices. Learn how we protect your sensitive information and maintain trust with our clients."
         keywords="NDA, non-disclosure agreement, confidentiality, data protection, trust, secure development, Ondosoft NDA"
-        canonicalUrl={getCanonicalUrl('/nda')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

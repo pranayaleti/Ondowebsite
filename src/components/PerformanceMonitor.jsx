@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 const PerformanceMonitor = () => {
+  // #region agent log
   useEffect(() => {
     // Store observers for cleanup
     let lcpObserver = null;

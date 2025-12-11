@@ -4,7 +4,7 @@ import { SERVICE_AREAS } from "../utils/unifiedData.js";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
 
-const Footer = () => {
+const Footer = ({ hideFeedbackCta = false }) => {
   // Get service areas data from consolidated utility
   const { states, topCities } = SERVICE_AREAS;
   
@@ -129,6 +129,19 @@ const Footer = () => {
                 <a href={`tel:${companyInfo.phoneE164}`} className="hover:underline">{companyInfo.phoneDisplay}</a>
               </li>
             </ul>
+            {!hideFeedbackCta && (
+              <div className="mt-4 p-4 rounded-lg border border-orange-500/30 bg-neutral-800/60">
+                <p className="text-orange-400 font-semibold text-sm">Got ideas? We're listening!</p>
+                <p className="text-gray-200 text-xs mt-1 mb-2">Share feedback to help us build better experiences.</p>
+                <Link
+                  to="/contact"
+                  className="inline-block text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 px-3 py-2 rounded-md hover:from-orange-600 hover:to-orange-700 transition-colors"
+                >
+                  Share feedback
+                </Link>
+              </div>
+            )}
+
           </div>
         </div>
 

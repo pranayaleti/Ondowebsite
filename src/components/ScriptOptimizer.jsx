@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 const ScriptOptimizer = () => {
+  // #region agent log
   useEffect(() => {
     // Load analytics with lazyOnload strategy (only if configured)
     const loadAnalytics = () => {

@@ -10,6 +10,36 @@ import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const TermsOfUsePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/terms-of-use');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#terms`,
+        "name": "Terms of Use",
+        "url": canonical,
+        "description": "Ondosoft Terms of Use for website and services."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Terms of Use",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -17,7 +47,8 @@ const TermsOfUsePage = () => {
         title="Terms of Use | Ondosoft Software Development"
         description="Ondosoft's Terms of Use - Read our terms and conditions for using our website and services. Understand your rights and obligations when working with Ondosoft."
         keywords="terms of use, terms and conditions, user agreement, service terms, Ondosoft terms"
-        canonicalUrl={getCanonicalUrl('/terms-of-use')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

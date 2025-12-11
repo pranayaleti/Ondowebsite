@@ -10,28 +10,52 @@ const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
 const AboutPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   
+  const canonical = getCanonicalUrl('/about');
   const aboutStructuredData = {
     "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "name": "About Ondosoft",
-    "description": "Learn about Ondosoft's mission, team, and expertise in software development, SaaS solutions, and freelancing services. Serving businesses across the USA with React, Node.js, Python, and cloud technologies.",
-    "mainEntity": {
-      "@type": "Organization",
-      "name": "Ondosoft",
-      "description": "Full stack software development, freelancing, and SaaS solutions company",
-      "foundingDate": companyInfo.foundingDate,
-      "numberOfEmployees": "10-50",
-      "industry": "Software Development",
-      "knowsAbout": [
-        "React Development",
-        "Node.js Development", 
-        "Python Development",
-        "SaaS Development",
-        "Mobile App Development",
-        "Cloud Deployment",
-        "Freelancing Services"
-      ]
-    }
+    "@graph": [
+      {
+        "@type": "AboutPage",
+        "@id": `${canonical}#about-page`,
+        "name": "About Ondosoft",
+        "url": canonical,
+        "description": "Learn about Ondosoft's mission, team, and expertise in software development, SaaS solutions, and freelancing services. Serving businesses across the USA with React, Node.js, Python, and cloud technologies.",
+        "mainEntity": {
+          "@type": "Organization",
+          "name": "Ondosoft",
+          "description": "Full stack software development, freelancing, and SaaS solutions company",
+          "foundingDate": companyInfo.foundingDate,
+          "numberOfEmployees": "10-50",
+          "industry": "Software Development",
+          "knowsAbout": [
+            "React Development",
+            "Node.js Development", 
+            "Python Development",
+            "SaaS Development",
+            "Mobile App Development",
+            "Cloud Deployment",
+            "Freelancing Services"
+          ]
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "About",
+            "item": canonical
+          }
+        ]
+      }
+    ]
   };
 
   return (

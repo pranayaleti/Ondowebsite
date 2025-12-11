@@ -10,6 +10,36 @@ import { formatDateUserTimezone } from '../utils/dateFormat.js';
 
 const AccessibilityPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/accessibility');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#accessibility`,
+        "name": "Accessibility Statement",
+        "url": canonical,
+        "description": "Ondosoft Accessibility Statement and commitment to WCAG compliance."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Accessibility",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -17,7 +47,8 @@ const AccessibilityPage = () => {
         title="Accessibility Statement | Ondosoft Software Development"
         description="Ondosoft's Accessibility Statement - Our commitment to web accessibility, WCAG compliance, and inclusive design. Learn about our accessibility features and how to report issues."
         keywords="accessibility, WCAG, ADA compliance, inclusive design, web accessibility, accessible website, Ondosoft accessibility"
-        canonicalUrl={getCanonicalUrl('/accessibility')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

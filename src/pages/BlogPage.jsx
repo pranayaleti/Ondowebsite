@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ConsultationWidget from '../components/ConsultationWidget';
-import { getCanonicalUrl } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -62,6 +62,46 @@ const BlogPage = () => {
     });
   }, [filteredPosts, sortBy]);
 
+  const structuredData = useMemo(() => {
+    if (!blogData) return null;
+    const canonical = getCanonicalUrl('/blogs');
+    const publisherLogo = `${companyInfo.urls.website}/logo.png`;
+    const items = blogData.blogPosts.slice(0, 50).map((post, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "url": getCanonicalUrl(`/blogs/${post.slug}`),
+      "name": post.title
+    }));
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Blog",
+          "@id": `${canonical}#blog`,
+          "name": "Ondosoft Blog",
+          "url": canonical,
+          "description": "Business technology, SaaS, automation, and software development insights from Ondosoft.",
+          "publisher": {
+            "@type": "Organization",
+            "name": companyInfo.name,
+            "logo": {
+              "@type": "ImageObject",
+              "url": publisherLogo
+            }
+          }
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${canonical}#list`,
+          "name": "Ondosoft Blog Posts",
+          "itemListOrder": "Descending",
+          "itemListElement": items
+        }
+      ]
+    };
+  }, [blogData]);
+
   // Show loading state while blogData is loading
   if (!blogData) {
     return (
@@ -71,6 +111,7 @@ const BlogPage = () => {
           description="Get expert insights on small business technology, automation, SaaS solutions, and web development. Learn how to grow your business with smart software."
           keywords="small business technology, business automation, SaaS solutions, web development, business software, technology tips"
           canonicalUrl={getCanonicalUrl('/blogs')}
+          structuredData={structuredData}
         />
         <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
@@ -86,6 +127,7 @@ const BlogPage = () => {
         description="Get expert insights on small business technology, automation, SaaS solutions, and web development. Learn how to grow your business with smart software."
         keywords="small business technology, business automation, SaaS solutions, web development, business software, technology tips"
         canonicalUrl={getCanonicalUrl('/blogs')}
+        structuredData={structuredData}
       />
       
       <div>

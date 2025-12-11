@@ -7,10 +7,40 @@ const Footer = lazy(() => import('../components/Footer'));
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 import { Link } from 'react-router-dom';
 import { SERVICE_AREAS } from '../utils/unifiedData.js';
-import { getCanonicalUrl } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 const SitemapPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/sitemap');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#sitemap`,
+        "name": "Site Map",
+        "url": canonical,
+        "description": "Complete site map of Ondosoft website pages and resources."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Site Map",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -18,7 +48,8 @@ const SitemapPage = () => {
         title="Site Map | Ondosoft Software Development"
         description="Complete site map of Ondosoft website. Find all pages, services, and resources in one place. Navigate our website easily with our comprehensive site map."
         keywords="sitemap, site map, navigation, website structure, Ondosoft pages, all pages"
-        canonicalUrl={getCanonicalUrl('/sitemap')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>

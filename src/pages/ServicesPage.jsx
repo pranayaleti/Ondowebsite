@@ -12,6 +12,7 @@ const Footer = lazy(() => import("../components/Footer"));
 
 const ServicesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = `${companyInfo.urls.website}/services`;
   
   const servicesStructuredData = {
     "@context": "https://schema.org",
@@ -67,6 +68,23 @@ const ServicesPage = () => {
             }
           ]
         }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": canonical
+          }
+        ]
       }
     ]
   };
@@ -77,7 +95,7 @@ const ServicesPage = () => {
         title="Software Development Services | Full Stack, SaaS & Freelancing | Ondosoft"
         description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies. Start your free consultation today!"
         keywords="software development services, full stack development, SaaS development, freelancing services, web app development, mobile app development, React, Node.js, Python, Java, cloud deployment, hire developers"
-        canonicalUrl={`${companyInfo.urls.website}/services`}
+        canonicalUrl={canonical}
         structuredData={servicesStructuredData}
       />
       <ServiceSchema

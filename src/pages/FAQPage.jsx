@@ -7,11 +7,35 @@ import ConsultationWidget from '../components/ConsultationWidget';
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
 const Footer = lazy(() => import('../components/Footer'));
 import { faqData, generateFAQStructuredData } from '../constants/faqData';
-import { companyInfo } from "../constants/companyInfo";
+import { companyInfo, getCanonicalUrl } from "../constants/companyInfo";
 
 const FAQPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const faqStructuredData = generateFAQStructuredData(faqData);
+  const canonical = getCanonicalUrl('/faq');
+  const faqStructuredDataWithBreadcrumb = {
+    "@context": "https://schema.org",
+    "@graph": [
+      faqStructuredData,
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "FAQ",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   return (
     <>
@@ -19,7 +43,8 @@ const FAQPage = () => {
         title="Frequently Asked Questions | Ondosoft Software Development"
         description="Get answers to common questions about Ondosoft's software development, freelancing, and SaaS services. Learn how to hire developers, build your SaaS app, and scale your business. Expert answers from our development team."
         keywords="FAQ, software development questions, hire developers, SaaS development, freelancing, Ondosoft services, development timeline, technology stack"
-        structuredData={faqStructuredData}
+        canonicalUrl={canonical}
+        structuredData={faqStructuredDataWithBreadcrumb}
       />
       
       <div>

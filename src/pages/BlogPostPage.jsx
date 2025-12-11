@@ -1,10 +1,10 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ShareButtons from '../components/ShareButtons';
 import ConsultationWidget from '../components/ConsultationWidget';
-import { getCanonicalUrl } from '../constants/companyInfo';
+import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import { formatDateUserTimezone } from '../utils/dateFormat.js';
 import { sanitizeHtml } from '../utils/security.js';
 
@@ -19,6 +19,7 @@ const BlogPostPage = () => {
   const [blogData, setBlogData] = useState(null);
   const [post, setPost] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
+  const [categoryName, setCategoryName] = useState(null);
 
   // Scroll to top when navigating to a blog post
   useEffect(() => {
@@ -37,9 +38,76 @@ const BlogPostPage = () => {
       setPost(foundPost);
       if (foundPost) {
         setRelatedPosts(module.getRelatedPosts(foundPost, 3));
+        const foundCategory = module.blogCategories.find(cat => cat.id === foundPost.category);
+        setCategoryName(foundCategory?.name || null);
+      } else {
+        setRelatedPosts([]);
+        setCategoryName(null);
       }
     });
   }, [slug]);
+
+  const structuredData = useMemo(() => {
+    if (!post) return null;
+    const canonical = getCanonicalUrl(`/blogs/${post.slug}`);
+    const publisherLogo = `${companyInfo.urls.website}/logo.png`;
+    const breadcrumbList = {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": companyInfo.urls.website
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blogs",
+          "item": getCanonicalUrl('/blogs')
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": post.title,
+          "item": canonical
+        }
+      ]
+    };
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": post.metaDescription || post.excerpt,
+      "image": post.socialImage || post.image,
+      "mainEntityOfPage": canonical,
+      "url": canonical,
+      "keywords": post.tags,
+      "inLanguage": "en-US",
+      "articleSection": categoryName || undefined,
+      "datePublished": post.publishDate,
+      "dateModified": post.updatedAt || post.publishDate,
+      "author": {
+        "@type": "Person",
+        "name": post.author
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": companyInfo.name,
+        "logo": {
+          "@type": "ImageObject",
+          "url": publisherLogo
+        }
+      },
+      "isPartOf": {
+        "@type": "Blog",
+        "name": "Ondosoft Blog",
+        "url": getCanonicalUrl('/blogs')
+      },
+      "breadcrumb": breadcrumbList
+    };
+  }, [post, categoryName]);
 
   // Show loading state while blogData is loading
   if (!blogData) {
@@ -169,6 +237,7 @@ const BlogPostPage = () => {
         keywords={post.tags.join(', ')}
         canonicalUrl={getCanonicalUrl(`/blogs/${post.slug}`)}
         ogImage={post.socialImage}
+        structuredData={structuredData}
       />
       
       <div>

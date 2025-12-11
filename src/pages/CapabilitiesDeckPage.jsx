@@ -11,6 +11,36 @@ import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award,
 
 const CapabilitiesDeckPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const canonical = getCanonicalUrl('/capabilities-deck');
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#capabilities`,
+        "name": "Capabilities Deck",
+        "url": canonical,
+        "description": "Ondosoft capabilities deck covering services, expertise, and team."
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": companyInfo.urls.website
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Capabilities Deck",
+            "item": canonical
+          }
+        ]
+      }
+    ]
+  };
 
   const handleDownload = () => {
     window.print();
@@ -22,7 +52,8 @@ const CapabilitiesDeckPage = () => {
         title="Capabilities Deck | Ondosoft Software Development"
         description="Download Ondosoft's comprehensive capabilities deck. Learn about our software development services, technology expertise, team capabilities, and how we can help transform your business."
         keywords="capabilities deck, company capabilities, software development services, technology expertise, Ondosoft capabilities"
-        canonicalUrl={getCanonicalUrl('/capabilities-deck')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div className="print:bg-white">

@@ -1,7 +1,7 @@
-import { useState, useRef, lazy, Suspense, useEffect } from 'react';
+import { useState, useRef, lazy, Suspense, useEffect, useMemo } from 'react';
 import SEOHead from '../components/SEOHead';
 import ConsultationWidget from '../components/ConsultationWidget';
-import { getCanonicalUrl } from '../constants/companyInfo';
+import { getCanonicalUrl, companyInfo } from '../constants/companyInfo';
 
 // Lazy load heavy components
 const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
@@ -212,13 +212,62 @@ const PortfolioPage = () => {
     setSelectedProject((prev) => (prev - 1 + portfolioProjects.length) % portfolioProjects.length);
   };
 
+  const canonical = getCanonicalUrl('/portfolio');
+  const structuredData = useMemo(() => {
+    const itemListElement = portfolioProjects.map((project, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": project.title,
+      "description": project.challenge,
+      "url": `${canonical}#project-${project.id}`
+    }));
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          "@id": `${canonical}#collection`,
+          "name": "Ondosoft Portfolio",
+          "url": canonical,
+          "description": "Software development portfolio showcasing SaaS, web, mobile, and analytics projects delivered by Ondosoft."
+        },
+        {
+          "@type": "ItemList",
+          "@id": `${canonical}#projects`,
+          "name": "Ondosoft Portfolio Projects",
+          "itemListOrder": "Descending",
+          "itemListElement": itemListElement
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": companyInfo.urls.website
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Portfolio",
+              "item": canonical
+            }
+          ]
+        }
+      ]
+    };
+  }, [canonical, portfolioProjects]);
+
   return (
     <>
       <SEOHead
         title="Portfolio | Ondosoft Software Development Projects & Success Stories"
         description="Explore our portfolio of successful software development projects. See how we've helped businesses scale with custom web applications, SaaS platforms, and mobile solutions. Real projects, real results."
         keywords="portfolio, software development projects, web application portfolio, SaaS development examples, mobile app portfolio, client projects, development showcase, project results"
-        canonicalUrl={getCanonicalUrl('/portfolio')}
+        canonicalUrl={canonical}
+        structuredData={structuredData}
       />
       
       <div>
