@@ -1,10 +1,34 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect, memo, useCallback } from "react";
 import { ArrowRight, CheckCircle, Star, Zap } from "lucide-react";
+import FancyHeading from "./FancyHeading";
 
 const HeroSection = ({ onOpenConsultation }) => {
-  // Remove animation delay for faster LCP - render immediately
-  const [isVisible] = useState(true);
+  // Rotating fancy headings - cycle through every 2 seconds
+  const fancyHeadings = [
+    { firstWord: "Development", secondWord: "Services" },
+    { firstWord: "Full Stack", secondWord: "Solutions" },
+    { firstWord: "SaaS Platform", secondWord: "Development" },
+    { firstWord: "Custom Software", secondWord: "Solutions" },
+    { firstWord: "Enterprise", secondWord: "Excellence" }
+  ];
+  
+  const [currentHeadingIndex, setCurrentHeadingIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentHeadingIndex((prevIndex) => 
+          (prevIndex + 1) % fancyHeadings.length
+        );
+        setIsTransitioning(false);
+      }, 350); // Slightly longer for smoother transition
+    }, 2500); // Change every 2.5 seconds for better readability
+
+    return () => clearInterval(interval);
+  }, [fancyHeadings.length]);
 
   const handleConsultationClick = useCallback(() => {
     if (onOpenConsultation) {
@@ -17,25 +41,49 @@ const HeroSection = ({ onOpenConsultation }) => {
       <div className="flex flex-col lg:flex-row items-center gap-12">
         {/* Left Column - Main Content */}
         <div className="flex-1 text-center lg:text-left">
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-5 md:mb-6">
             <span className="inline-flex items-center bg-orange-500/20 text-orange-300 px-4 py-2 rounded-full text-sm font-medium border border-orange-500/30">
               <Star className="h-4 w-4 mr-2" />
               #1 Rated Software Development Company
             </span>
           </div>
           
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-            <span className="text-white">Ondosoft - Best</span>
-            <br />
-            <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text drop-shadow-lg">
-              Freelancing Site Near You
-            </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 sm:mb-5 md:mb-6">
+            <span className="text-white block">Premium Software</span>
           </h1>
           
-          <p className="text-xl text-gray-200 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-            <strong className="text-orange-400 font-semibold">Ondosoft</strong> is the best freelancing site and #1 software development platform. 
-            Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. 
-            From startups to enterprises, we deliver scalable solutions that drive real business growth.
+          {/* Rotating Fancy Heading - Enhanced Connective Style */}
+          <div className="mb-6 sm:mb-7 md:mb-8 min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px] flex items-start justify-center lg:justify-start relative overflow-hidden">
+            <div 
+              className={`w-full max-w-full transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                isTransitioning 
+                  ? 'opacity-0 transform translate-y-4 scale-95 blur-sm' 
+                  : 'opacity-100 transform translate-y-0 scale-100 blur-0'
+              }`}
+              style={{
+                transitionProperty: 'opacity, transform, filter',
+              }}
+            >
+              <FancyHeading 
+                firstWord={fancyHeadings[currentHeadingIndex].firstWord}
+                secondWord={fancyHeadings[currentHeadingIndex].secondWord}
+                textSize="text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
+                className="w-full"
+              />
+            </div>
+            {/* Subtle background glow effect */}
+            <div 
+              className="absolute inset-0 pointer-events-none opacity-20 blur-3xl"
+              style={{
+                background: 'radial-gradient(circle at 30% 50%, rgba(249, 115, 22, 0.3), transparent 70%)',
+                transition: 'opacity 0.7s ease',
+              }}
+            />
+          </div>
+          
+          <p className="text-lg sm:text-xl text-gray-200 mb-6 sm:mb-7 md:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            <strong className="text-orange-400 font-semibold">Ondosoft</strong> is a premium software development company delivering expert solutions for React, Node.js, Python, and full stack development. 
+            From startups to enterprises, we build scalable software that drives real business growth with enterprise quality at competitive rates.
           </p>
           
           {/* Key Benefits */}

@@ -2,6 +2,7 @@ import { useState, useMemo, memo, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import HeroSection from "../components/HeroSection";
 import HiddenSEOSection from "../components/HiddenSEOSection";
+import FancyHeading from "../components/FancyHeading";
 
 // Lazy load heavy components - defer non-critical sections for faster LCP
 const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
@@ -153,6 +154,78 @@ const HomePage = () => {
                 <h3 className="text-xl font-semibold text-white mb-3">Dedicated Support</h3>
                 <p className="text-neutral-400 leading-relaxed">
                   24/7 support and maintenance to keep your applications running smoothly
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Fancy Headings Section - Results & Outcomes Focused */}
+        <section id="fancy-headings" className="py-24 bg-gradient-to-b from-transparent via-gray-900/30 to-transparent">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="mb-12 text-center">
+              <p className="text-sm text-orange-400 uppercase tracking-wider mb-2">Why Choose Ondosoft</p>
+              <p className="text-gray-400 text-lg">Results that transform your business</p>
+            </div>
+            
+            <div className="space-y-32">
+              {/* Heading 1: Proven Results */}
+              <div className="flex flex-col items-start">
+                <FancyHeading 
+                  firstWord="Proven Results" 
+                  secondWord="delivered" 
+                  className="mb-8"
+                />
+                <p className="text-xl text-gray-300 max-w-3xl leading-relaxed mt-6">
+                  500+ successful projects, 99% client satisfaction, and measurable business growth. We don't just build software—we deliver outcomes that transform your business.
+                </p>
+              </div>
+
+              {/* Heading 2: Scalable Growth */}
+              <div className="flex flex-col items-start">
+                <FancyHeading 
+                  firstWord="Scalable Growth" 
+                  secondWord="from day one" 
+                  className="mb-8"
+                />
+                <p className="text-xl text-gray-300 max-w-3xl leading-relaxed mt-6">
+                  Built to scale from startup to enterprise. Our solutions grow with your business, handling everything from initial launch to millions of users without costly rewrites.
+                </p>
+              </div>
+
+              {/* Heading 3: Enterprise Quality */}
+              <div className="flex flex-col items-start">
+                <FancyHeading 
+                  firstWord="Enterprise Quality" 
+                  secondWord="without enterprise cost" 
+                  className="mb-8"
+                />
+                <p className="text-xl text-gray-300 max-w-3xl leading-relaxed mt-6">
+                  Bank-level security, enterprise-grade architecture, and Fortune 500 standards—delivered at a fraction of traditional enterprise development costs.
+                </p>
+              </div>
+
+              {/* Heading 4: Rapid Innovation */}
+              <div className="flex flex-col items-start">
+                <FancyHeading 
+                  firstWord="Rapid Innovation" 
+                  secondWord="at startup speed" 
+                  className="mb-8"
+                />
+                <p className="text-xl text-gray-300 max-w-3xl leading-relaxed mt-6">
+                  Move 40% faster than industry average. Our agile methodology and modern tech stack mean you get to market sooner, iterate faster, and stay ahead of competitors.
+                </p>
+              </div>
+
+              {/* Heading 5: Dedicated Partnership */}
+              <div className="flex flex-col items-start">
+                <FancyHeading 
+                  firstWord="Dedicated Partnership" 
+                  secondWord="not just vendors" 
+                  className="mb-8"
+                />
+                <p className="text-xl text-gray-300 max-w-3xl leading-relaxed mt-6">
+                  We're your long-term technology partner, not a one-time contractor. From initial concept to ongoing support, we're invested in your success.
                 </p>
               </div>
             </div>

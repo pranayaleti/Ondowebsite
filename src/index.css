@@ -8,7 +8,7 @@
 /* Performance optimizations */
 html {
   scroll-behavior: smooth;
-  font-display: swap;
+  background-color: #000000;
 }
 
 body {
@@ -19,8 +19,6 @@ body {
   text-rendering: optimizeLegibility;
   background-color: #000000;
   color: #ffffff;
-  /* Prevent layout shifts from font loading */
-  font-display: swap;
 }
 
 /* Prevent layout shifts from images */
@@ -28,15 +26,12 @@ img {
   max-width: 100%;
   height: auto;
   display: block;
+  loading: lazy;
 }
 
 /* Reserve space for images to prevent CLS */
 img[width][height] {
   aspect-ratio: attr(width) / attr(height);
-}
-
-html {
-  background-color: #000000;
 }
 
 /* Critical loading styles */
@@ -46,14 +41,7 @@ html {
 
 @keyframes spin {
   from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Image optimization */
-img {
-  max-width: 100%;
-  height: auto;
-  loading: lazy;
+  to { transform: rotate(360deg);   }
 }
 
 /* Focus styles for accessibility */
@@ -232,6 +220,35 @@ img {
 
 .animate-scale-in {
   animation: scale-in 0.3s ease-out;
+}
+
+/* Enhanced fancy heading animations */
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+  }
+  50% {
+    text-shadow: 0 2px 12px rgba(249, 115, 22, 0.5), 0 0 20px rgba(249, 115, 22, 0.2);
+  }
+}
+
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fancy-heading-enter {
+  animation: fade-scale-in 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fancy-heading-glow {
+  animation: text-glow 3s ease-in-out infinite;
 }
 
 /* Print styles */
