@@ -1,10 +1,10 @@
-import { useState, useEffect, lazy, Suspense, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Calendar, X } from 'lucide-react';
 import { companyInfo } from '../constants/companyInfo';
 
-// Lazy load components
-const AIChatModal = lazy(() => import('./AIChatModal'));
-const ConsultationModal = lazy(() => import('./ConsultationModal'));
+// Direct imports to avoid dynamic import failures in some environments
+import AIChatModal from './AIChatModal';
+import ConsultationModal from './ConsultationModal';
 
 const UnifiedChatWidget = () => {
   const [showPrompt, setShowPrompt] = useState(false);
@@ -164,24 +164,20 @@ const UnifiedChatWidget = () => {
 
       {/* Chat Modal - Bottom Right Panel */}
       {showChat && (
-        <Suspense fallback={null}>
-          <AIChatModal 
-            isOpen={showChat} 
-            onClose={handleClose} 
-            position="bottom-right"
-          />
-        </Suspense>
+        <AIChatModal 
+          isOpen={showChat} 
+          onClose={handleClose} 
+          position="bottom-right"
+        />
       )}
 
       {/* Consultation Modal */}
       {showConsultation && (
-        <Suspense fallback={null}>
-          <ConsultationModal 
-            isOpen={showConsultation} 
-            onClose={handleClose}
-            utmMedium="unified_widget"
-          />
-        </Suspense>
+        <ConsultationModal 
+          isOpen={showConsultation} 
+          onClose={handleClose}
+          utmMedium="unified_widget"
+        />
       )}
     </>
   );

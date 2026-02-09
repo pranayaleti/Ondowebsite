@@ -93,7 +93,7 @@ const HeroSection = ({ onOpenConsultation }) => {
             </div>
             <div className="flex items-center text-gray-200">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
-              <span>Senior engineers, not freelancers</span>
+              <span>On-time delivery, every time</span>
             </div>
             <div className="flex items-center text-gray-200">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />

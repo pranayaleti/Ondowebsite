@@ -16,34 +16,34 @@ const About = () => {
       <div className="relative">
         <div className="relative max-w-7xl mx-auto px-4 py-24">
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-6">
-            About <span className="text-orange-500">OndoSoft</span>
+            About <span className="text-orange-500">Ondosoft</span>
           </h1>
           <p className="text-2xl text-gray-300 max-w-3xl">
-            A software freelancing company specializing in custom technology solutions 
-            for businesses of all sizes—from local startups to established enterprises.
+            A senior product team that designs, builds, and scales secure software—pairing 
+            clear strategy with production-grade engineering for web, mobile, and AI-powered experiences.
           </p>
 
           {/* Key Stats Banner */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
             <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
               <div className="text-4xl font-bold text-orange-400">50+</div>
-              <div className="text-white mt-2">Projects Delivered</div>
-              <div className="text-gray-400 text-sm">Websites • Apps • SaaS</div>
+              <div className="text-white mt-2">Launches Delivered</div>
+              <div className="text-gray-400 text-sm">SaaS • Enterprise • Web</div>
             </div>
             <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">25+</div>
-              <div className="text-white mt-2">Happy Clients</div>
-              <div className="text-gray-400 text-sm">Small Business • Startups</div>
-            </div>
-            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">5+</div>
-              <div className="text-white mt-2">Years Experience</div>
-              <div className="text-gray-400 text-sm">Full Stack • Cloud</div>
-            </div>
-            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
-              <div className="text-4xl font-bold text-orange-400">100%</div>
+              <div className="text-4xl font-bold text-orange-400">4.9/5</div>
               <div className="text-white mt-2">Client Satisfaction</div>
-              <div className="text-gray-400 text-sm">Quality • Support</div>
+              <div className="text-gray-400 text-sm">Rated by clients</div>
+            </div>
+            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
+              <div className="text-4xl font-bold text-orange-400">Nationwide</div>
+              <div className="text-white mt-2">Collaboration</div>
+              <div className="text-gray-400 text-sm">Strategy • Delivery</div>
+            </div>
+            <div className="bg-orange-500 bg-opacity-20 backdrop-blur-lg rounded-lg p-6 border border-orange-500">
+              <div className="text-4xl font-bold text-orange-400">On-time</div>
+              <div className="text-white mt-2">Delivery</div>
+              <div className="text-gray-400 text-sm">Every time</div>
             </div>
           </div>
         </div>
@@ -64,7 +64,7 @@ const About = () => {
                 <div className="flex-shrink-0">
                   <img
                     src="/assets/founder.jpg"
-                    alt="Pranay Reddy Aleti - Founder & Owner of Ondosoft"
+                    alt="Pranay Reddy Aleti - Founder of Ondosoft"
                     className="w-48 h-48 rounded-lg object-cover border-2 border-orange-500/30 shadow-lg"
                     onError={(e) => {
                       e.target.style.display = 'none';
@@ -73,19 +73,17 @@ const About = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                    <strong className="text-orange-400">OndoSoft</strong> is a software freelancing company founded by 
-                    <strong className="text-orange-400"> Pranay Reddy Aleti</strong>, a software engineer with a Master's degree in Computer Science.
+                    <strong className="text-orange-400">Ondosoft</strong> was founded by 
+                    <strong className="text-orange-400"> Pranay Reddy Aleti</strong>, a software engineer with a Master's degree in Computer Science. We're a senior product team that moves quickly without cutting corners.
                   </p>
                   <p className="text-gray-300 text-lg leading-relaxed">
-                    We specialize in building <strong className="text-orange-400">custom technology solutions</strong> for businesses of all sizes. 
-                    From simple websites for local businesses to complex SaaS platforms for startups, 
-                    we deliver <strong className="text-orange-400">reliable, scalable, and user-friendly</strong> software that drives growth.
+                    We design, build, and scale <strong className="text-orange-400">secure software</strong>—from custom websites and SEO to SaaS platforms and enterprise applications. 
+                    We pair <strong className="text-orange-400">strategy-first discovery</strong> with <strong className="text-orange-400">production-grade engineering</strong> for web, mobile, and AI-powered experiences.
                   </p>
                 </div>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Our mission is to make professional software development accessible to every business, 
-                regardless of size or technical expertise.
+                Our mission is to make professional software development accessible to every business—delivering on time, with ongoing support and measurable uptime.
               </p>
             </div>
 
@@ -96,13 +94,13 @@ const About = () => {
                 <h2 className="text-3xl font-bold text-white">Our Vision</h2>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                We believe that <strong className="text-orange-400">every business deserves access to professional software solutions</strong>.
-                Our goal is to <strong className="text-orange-400">democratize technology</strong> by making custom development 
-                accessible and affordable for businesses of all sizes.
+                We believe that <strong className="text-orange-400">every business deserves a product team that ships to production</strong>.
+                Our goal is to <strong className="text-orange-400">democratize premium software</strong>—making strategy-led, production-grade development 
+                accessible for startups, SMBs, and enterprises alike.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed">
-                From local restaurants needing a simple website to startups building the next big SaaS platform, 
-                we're here to turn your <strong className="text-orange-400">vision into reality</strong>.
+                From web and SEO to custom SaaS and enterprise applications, 
+                we're here to turn your <strong className="text-orange-400">vision into shipped software</strong>.
               </p>
             </div>
 
@@ -115,47 +113,47 @@ const About = () => {
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Affordable Solutions</h4>
+                    <h4 className="text-white font-bold mb-2">Strategy-First Discovery</h4>
                     <p className="text-gray-400 text-sm">
-                      Competitive pricing without compromising quality. We work within your budget to deliver maximum value.
+                      Clear roadmap and discovery before we build. We align on goals and scope so delivery stays on track.
                     </p>
                   </div>
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Personalized Service</h4>
+                    <h4 className="text-white font-bold mb-2">On-Time Delivery</h4>
                     <p className="text-gray-400 text-sm">
-                      Direct communication with the developer. No middlemen, no corporate bureaucracy—just results.
+                      We move quickly without cutting corners. Production-grade engineering, delivered when we say we will.
                     </p>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Fast Delivery</h4>
+                    <h4 className="text-white font-bold mb-2">SaaS & Enterprise Launches</h4>
                     <p className="text-gray-400 text-sm">
-                      Quick turnaround times without sacrificing quality. We understand that time is money for your business.
+                      Dozens of launches across SaaS and enterprise. From MVPs to scale-ready platforms.
                     </p>
                   </div>
                   <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-orange-500">
-                    <h4 className="text-white font-bold mb-2">Ongoing Support</h4>
+                    <h4 className="text-white font-bold mb-2">Ongoing Support & Uptime</h4>
                     <p className="text-gray-400 text-sm">
-                      We don't just build and disappear. We provide maintenance, updates, and support to keep your solution running smoothly.
+                      We don't ship and disappear. Maintenance, updates, and support with measurable uptime.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* What OndoSoft Stands For */}
+            {/* What Ondosoft Stands For */}
             <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
               <div className="flex items-center mb-6">
                 <Home className="text-orange-400 h-7 w-7 mr-4" />
-                <h2 className="text-3xl font-bold text-white">What OndoSoft Stands For</h2>
+                <h2 className="text-3xl font-bold text-white">What Ondosoft Stands For</h2>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                <strong className="text-orange-400">OndoSoft</strong> is about building strong foundations—
+                <strong className="text-orange-400">Ondosoft</strong> is about shipping to production—strong foundations, 
                 clean codebases, clear interfaces, and dependable infrastructure.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed">
-                From design systems to microservices, from CI pipelines to production monitoring,
+                From design systems to microservices, CI pipelines to production monitoring,
                 we deliver software that teams can trust and scale.
               </p>
             </div>
@@ -184,11 +182,11 @@ const About = () => {
                 <h2 className="text-3xl font-bold text-white">Let's Connect</h2>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                Startup or enterprise—if you want to <strong className="text-orange-400">ship faster</strong>,
-                <strong className="text-orange-400"> scale confidently</strong>, and <strong className="text-orange-400">delight users</strong>, let's talk.
+                Startup or enterprise—if you want to <strong className="text-orange-400">ship to production</strong>,
+                <strong className="text-orange-400"> scale confidently</strong>, and <strong className="text-orange-400">deliver on time</strong>, let's talk.
               </p>
               <p className="text-gray-300 text-lg leading-relaxed font-medium">
-                This isn't just development—it's <strong className="text-orange-400">product delivery redefined</strong>.
+                A senior product team that designs, builds, and scales secure software—<strong className="text-orange-400">premium software, delivered</strong>.
               </p>
             </div>
           </div>
@@ -258,9 +256,9 @@ const About = () => {
 
             {/* Contact Info */}
             <div className="bg-gradient-to-r from-orange-900 to-gray-900 rounded-xl p-6 border border-orange-500">
-              <h3 className="text-xl font-bold text-white mb-4">Ready to Build?</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Ready to Ship?</h3>
               <p className="text-gray-300 text-sm mb-4">
-                Let's discuss how we can design, build, and ship your next product.
+                Start a free consultation. We'll design, build, and scale your next product—on time.
               </p>
               <a href="/contact" className="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors mb-4">
                 Schedule a Meeting
@@ -279,14 +277,14 @@ const About = () => {
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 py-20 border-t border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Ship <span className="text-orange-500">Faster?</span>
+            Ready to Ship <span className="text-orange-500">to Production?</span>
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            From MVPs to scale-ready platforms—let's build something users love.
+            Strategy-first discovery, production-grade engineering—from MVPs to scale-ready platforms.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
-              Start Your Journey
+              Start Free Consultation
             </a>
             <a href="/capabilities-deck" className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
               Download Capabilities Deck
@@ -300,20 +298,20 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-orange-400">10+</div>
-              <div className="text-gray-400 text-sm mt-1">Years Experience</div>
+              <div className="text-3xl font-bold text-orange-400">50+</div>
+              <div className="text-gray-400 text-sm mt-1">Launches Delivered</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-orange-400">100+</div>
-              <div className="text-gray-400 text-sm mt-1">Projects Completed</div>
+              <div className="text-3xl font-bold text-orange-400">4.9/5</div>
+              <div className="text-gray-400 text-sm mt-1">Client Satisfaction</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-orange-400">12+</div>
-              <div className="text-gray-400 text-sm mt-1">Products Shipped</div>
+              <div className="text-3xl font-bold text-orange-400">Nationwide</div>
+              <div className="text-gray-400 text-sm mt-1">Collaboration</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-orange-400">99.9%</div>
-              <div className="text-gray-400 text-sm mt-1">Uptime Achieved</div>
+              <div className="text-3xl font-bold text-orange-400">On-time</div>
+              <div className="text-gray-400 text-sm mt-1">Delivery, Every Time</div>
             </div>
           </div>
         </div>
