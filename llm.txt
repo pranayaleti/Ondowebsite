@@ -1,0 +1,64 @@
+# Ondowebsite (OndoSoft)
+
+OndoSoft is a professional business website and client portal: marketing site, blog, pricing, testimonials, contact, plus authenticated client dashboard and admin panel. Backend API serves the app and persists data in Supabase (PostgreSQL).
+
+## Architecture
+
+- **Frontend**: React 18 + Vite 7, Tailwind CSS. SPA with client-side routing. Dev server on port 3000; `/api` proxied to backend 5001. PWA (public/sw.js), react-helmet-async for SEO.
+- **Backend**: Express (Node ≥20), JWT auth, cookie-based sessions. Port 5001. Connects to Supabase via `pg` (DATABASE_URL). Optional Supabase JS client in `backend/supabaseClient.js` for realtime/storage.
+- **Database**: Supabase (PostgreSQL). Tables: users, password_reset_tokens, subscriptions, campaigns, email_templates, invoices, tickets, notifications, consultation_leads, feedback, ai_conversations, ai_messages, analytics_*, etc. Backend creates tables in `createTables` if not exist.
+- **Deploy**: GitHub Actions build Vite → `dist`, deploy to GitHub Pages. Backend deployed separately (e.g. Render; see `backend/render.yaml`). Production frontend uses relative `/api` or `VITE_API_URL` for API.
+
+## AI & advanced tech
+
+- **AI chat**: UnifiedChatWidget, AIChatPrompt, AIChatModal. Session-based; API: GET/POST `/api/ai-chat/conversations`, POST messages (returns `assistantReply` when AI keys set)/feedback/end. Backend: `backend/services/aiService.js` (OpenAI or Anthropic when OPENAI_API_KEY or ANTHROPIC_API_KEY set), `backend/constants/companyContext.js` for system prompt. Data in ai_conversations, ai_messages. Admin: AIConversationsPage, `/api/admin/ai-conversations`. Without API keys, frontend uses rule-based responses.
+- **Analytics**: Frontend `src/utils/analytics.js` – session, page views, clicks, navigation, scroll, form, visibility, errors; batch to `POST /api/analytics/track`. Backend tables: analytics_events, analytics_clicks, analytics_navigation, analytics_page_views, analytics_scrolls, analytics_form_interactions, analytics_user_interactions.
+- **Performance**: PerformanceMonitor, ScriptOptimizer, initPerformanceOptimizations (preload, lazy scripts), requestIdleCallback for analytics/prefetch, OptimizedImage, Vite manualChunks (admin, portal, auth, vendor-react, vendor-other).
+- **Security**: `src/utils/security.js` – CSP, sanitizeInput, validateFormData, rateLimiter, generateCSRFToken; used by Contact and auth.
+- **Caching**: `src/utils/apiCache.js` – in-memory API cache with TTL and request deduplication.
+
+## Repo layout
+
+- `/` – Frontend root: `index.html`, `vite.config.js`, `tailwind.config.js`, `src/`, `public/`
+- `src/` – React app: `main.jsx`, `App.jsx`, `index.css`, `components/`, `pages/`, `contexts/`, `utils/`, `constants/`, `data/`, `styles/`
+- `src/pages/` – Route components: `HomePage`, `AboutPage`, `ServicesPage`, `PricingPage`, `BlogPage`, `BlogPostPage`, `ContactPage`, `FAQPage`, legal (`PrivacyPolicyPage`, `TermsOfUsePage`, `LegalPage`, `NDAPage`, `LicensingPage`), `AccessibilityPage`, `CapabilitiesDeckPage`, sitemap/robots, auth (`SignInPage`, `SignUpPage`, `ForgotPasswordPage`, `ResetPasswordPage`), `portal/` (dashboard), `admin/`
+- `src/pages/portal/` – Client dashboard: `PortalLayout`, `PortalDashboard`, `SubscriptionsPage`, `CampaignsPage`, `AssetsPage`, `InvoicesPage`, `TicketsPage`, `NotificationsPage`
+- `src/pages/admin/` – Admin UI: `AdminLayout`, `AdminDashboard`, `AnalyticsPage`, `ClientsPage`, `CampaignsPage`, `AssetsPage`, `TicketsPage`, `InvoicesPage`, `NotificationsPage`, `ConsultationLeadsPage`, `AIConversationsPage`, `EmailTemplatesPage`
+- `src/components/` – Shared UI: `Navbar`, `Footer`, `BaseLayout`, `SEOHead`, `HiddenSEOSection`, `SchemaMarkup`, `UnifiedChatWidget`, `AIChatWidget`, `ConsultationWidget`, `ProtectedRoute`, `ErrorBoundary`, `PerformanceMonitor`, `ScriptOptimizer`, etc.
+- `src/contexts/AuthContext.jsx` – Auth state; uses `src/utils/auth.js` (signin/signup/signout/session via backend).
+- `src/constants/companyInfo.js` – Company name, contact, address, hours, URLs, schema helpers; used by SEO and schema markup.
+- `src/utils/` – `apiConfig.js` (getAPIUrl, API_URL), `auth.js`, `analytics.js`, `performance.js`, `security.js`, `unifiedData.js`, `sitemapGenerator.js`, etc.
+- `backend/` – Express app: `index.js`, `supabaseClient.js`, `seed.js`, `.env.example`, `render.yaml`
+- `public/` – `robots.txt`, `sitemap.xml`, `manifest.json`, `sw.js`, `logo.png`
+- `.github/workflows/deploy-pages.yml` – Build frontend, upload `dist`, deploy to GitHub Pages; uses `VITE_API_URL` secret
+
+## Routing (App.jsx)
+
+- Public: `/`, `/services`, `/pricing`, `/testimonials`, `/portfolio`, `/blogs`, `/blogs/:slug`, `/contact`, `/about`, `/faq`, `/legal`, `/privacy-policy`, `/terms-of-use`, `/nda`, `/licensing`, `/accessibility`, `/capabilities-deck`, `/sitemap`, `/sitemap.xml`, `/robots.txt`
+- Auth: `/auth/signup`, `/auth/signin`, `/auth/forgot-password`, `/reset-password`
+- Dashboard: `/dashboard` (PortalLayout) – index, subscriptions, campaigns, assets, invoices, tickets, notifications
+- Admin: `/admin` (AdminLayout, requireAdmin) – dashboard, analytics, clients, campaigns, assets, tickets, invoices, notifications, consultation-leads, ai-conversations, email-templates
+- All pages lazy-loaded; chunks: admin, portal, auth, vendor-react, vendor-other
+
+## API (backend/index.js)
+
+Base path `/api`. Auth: JWT in cookie or Authorization header; `authenticateToken`; admin routes use `requireAdmin`.
+
+- Health: `GET /api/health`
+- Auth: `POST /api/auth/signup`, `POST /api/auth/signin`, `POST /api/auth/signout`, `GET /api/auth/session`
+- Dashboard (authenticated): `/api/dashboard/dashboard`, `/api/dashboard/subscriptions`, `/api/dashboard/campaigns`, `/api/dashboard/assets`, `/api/dashboard/invoices`, `/api/dashboard/invoices/:id/pdf`, `/api/dashboard/tickets`, `/api/dashboard/notifications`
+- Admin: `/api/admin/dashboard`, `/api/admin/users`, `/api/admin/consultation-leads`, `/api/admin/feedback`, `/api/admin/ai-conversations`, `/api/admin/email-templates`, `/api/admin/analytics`, `/api/admin/tickets`, `/api/admin/invoices`, `/api/admin/assets`, `/api/admin/notifications`, etc.
+- Shared: `GET/POST /api/email-templates` (authenticated)
+- Public: `POST /api/analytics/track`, `POST /api/consultation/submit`, `POST /api/pricing/interaction`, `POST /api/feedback`, `GET/POST /api/ai-chat/conversations`, etc.
+
+## Environment
+
+- Frontend: `VITE_API_URL` (optional; production API base). Dev uses proxy to `http://localhost:5001`.
+- Backend (`.env` in `backend/`): `DATABASE_URL` (Supabase Postgres), `JWT_SECRET`, `PORT` (default 5001), `FRONTEND_URL`, optional `SUPABASE_URL`, `SUPABASE_KEY`/`SUPABASE_ANON_KEY` for Supabase JS client. See `backend/.env.example`.
+
+## Conventions
+
+- Company/brand: Ondosoft; content and schema use `src/constants/companyInfo.js`.
+- SEO: `SEOHead`, `HiddenSEOSection`, `SchemaMarkup`; canonical and structured data from companyInfo.
+- All React-dependent libs (react, react-dom, react-router-dom, react-helmet-async, lucide-react) in `vendor-react` chunk to avoid duplicate React context.
+- No `.md` files for developers unless required for tooling or project comprehension.

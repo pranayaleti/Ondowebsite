@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import { isConfigured as aiConfigured, generateReply as generateAIReply, MAX_HISTORY as AI_MAX_HISTORY } from './services/aiService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,7 +105,7 @@ const pool = new Pool({
 });
 
 // Handle pool errors gracefully to prevent server crashes
-pool.on('error', (err, client) => {
+pool.on('error', (err) => {
   console.error('Unexpected error on idle database client:', err);
   // Don't crash the server - log the error and let the pool handle reconnection
   // The pool will automatically try to reconnect on the next query
@@ -132,15 +133,6 @@ pool.query('SELECT NOW()', (err, res) => {
 const createTables = async () => {
   try {
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS password_reset_tokens (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        token VARCHAR(255) UNIQUE NOT NULL,
-        expires_at TIMESTAMP NOT NULL,
-        used BOOLEAN DEFAULT false,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -166,6 +158,15 @@ const createTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        token VARCHAR(255) UNIQUE NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        used BOOLEAN DEFAULT false,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS subscriptions (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -179,16 +180,6 @@ const createTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
-      CREATE TABLE IF NOT EXISTS campaigns (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        name VARCHAR(255) NOT NULL,
-        status VARCHAR(50) DEFAULT 'active',
-        email_template_id INTEGER REFERENCES email_templates(id) ON DELETE SET NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
       CREATE TABLE IF NOT EXISTS email_templates (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -198,6 +189,16 @@ const createTables = async () => {
         category VARCHAR(100),
         is_active BOOLEAN DEFAULT true,
         created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS campaigns (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name VARCHAR(255) NOT NULL,
+        status VARCHAR(50) DEFAULT 'active',
+        email_template_id INTEGER REFERENCES email_templates(id) ON DELETE SET NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
@@ -5319,11 +5320,61 @@ app.post('/api/ai-chat/conversations/:conversationId/messages', async (req, res)
       ]
     );
 
-    res.json({
+    const responsePayload = {
       success: true,
       messageId: result.rows[0].id,
       createdAt: result.rows[0].created_at,
-    });
+    };
+
+    // If user message and AI is configured, generate assistant reply and persist it
+    if (role === 'user' && aiConfigured()) {
+      try {
+        const historyResult = await pool.query(
+          `SELECT role, content FROM ai_messages WHERE conversation_id = $1 ORDER BY message_index DESC LIMIT $2`,
+          [conversationId, AI_MAX_HISTORY]
+        );
+        const recentMessages = (historyResult.rows || []).reverse().map((r) => ({ role: r.role, content: r.content }));
+        const assistantReply = await generateAIReply(recentMessages, content);
+        if (assistantReply && assistantReply.content) {
+          const countResult2 = await pool.query(
+            'SELECT COUNT(*) as count FROM ai_messages WHERE conversation_id = $1',
+            [conversationId]
+          );
+          const nextIndex = parseInt(countResult2.rows[0].count, 10) + 1;
+          const insertAssistant = await pool.query(
+            `INSERT INTO ai_messages 
+             (conversation_id, role, content, message_type, quick_replies, message_index, created_at)
+             VALUES ($1, 'assistant', $2, 'text', $3, $4, (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'))
+             RETURNING id, created_at`,
+            [
+              conversationId,
+              assistantReply.content,
+              assistantReply.quickReplies ? JSON.stringify(assistantReply.quickReplies) : null,
+              nextIndex,
+            ]
+          );
+          await pool.query(
+            `UPDATE ai_conversations 
+             SET total_messages = total_messages + 1, total_ai_messages = total_ai_messages + 1,
+                 last_message_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'),
+                 updated_at = (NOW() AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver')
+             WHERE id = $1`,
+            [conversationId]
+          );
+          responsePayload.assistantReply = {
+            messageId: insertAssistant.rows[0].id,
+            content: assistantReply.content,
+            quickReplies: assistantReply.quickReplies || undefined,
+            createdAt: insertAssistant.rows[0].created_at,
+          };
+        }
+      } catch (aiErr) {
+        console.error('AI reply generation error:', aiErr?.message || aiErr);
+        // Do not fail the request; client can fall back to rule-based response
+      }
+    }
+
+    res.json(responsePayload);
   } catch (error) {
     console.error('AI message save error:', error);
     res.status(500).json({

@@ -1,10 +1,15 @@
-import { useEffect, useState, useRef } from 'react';
-import { X, Send, Loader, Bot, User, Home, RefreshCw, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
+import { useEffect, useState, useRef, useCallback, memo } from 'react';
+import { X, Send, Loader, Bot, User, Home, RefreshCw, Sparkles, Maximize2, Minimize2, Copy, Check, Trash2 } from 'lucide-react';
 import analyticsTracker from '../utils/analytics.js';
 import { API_URL } from '../utils/apiConfig.js';
 import { companyInfo } from '../constants/companyInfo';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDateWithWeekdayUser, formatDateTimeUserTimezone } from '../utils/dateFormat.js';
+import MessageBubble from './chat/MessageBubble.jsx';
+import QuickReplies from './chat/QuickReplies.jsx';
+import ChatInput from './chat/ChatInput.jsx';
+import TypingIndicator from './chat/TypingIndicator.jsx';
+import EmptyState from './chat/EmptyState.jsx';
 
 const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const { user, isAuthenticated } = useAuth();
@@ -20,6 +25,8 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const [isResizing, setIsResizing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [copiedMessageId, setCopiedMessageId] = useState(null);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
@@ -35,7 +42,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     if (isOpen && !conversationStarted && !isInitializingRef.current) {
       initializeConversation();
     }
-  }, [isOpen, conversationStarted]);
+  }, [isOpen, conversationStarted, initializeConversation]);
 
   // End conversation when modal closes
   useEffect(() => {
@@ -76,6 +83,35 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      // Escape to close modal
+      if (e.key === 'Escape' && !isMaximized) {
+        onClose();
+        return;
+      }
+
+      // Don't handle shortcuts if user is typing in input
+      if (document.activeElement?.tagName === 'TEXTAREA' || document.activeElement?.tagName === 'INPUT') {
+        // Enter to send (handled in form submit)
+        // Shift+Enter for newline is default browser behavior
+        return;
+      }
+
+      // Focus input with Cmd/Ctrl+K
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isMaximized, onClose]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -141,7 +177,28 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     return false; // No history found
   };
 
-  const initializeConversation = async () => {
+  // Create welcome message helper function
+  const createWelcomeMessage = useCallback(() => {
+    const userName = isAuthenticated && user ? user.name : null;
+    const welcomeContent = userName
+      ? `Welcome back, ${userName}! 👋\n\nI'm ${AI_NAME}, your ${AI_TITLE}. How can I help you today?`
+      : `Welcome to ${companyInfo.name}! 👋\n\nI'm ${AI_NAME}, your ${AI_TITLE}. How can I help you today?`;
+    
+    return {
+      id: Date.now(),
+      role: 'assistant',
+      content: welcomeContent,
+      timestamp: new Date(),
+      quickReplies: [
+        { label: 'Get a Quote', value: 'pricing' },
+        { label: 'See Our Work', value: 'portfolio' },
+        { label: 'Schedule a Call', value: 'schedule_call' },
+        { label: 'Learn More', value: 'services' },
+      ],
+    };
+  }, [isAuthenticated, user, AI_NAME, AI_TITLE]);
+
+  const initializeConversation = useCallback(async () => {
     // Prevent multiple simultaneous initialization calls
     if (isInitializingRef.current) {
       return;
@@ -164,23 +221,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       }
 
       // No history found, prepare welcome message
-      const userName = isAuthenticated && user ? user.name : null;
-      const welcomeContent = userName
-        ? `Welcome back, ${userName}! 👋\n\nI'm ${AI_NAME}, your ${AI_TITLE}. How can I help you today?`
-        : `Welcome to ${companyInfo.name}! 👋\n\nI'm ${AI_NAME}, your ${AI_TITLE}. How can I help you today?`;
-      
-      const welcomeMessage = {
-        id: Date.now(),
-        role: 'assistant',
-        content: welcomeContent,
-        timestamp: new Date(),
-        quickReplies: [
-          { label: 'Get a Quote', value: 'pricing' },
-          { label: 'See Our Work', value: 'portfolio' },
-          { label: 'Schedule a Call', value: 'schedule_call' },
-          { label: 'Learn More', value: 'services' },
-        ],
-      };
+      const welcomeMessage = createWelcomeMessage();
 
       // Show welcome message immediately
       setMessages([welcomeMessage]);
@@ -252,29 +293,13 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         console.error('Error initializing conversation:', error);
       }
       // Still show welcome message even if backend fails
-      const userName = isAuthenticated && user ? user.name : null;
-      const welcomeContent = userName
-        ? `Welcome back, ${userName}! 👋\n\nI'm ${AI_NAME}, your ${AI_TITLE}. How can I help you today?`
-        : `Welcome to ${companyInfo.name}! 👋\n\nI'm ${AI_NAME}, your ${AI_TITLE}. How can I help you today?`;
-      
-      const welcomeMessage = {
-        id: Date.now(),
-        role: 'assistant',
-        content: welcomeContent,
-        timestamp: new Date(),
-        quickReplies: [
-          { label: 'Get a Quote', value: 'pricing' },
-          { label: 'See Our Work', value: 'portfolio' },
-          { label: 'Schedule a Call', value: 'schedule_call' },
-          { label: 'Learn More', value: 'services' },
-        ],
-      };
+      const welcomeMessage = createWelcomeMessage();
       setMessages([welcomeMessage]);
       setConversationStarted(true);
     } finally {
       isInitializingRef.current = false;
     }
-  };
+  }, [createWelcomeMessage, isAuthenticated, user]);
 
   const generateSessionId = () => {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -282,7 +307,6 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
 
   const saveMessage = async (convId, message) => {
     if (!convId) return;
-
     try {
       await fetch(`${API_URL}/ai-chat/conversations/${convId}/messages`, {
         method: 'POST',
@@ -301,6 +325,40 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       if (import.meta.env.DEV) {
         console.error('Error saving message:', error);
       }
+    }
+  };
+
+  /** POST user message and return full response; backend may include assistantReply when AI (OpenAI/Anthropic) is configured. */
+  const postUserMessageAndGetReply = async (convId, message) => {
+    if (!convId) return null;
+    try {
+      setError(null);
+      const res = await fetch(`${API_URL}/ai-chat/conversations/${convId}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          role: message.role,
+          content: message.content,
+          messageType: message.messageType || 'text',
+          quickReplies: message.quickReplies,
+          buttonClicks: message.buttonClicks,
+          metadata: message.metadata,
+        }),
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json().catch(() => ({}));
+      return data?.assistantReply ? data : null;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Error posting user message:', error);
+      }
+      setError('Failed to send message. Please try again.');
+      return null;
     }
   };
 
@@ -336,11 +394,23 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
 
-    if (conversationId) {
-      await saveMessage(conversationId, userMessage);
+    setIsLoading(true);
+    const apiResponse = conversationId ? await postUserMessageAndGetReply(conversationId, userMessage) : null;
+    if (apiResponse?.assistantReply) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: apiResponse.assistantReply.messageId,
+          role: 'assistant',
+          content: apiResponse.assistantReply.content,
+          quickReplies: apiResponse.assistantReply.quickReplies,
+          timestamp: apiResponse.assistantReply.createdAt ? new Date(apiResponse.assistantReply.createdAt) : new Date(),
+        },
+      ]);
+      setIsLoading(false);
+    } else {
+      await generateAIResponse(userMessage.content);
     }
-
-    await generateAIResponse(userMessage.content);
   };
 
   const handleSendMessage = async (e) => {
@@ -357,18 +427,45 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
 
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
+    
+    // Refocus input after sending
+    setTimeout(() => inputRef.current?.focus(), 50);
 
-    if (conversationId) {
-      await saveMessage(conversationId, userMessage);
-      
-      // Check if message contains email and update conversation
-      const emailMatch = messageText.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
-      if (emailMatch && conversationId) {
-        await updateConversationInfo({ email: emailMatch[0] });
-      }
+    setIsLoading(true);
+    const apiResponse = conversationId ? await postUserMessageAndGetReply(conversationId, userMessage) : null;
+    if (apiResponse?.assistantReply) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: apiResponse.assistantReply.messageId,
+          role: 'assistant',
+          content: apiResponse.assistantReply.content,
+          quickReplies: apiResponse.assistantReply.quickReplies,
+          timestamp: apiResponse.assistantReply.createdAt ? new Date(apiResponse.assistantReply.createdAt) : new Date(),
+        },
+      ]);
+      setIsLoading(false);
+    } else {
+      await generateAIResponse(messageText);
     }
 
-    await generateAIResponse(messageText);
+    const emailMatch = messageText.match(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/);
+    if (emailMatch && conversationId) {
+      await updateConversationInfo({ email: emailMatch[0] });
+    }
+  };
+
+  // Copy message to clipboard
+  const copyMessage = async (content, messageId) => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageId(messageId);
+      setTimeout(() => setCopiedMessageId(null), 2000);
+    } catch (err) {
+      if (import.meta.env.DEV) {
+        console.error('Failed to copy message:', err);
+      }
+    }
   };
 
   const updateConversationInfo = async (info) => {
@@ -507,11 +604,13 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       if (import.meta.env.DEV) {
         console.error('Error generating AI response:', error);
       }
+      setError('Failed to generate response. Please try again.');
       const errorMessage = {
         id: Date.now(),
         role: 'assistant',
         content: 'I apologize, but I encountered an error. Please try again or contact our support team.',
         timestamp: new Date(),
+        isError: true,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -519,48 +618,38 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     }
   };
 
-
-  const formatTime = (timestamp) => {
-    // Display in user's local timezone
-    return formatDateTimeUserTimezone(timestamp, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
+  // Retry last message
+  const retryLastMessage = async () => {
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+    if (lastUserMessage) {
+      setError(null);
+      setIsLoading(true);
+      // Remove error message if exists
+      setMessages(prev => prev.filter(m => !m.isError));
+      await generateAIResponse(lastUserMessage.content);
+    }
   };
 
-  // Render message content with clickable links
-  const renderMessageWithLinks = (content) => {
-    if (!content) return '';
-    
-    // URL regex pattern
-    const urlPattern = /(https?:\/\/[^\s]+)/g;
-    const parts = content.split(urlPattern);
-    
-    return parts.map((part, index) => {
-      if (urlPattern.test(part)) {
-        return (
-          <a
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-orange-600 hover:text-orange-700 underline font-medium break-all"
-            onClick={() => {
-              // Track link clicks in analytics (optional - can be removed if not needed)
-              // Link click tracking removed per user request
-            }}
-          >
-            {part}
-          </a>
-        );
+  // Clear conversation
+  const clearConversation = async () => {
+    if (window.confirm('Are you sure you want to clear this conversation? This cannot be undone.')) {
+      setMessages([]);
+      setError(null);
+      // End current conversation if exists
+      if (conversationId) {
+        await endConversation();
+        setConversationId(null);
       }
-      return <span key={index}>{part}</span>;
-    });
+      // Reset conversation started flag to allow new welcome message
+      setConversationStarted(false);
+      // Initialize new conversation
+      if (isOpen) {
+        await initializeConversation();
+      }
+    }
   };
+
+
 
   // Handle maximize/minimize
   const handleMaximize = () => {
@@ -678,6 +767,10 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         ref={modalRef}
         className={modalClasses}
         style={modalStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chat-header-title"
+        aria-describedby="chat-header-subtitle"
       >
         {/* Header - Draggable */}
         <div
@@ -689,11 +782,11 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
               <Bot className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold flex items-center gap-2">
+              <h3 id="chat-header-title" className="font-semibold flex items-center gap-2">
                 {AI_NAME}
                 <Sparkles className="w-4 h-4 text-yellow-300" />
               </h3>
-              <p className="text-xs text-orange-100">
+              <p id="chat-header-subtitle" className="text-xs text-orange-100">
                 {AI_TITLE} • {companyInfo.name}
                 {isAuthenticated && user && (
                   <span className="ml-2">• {user.name}</span>
@@ -723,107 +816,101 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           </div>
         </div>
 
-        {/* Timestamp - Show current time or conversation start time */}
-        <div className="px-4 py-2 bg-gray-50 text-center">
+        {/* Timestamp and Actions - Show current time or conversation start time */}
+        <div className="px-4 py-2 bg-gray-50 flex items-center justify-between">
           <p className="text-xs text-gray-500">
             {messages.length > 0 && messages[0].timestamp
               ? formatDateWithWeekdayUser(messages[0].timestamp)
               : formatDateWithWeekdayUser(new Date())}
           </p>
+          {messages.length > 0 && (
+            <button
+              onClick={clearConversation}
+              className="text-xs text-gray-500 hover:text-red-600 flex items-center gap-1 transition-colors"
+              aria-label="Clear conversation"
+              title="Clear conversation"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>Clear</span>
+            </button>
+          )}
         </div>
 
         {/* Messages */}
         <div
           ref={chatContainerRef}
           className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
+          role="log"
+          aria-live="polite"
+          aria-label="Chat messages"
         >
+          {messages.length === 0 && <EmptyState aiName={AI_NAME} />}
           {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex gap-3 ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              {message.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center flex-shrink-0">
-                  <Bot className="w-5 h-5 text-white" />
-                </div>
-              )}
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                  message.role === 'user'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-white text-gray-800 shadow-sm'
-                }`}
-              >
-                <div className="text-sm whitespace-pre-wrap">
-                  {renderMessageWithLinks(message.content)}
-                </div>
-                {message.quickReplies && message.role === 'assistant' && (
-                  <div className="mt-3 space-y-2">
-                    {message.quickReplies.map((reply, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleQuickReply(reply.value)}
-                        className="block w-full text-left px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm"
-                      >
-                        {reply.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <p className="text-xs mt-1 opacity-70">
-                  {formatTime(message.timestamp)}
-                </p>
-              </div>
-              {message.role === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-gray-600" />
-                </div>
+            <div key={message.id}>
+              <MessageBubble
+                message={message}
+                onCopy={copyMessage}
+                copiedMessageId={copiedMessageId}
+              />
+              {message.quickReplies && message.role === 'assistant' && (
+                <QuickReplies
+                  quickReplies={message.quickReplies}
+                  onQuickReply={handleQuickReply}
+                />
               )}
             </div>
           ))}
 
-          {isLoading && (
-            <div className="flex gap-3 justify-start">
-              <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
-              </div>
-              <div className="bg-white rounded-2xl px-4 py-2 shadow-sm">
-                <Loader className="w-5 h-5 animate-spin text-orange-600" />
-              </div>
-            </div>
-          )}
+          {isLoading && <TypingIndicator />}
 
           <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
         <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-200">
-          <div className="flex gap-2">
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Enter a message"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              disabled={isLoading}
-            />
-            <button
-              type="submit"
-              disabled={!inputMessage.trim() || isLoading}
-              className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <Send className="w-5 h-5" />
-            </button>
+          {error && (
+            <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
+              <p className="text-sm text-red-800">{error}</p>
+              <div className="flex gap-2">
+                {messages.length > 0 && messages[messages.length - 1]?.role === 'user' && (
+                  <button
+                    type="button"
+                    onClick={retryLastMessage}
+                    className="text-xs text-red-600 hover:text-red-800 underline"
+                  >
+                    Retry
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setError(null)}
+                  className="text-xs text-red-600 hover:text-red-800"
+                  aria-label="Dismiss error"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          )}
+          <ChatInput
+            ref={inputRef}
+            inputMessage={inputMessage}
+            setInputMessage={setInputMessage}
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+            placeholder="Type a message... (Shift+Enter for new line)"
+          />
+          <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
+            <p className="text-xs text-gray-500">
+              This chat may be recorded and used in line with our{' '}
+              <a href="/privacy-policy" className="text-orange-600 underline" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+            </p>
+            <p id="input-help-text" className="text-xs text-gray-400">
+              <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Enter</kbd> to send, <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Shift+Enter</kbd> for new line
+            </p>
           </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">
-            This chat may be recorded and used in line with our{' '}
-            <a href="/privacy-policy" className="text-orange-600 underline" target="_blank" rel="noopener noreferrer">
-              Privacy Policy
-            </a>
-          </p>
         </form>
         
         {/* Resize Handle */}

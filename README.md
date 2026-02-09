@@ -1,125 +1,130 @@
-# OndoSoft - Modern Business Website
+# OndoSoft – Business Website & Client Portal
 
-A professional, responsive business website built with React and Vite, featuring modern design and smooth user experience.
+A full-stack business website and client portal: marketing site, blog, pricing, testimonials, contact, plus authenticated **client dashboard** and **admin panel**. Frontend is a React SPA; backend is an Express API with JWT auth and Supabase (PostgreSQL).
 
-## 🚀 Features
+## Features
 
-- **Modern Design**: Clean, professional interface with gradient accents
-- **Responsive Layout**: Optimized for all devices and screen sizes
-- **Smooth Navigation**: React Router with smooth scrolling to sections
-- **Component-Based Architecture**: Modular, reusable components
-- **Tailwind CSS**: Utility-first styling for consistent design
-- **Performance Optimized**: Fast loading with Vite build tool
+- **Marketing site**: Hero, services, pricing, testimonials, portfolio, blog, FAQ, contact
+- **Legal & info**: Privacy policy, terms of use, NDA, licensing, accessibility, capabilities deck
+- **Auth**: Sign up, sign in, forgot password, reset password (JWT + cookies)
+- **Client dashboard** (`/dashboard`): Subscriptions, campaigns, assets, invoices, tickets, notifications
+- **Admin panel** (`/admin`): Dashboard, analytics, clients, campaigns, assets, tickets, invoices, notifications, consultation leads, AI conversations, email templates
+- **SEO**: Per-page meta, canonical URLs, structured data (Schema.org), sitemap, robots.txt
+- **Performance**: Lazy-loaded routes, code-split chunks (admin, portal, auth), service worker (production), critical CSS
+- **AI chat & consultation**: Unified chat widget, consultation form, draft save
 
-## 📋 Sections
+## Tech Stack
 
-- **Hero Section**: Compelling landing with call-to-action
-- **Products**: Showcase your products and services
-- **Services**: Detailed service offerings
-- **Workflow**: Process and methodology explanation
-- **Pricing**: Transparent pricing plans
-- **Testimonials**: Customer reviews and feedback
-- **Contact**: Get in touch form and information
-- **Footer**: Additional links and company information
+| Layer    | Tech |
+|----------|------|
+| Frontend | React 18, Vite 7, Tailwind CSS, React Router DOM, react-helmet-async, Lucide React |
+| Backend  | Express, JWT, cookie-parser, bcryptjs, pg (PostgreSQL) |
+| Database | Supabase (PostgreSQL) |
+| Deploy   | GitHub Actions → GitHub Pages (frontend); backend separately (e.g. Render) |
 
-## 🛠️ Tech Stack
+**Node**: `>=20.19.0` (see `.nvmrc`).
 
-- **Frontend Framework**: React 18
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Routing**: React Router DOM
-- **Icons**: Lucide React & React Icons
-- **Development**: ESLint, PostCSS, Autoprefixer
-
-## 📦 Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd Ondowebsite
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-```
-
-4. Open your browser and navigate to `http://localhost:5173`
-
-## 🏗️ Build Commands
-
-```bash
-# Development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
-```
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-src/
-├── components/          # React components
-│   ├── Contact.jsx
-│   ├── Footer.jsx
-│   ├── HeroSection.jsx
-│   ├── Navbar.jsx
-│   ├── Pricing.jsx
-│   ├── Products.jsx
-│   ├── Services.jsx
-│   ├── Testimonials.jsx
-│   └── Workflow.jsx
-├── assets/             # Static assets
-│   ├── illustrations/
-│   ├── profile-pictures/
-│   └── videos/
-├── constants/          # Data and constants
-├── App.jsx            # Main application component
-└── main.jsx           # Application entry point
+Ondowebsite/
+├── src/
+│   ├── main.jsx, App.jsx, index.css
+│   ├── components/       # Navbar, Footer, SEOHead, SchemaMarkup, UnifiedChatWidget, etc.
+│   ├── pages/            # Route components (lazy-loaded)
+│   │   ├── portal/       # Client dashboard pages
+│   │   └── admin/        # Admin panel pages
+│   ├── contexts/         # AuthContext
+│   ├── constants/        # companyInfo.js, faqData, pricing, etc.
+│   ├── utils/           # apiConfig, auth, analytics, performance, etc.
+│   ├── data/            # blogData
+│   └── assets/
+├── backend/
+│   ├── index.js         # Express API, DB (pg), JWT auth
+│   ├── supabaseClient.js
+│   ├── seed.js
+│   ├── .env.example
+│   └── render.yaml
+├── public/              # robots.txt, sitemap.xml, manifest.json, sw.js, logo.png
+├── vite.config.js       # Proxy /api → backend:5001, manualChunks
+├── llm.txt              # Project context for LLMs
+└── .github/workflows/deploy-pages.yml
 ```
 
-## 🎨 Customization
+## Installation
 
-### Styling
-- Modify Tailwind classes in components for design changes
-- Update color scheme in `tailwind.config.js`
-- Customize gradients and animations
+1. **Clone and install frontend deps**
+   ```bash
+   git clone <repository-url>
+   cd Ondowebsite
+   npm install
+   ```
 
-### Content
-- Edit component content directly in JSX files
-- Update images in `src/assets/` directory
-- Modify routing in `App.jsx`
+2. **Backend setup**
+   ```bash
+   cd backend
+   cp .env.example .env
+   # Edit .env: set DATABASE_URL (Supabase), JWT_SECRET, PORT (default 5001), FRONTEND_URL
+   npm install
+   cd ..
+   ```
 
-### Configuration
-- Update `package.json` for project metadata
-- Modify `vite.config.js` for build settings
-- Adjust `postcss.config.js` for CSS processing
+3. **Run development**
+   - **Frontend only** (API calls will fail without backend):
+     ```bash
+     npm run dev
+     ```
+     Opens at **http://localhost:3000**. `/api` is proxied to `http://localhost:5001`.
+   - **Backend only** (e.g. already running frontend elsewhere):
+     ```bash
+     npm run dev:backend
+     ```
+   - **Both** (recommended):
+     ```bash
+     npm run dev:all
+     ```
+     Uses `start-dev.sh`: starts backend on 5001, then frontend on 3000.
 
-## 🌐 Deployment
+## Scripts
 
-The project is ready for deployment on various platforms:
+| Command           | Description |
+|-------------------|-------------|
+| `npm run dev`     | Start Vite dev server (port 3000) |
+| `npm run dev:backend` | Start backend only (port 5001) |
+| `npm run dev:all` | Start backend + frontend via `start-dev.sh` |
+| `npm run build`   | Production build → `dist/` |
+| `npm run preview` | Serve `dist/` (port 4173) |
+| `npm run lint`    | ESLint (js, jsx) |
+| `npm run optimize:logo` | Run logo optimization script |
 
-- **Vercel**: Connect your repository for automatic deployments
-- **Netlify**: Drag and drop the `dist` folder after build
-- **GitHub Pages**: Use the `gh-pages` package
-- **Traditional Hosting**: Upload the `dist` folder to your server
+## Environment
 
-## 📝 License
+- **Frontend**  
+  - Dev: no env required; `/api` is proxied to `http://localhost:5001`.  
+  - Prod: optional `VITE_API_URL` (API base, e.g. `https://your-backend.onrender.com`). If unset, relative `/api` is used.
+
+- **Backend** (`.env` in `backend/`, see `backend/.env.example`):
+  - `DATABASE_URL` – Supabase PostgreSQL connection string (required)
+  - `JWT_SECRET` – Secret for JWT signing (required in production)
+  - `PORT` – Default 5001
+  - `FRONTEND_URL` – For CORS (e.g. `http://localhost:3000`)
+  - Optional: `SUPABASE_URL`, `SUPABASE_KEY` / `SUPABASE_ANON_KEY` for Supabase JS client
+
+## Deployment
+
+- **Frontend**: GitHub Actions build (`npm run build`, `VITE_API_URL` from secrets), then deploy `dist/` to GitHub Pages. `dist/404.html` is copied from `index.html` for SPA routing.
+- **Backend**: Deploy `backend/` to a Node host (e.g. Render via `backend/render.yaml`). Set `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_URL` (and optionally `VITE_API_URL` to point to this backend).
+
+## Customization
+
+- **Branding & SEO**: Edit `src/constants/companyInfo.js` (name, contact, URLs, hours, schema helpers). Used by `SEOHead`, `SchemaMarkup`, and related components.
+- **Styling**: Tailwind in components; theme in `tailwind.config.js`.
+- **Routes**: Add lazy imports and `<Route>` entries in `src/App.jsx`; add page under `src/pages/` (or `portal/`, `admin/`).
+
+## License
 
 This project is private and proprietary to OndoSoft.
 
-## 🤝 Contributing
+## Contributing
 
-This is a private project. For internal contributions, please follow the established coding standards and component patterns.
+Internal contributions only. Follow existing patterns (see `llm.txt` for architecture and conventions).
