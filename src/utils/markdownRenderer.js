@@ -22,7 +22,7 @@ export const renderMarkdown = (text) => {
 
   lines.forEach((line, index) => {
     if (line.trim() === '') {
-      elements.push(<br key={`br-${index}`} />);
+      elements.push(React.createElement('br', { key: `br-${index}` }));
       return;
     }
 
@@ -33,12 +33,14 @@ export const renderMarkdown = (text) => {
     fetch('http://127.0.0.1:7243/ingest/4ed8e0b4-0b62-40c2-b89e-683e2b0cadf2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'markdownRenderer.js:25',message:'Processed line',data:{lineIndex:index,processedType:Array.isArray(processed)?'array':typeof processed,processedLength:Array.isArray(processed)?processed.length:null},timestamp:Date.now(),runId:'run1',hypothesisId:'B'})}).catch(()=>{});
     // #endregion
     
-    elements.push(
-      <span key={`line-${index}`}>
-        {processed}
-        {index < lines.length - 1 && <br />}
-      </span>
-    );
+    elements.push(React.createElement(
+      'span',
+      { key: `line-${index}` },
+      processed,
+      index < lines.length - 1
+        ? React.createElement('br', null)
+        : null
+    ));
   });
 
   return elements;
@@ -107,33 +109,41 @@ const processInlineMarkdown = (text) => {
     // Add match content
     if (match.type === 'url') {
       parts.push(
-        <a
-          key={`link-${match.start}`}
-          href={match.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-orange-600 hover:text-orange-700 underline font-medium break-all"
-        >
-          {match.url}
-        </a>
+        React.createElement(
+          'a',
+          {
+            key: `link-${match.start}`,
+            href: match.url,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            className: 'text-orange-600 hover:text-orange-700 underline font-medium break-all',
+          },
+          match.url
+        )
       );
     } else if (match.type === 'bold') {
       parts.push(
-        <strong key={`bold-${match.start}`} className="font-semibold">
-          {match.content}
-        </strong>
+        React.createElement(
+          'strong',
+          { key: `bold-${match.start}`, className: 'font-semibold' },
+          match.content
+        )
       );
     } else if (match.type === 'italic') {
       parts.push(
-        <em key={`italic-${match.start}`} className="italic">
-          {match.content}
-        </em>
+        React.createElement(
+          'em',
+          { key: `italic-${match.start}`, className: 'italic' },
+          match.content
+        )
       );
     } else if (match.type === 'code') {
       parts.push(
-        <code key={`code-${match.start}`} className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono">
-          {match.content}
-        </code>
+        React.createElement(
+          'code',
+          { key: `code-${match.start}`, className: 'bg-gray-100 px-1 py-0.5 rounded text-xs font-mono' },
+          match.content
+        )
       );
     }
 
