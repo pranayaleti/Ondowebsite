@@ -95,7 +95,7 @@ const TermsOfUsePage = () => {
                 <div>
                   <h2 className="text-3xl font-bold text-white mb-4">3. Services</h2>
                   <p className="leading-relaxed">
-                    Ondosoft provides software development, freelancing, and SaaS application services. All services are provided subject to:
+                    Ondosoft provides software development and SaaS application services. All services are provided subject to:
                   </p>
                   <ul className="list-disc pl-6 space-y-2 mt-4">
                     <li>Written service agreements or contracts</li>

@@ -19,7 +19,7 @@ const Services = () => {
           </span>
         </h1>
         <span className="bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-full px-4 py-2 text-sm font-medium backdrop-blur-sm">
-        Hire developers for React, Node.js, Python, Java, and cloud-native applications
+        Product teams for React, Node.js, Python, and cloud-native builds
         </span>
       </div>
       <div className="flex flex-wrap mt-10 lg:mt-20">
@@ -50,8 +50,7 @@ const Services = () => {
           </span>
         </h2>
         <p className="text-center text-neutral-200 text-lg mt-4 max-w-3xl mx-auto leading-relaxed">
-          From initial consultation to final deployment, we follow a proven process 
-          that ensures your project is delivered on time, on budget, and exceeds expectations.
+          From first workshop to launch, we follow a transparent, proven process so your release lands on time, on budget, and ready for scale.
         </p>
         
         <div className="flex flex-wrap justify-center mt-12">

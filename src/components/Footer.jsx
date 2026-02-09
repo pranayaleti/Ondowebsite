@@ -1,13 +1,9 @@
 import { Link } from "react-router-dom";
 import { memo, useMemo } from "react";
-import { SERVICE_AREAS } from "../utils/unifiedData.js";
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 import { navItems } from "../constants/data";
 
 const Footer = ({ hideFeedbackCta = false }) => {
-  // Get service areas data from consolidated utility
-  const { states, topCities } = SERVICE_AREAS;
-  
   // Memoize links to prevent recalculation on every render
   const quickLinks = useMemo(() => {
     const allLinks = [
@@ -30,7 +26,7 @@ const Footer = ({ hideFeedbackCta = false }) => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": companyInfo.name,
-    "description": "Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. Ondosoft is a nationwide software development company offering freelancing, full stack development, SaaS solutions, and enterprise applications. We serve clients across all 50 states.",
+    "description": "Ondosoft is a US-based product team building custom software, SaaS platforms, and AI-enabled experiences for businesses nationwide.",
     "url": companyInfo.urls.website,
     "logo": `${companyInfo.urls.website}/logo.png`,
     "contactPoint": { ...getContactPointSchema("customer service"), availableLanguage: "English" },
@@ -40,8 +36,7 @@ const Footer = ({ hideFeedbackCta = false }) => {
       "name": "United States"
     },
     "serviceType": [
-      "Freelancing Services",
-      "Full Stack Development", 
+      "Full Stack Development",
       "SaaS Applications",
       "Web Development",
       "Mobile App Development",
@@ -65,7 +60,7 @@ const Footer = ({ hideFeedbackCta = false }) => {
           <div className="pr-8">
             <h3 className="text-xl font-bold mb-3">Ondosoft</h3>
             <p className="text-sm leading-relaxed">
-              Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. We serve clients across all 50 states.
+              Ondosoft is a senior product team that designs, builds, and maintains modern software. We ship secure web, mobile, and platform experiences with clear communication and dependable support.
             </p>
           </div>
 
@@ -148,7 +143,7 @@ const Footer = ({ hideFeedbackCta = false }) => {
         <div className="mt-8 border-t border-gray-700 pt-4 pb-4">
           {/* Mobile Layout - Two lines */}
           <div className="flex flex-col items-center gap-2 text-xs text-gray-400 px-4 md:hidden">
-            <div className="text-center">© {new Date().getFullYear()} Ondosoft. All rights reserved. Freelancing | Full Stack Development | SaaS Applications</div>
+            <div className="text-center">© {new Date().getFullYear()} Ondosoft. All rights reserved. Software Development & SaaS Platforms</div>
             <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4">
               <Link to="/legal" className="hover:text-orange-500 hover:underline whitespace-nowrap">Legal</Link>
               <Link to="/nda" className="hover:text-orange-500 hover:underline whitespace-nowrap">NDA</Link>
@@ -164,7 +159,7 @@ const Footer = ({ hideFeedbackCta = false }) => {
           
           {/* Desktop Layout - Single line with gap, centered */}
           <div className="hidden md:flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 px-4">
-            <span className="whitespace-nowrap">© {new Date().getFullYear()} Ondosoft. All rights reserved. Freelancing | Full Stack Development | SaaS Applications</span>
+            <span className="whitespace-nowrap">© {new Date().getFullYear()} Ondosoft. All rights reserved. Software Development & SaaS Platforms</span>
             <span>|</span>
             <Link to="/legal" className="hover:text-orange-500 hover:underline whitespace-nowrap">Legal</Link>
             <Link to="/nda" className="hover:text-orange-500 hover:underline whitespace-nowrap">NDA</Link>
@@ -176,32 +171,6 @@ const Footer = ({ hideFeedbackCta = false }) => {
           </div>
         </div>
 
-        {/* Hidden SEO Section - Service Areas for Search Engines */}
-        <div style={{ display: 'none' }} aria-hidden="true">
-          <h2>Software Development Services by State</h2>
-          <p>Ondosoft provides freelancing, full stack development, and SaaS solutions across all 50 states:</p>
-          <ul>
-            {states.map(state => (
-              <li key={state.slug}>
-                <a href={`/services/${state.slug}`}>
-                  Software development services in {state.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-          
-          <h2>Top Cities for Software Development</h2>
-          <p>Leading software development company serving major metropolitan areas:</p>
-          <ul>
-            {topCities.map(city => (
-              <li key={city.slug}>
-                <a href={`/services/${city.slug}`}>
-                  Freelancing and full stack development in {city.displayName}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
       </footer>
     </>
   );

@@ -21,7 +21,7 @@ const ServicesPage = () => {
         "@type": "Service",
         "@id": `${companyInfo.urls.website}/services#services`,
         "name": "Software Development Services",
-        "description": "Full stack software development, web applications, mobile apps, and SaaS platform development",
+        "description": "Full stack web, mobile, and platform development with a senior product team.",
         "provider": {
           "@id": `${companyInfo.urls.website}/#organization`
         },
@@ -92,15 +92,15 @@ const ServicesPage = () => {
   return (
     <>
       <SEOHead
-        title="Software Development Services | Full Stack, SaaS & Freelancing | Ondosoft"
-        description="Professional software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions. Serving businesses across the USA with React, Node.js, Python, and cloud technologies. Start your free consultation today!"
-        keywords="software development services, full stack development, SaaS development, freelancing services, web app development, mobile app development, React, Node.js, Python, Java, cloud deployment, hire developers"
+        title="Software Development Services | Ondosoft"
+        description="Custom software delivery from a US-based product team. We build and scale web apps, SaaS platforms, mobile experiences, and cloud infrastructure with clear roadmaps and reliable support."
+        keywords="software development services, web app development, SaaS development, mobile app development, cloud engineering"
         canonicalUrl={canonical}
         structuredData={servicesStructuredData}
       />
       <ServiceSchema
         serviceName="Software Development Services"
-        serviceDescription="Comprehensive software development services including full stack web development, SaaS platform creation, mobile app development, and freelancing solutions across the United States."
+        serviceDescription="Comprehensive software development services including full stack web development, SaaS platform creation, and mobile app development across the United States."
         serviceType="Software Development"
         pageUrl={`${companyInfo.urls.website}/services`}
       />

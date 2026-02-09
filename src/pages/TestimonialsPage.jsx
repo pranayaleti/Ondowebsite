@@ -19,7 +19,7 @@ const TestimonialsPage = () => {
         "@type": "ItemList",
         "@id": `${canonical}#testimonials`,
         "name": "Ondosoft Client Testimonials",
-        "description": "Real client reviews and testimonials for Ondosoft's software development, SaaS, and freelancing services",
+        "description": "Real client reviews and testimonials for Ondosoft's software development and SaaS services",
         "itemListElement": [
           {
             "@type": "Review",
@@ -71,8 +71,8 @@ const TestimonialsPage = () => {
     <>
       <SEOHead
         title="Client Testimonials | Ondosoft Software Development Reviews"
-        description="Read real client testimonials and reviews for Ondosoft's software development, SaaS solutions, and freelancing services. See why businesses choose us for React, Node.js, and Python projects. 5-star rated development company."
-        keywords="ondosoft reviews, software development testimonials, SaaS development reviews, freelancing testimonials, client feedback, developer reviews"
+        description="Read real client testimonials and reviews for Ondosoft's software development and SaaS solutions. See why teams choose us for React, Node.js, and Python projects. 5-star rated development company."
+        keywords="ondosoft reviews, software development testimonials, SaaS development reviews, client feedback, developer reviews"
         canonicalUrl={canonical}
         structuredData={testimonialsStructuredData}
       />

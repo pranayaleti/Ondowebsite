@@ -1,197 +1,21 @@
-# Comprehensive robots.txt for Ondosoft.com
-# Optimized for SEO and Search Engine Crawling
-# Last Updated: 2024-12-19
+# robots.txt for Ondosoft
+# Simplified to keep important routes indexable
 
-# ============================================
-# DEFAULT RULES - All Search Engines
-# ============================================
 User-agent: *
 Allow: /
 
-# Disallow admin and private areas
 Disallow: /admin/
+Disallow: /dashboard/
 Disallow: /portal/
 Disallow: /auth/
 Disallow: /sign-in
 Disallow: /sign-up
-Disallow: /private/
-Disallow: /_next/
 Disallow: /api/
-Disallow: /server/
+Disallow: /_next/
 Disallow: /node_modules/
 
-# Disallow query parameters that don't add value
-Disallow: /*?*utm_*
-Disallow: /*?*ref=*
-Disallow: /*?*fbclid=*
-Disallow: /*?*gclid=*
-Disallow: /*?*_ga=*
-
-# Disallow file types that shouldn't be indexed
-Disallow: /*.json$
-Disallow: /*.xml$
-Disallow: /*.txt$
-Disallow: /sw.js
-Disallow: /service-worker.js
-
-# Allow important directories explicitly
-Allow: /services/
-Allow: /products/
-Allow: /pricing/
-Allow: /contact/
-Allow: /about/
-Allow: /testimonials/
-Allow: /faq/
-Allow: /blogs/
-Allow: /blog/
-Allow: /portfolio/
-Allow: /legal/
-Allow: /privacy-policy/
-Allow: /terms-of-use/
-Allow: /nda/
-Allow: /licensing/
-Allow: /accessibility/
-Allow: /capabilities-deck/
-Allow: /sitemap/
 Allow: /sitemap.xml
-Allow: /robots.txt
+Allow: /sitemap-blogs.xml
 
-# ============================================
-# GOOGLE SPECIFIC RULES
-# ============================================
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-# Google Image Bot
-User-agent: Googlebot-Image
-Allow: /assets/
-Allow: /assets/images/
-Allow: /logo.png
-Allow: /dist/assets/images/
-Disallow: /admin/
-Disallow: /portal/
-Disallow: /auth/
-
-# Google Mobile Bot
-User-agent: Googlebot-Mobile
-Allow: /
-Crawl-delay: 0
-
-# Google News Bot
-User-agent: Googlebot-News
-Allow: /blogs/
-Allow: /blog/
-Disallow: /admin/
-Disallow: /portal/
-
-# ============================================
-# BING SPECIFIC RULES
-# ============================================
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
-
-# Bing Preview Bot
-User-agent: BingPreview
-Allow: /
-Crawl-delay: 1
-
-# ============================================
-# OTHER MAJOR SEARCH ENGINES
-# ============================================
-User-agent: Slurp
-Allow: /
-Crawl-delay: 1
-
-User-agent: DuckDuckBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: Baiduspider
-Allow: /
-Crawl-delay: 2
-
-User-agent: Yandex
-Allow: /
-Crawl-delay: 1
-
-User-agent: facebookexternalhit
-Allow: /
-Crawl-delay: 1
-
-User-agent: Twitterbot
-Allow: /
-Crawl-delay: 1
-
-User-agent: LinkedInBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: WhatsApp
-Allow: /
-Crawl-delay: 1
-
-User-agent: Applebot
-Allow: /
-Crawl-delay: 1
-
-# ============================================
-# AI CRAWLERS (ChatGPT, Gemini, Claude, etc.)
-# ============================================
-User-agent: GPTBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: ChatGPT-User
-Allow: /
-Crawl-delay: 1
-
-User-agent: CCBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: anthropic-ai
-Allow: /
-Crawl-delay: 1
-
-User-agent: Claude-Web
-Allow: /
-Crawl-delay: 1
-
-User-agent: PerplexityBot
-Allow: /
-Crawl-delay: 1
-
-User-agent: YouBot
-Allow: /
-Crawl-delay: 1
-
-# ============================================
-# BLOCK BAD BOTS
-# ============================================
-User-agent: AhrefsBot
-Crawl-delay: 10
-
-User-agent: SemrushBot
-Crawl-delay: 10
-
-User-agent: MJ12bot
-Crawl-delay: 10
-
-User-agent: DotBot
-Crawl-delay: 10
-
-# ============================================
-# SITEMAPS
-# ============================================
 Sitemap: https://ondosoft.com/sitemap.xml
 Sitemap: https://ondosoft.com/sitemap-blogs.xml
-
-# ============================================
-# NOTES
-# ============================================
-# - Host directive is deprecated, use Sitemap instead
-# - Crawl-delay helps prevent server overload
-# - Explicit Allow rules help with crawl budget optimization
-# - AI crawlers are allowed to improve AI search visibility

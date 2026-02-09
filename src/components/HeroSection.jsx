@@ -44,7 +44,7 @@ const HeroSection = ({ onOpenConsultation }) => {
           <div className="mb-4 sm:mb-5 md:mb-6">
             <span className="inline-flex items-center bg-orange-500/20 text-orange-300 px-4 py-2 rounded-full text-sm font-medium border border-orange-500/30">
               <Star className="h-4 w-4 mr-2" />
-              #1 Rated Software Development Company
+              Product team that ships to production
             </span>
           </div>
           
@@ -82,27 +82,26 @@ const HeroSection = ({ onOpenConsultation }) => {
           </div>
           
           <p className="text-lg sm:text-xl text-gray-200 mb-6 sm:mb-7 md:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-            <strong className="text-orange-400 font-semibold">Ondosoft</strong> is a premium software development company delivering expert solutions for React, Node.js, Python, and full stack development. 
-            From startups to enterprises, we build scalable software that drives real business growth with enterprise quality at competitive rates.
+            <strong className="text-orange-400 font-semibold">Ondosoft</strong> is a senior product team that designs, builds, and scales secure software. We move quickly without cutting corners—pairing clear strategy with production-grade engineering for web, mobile, and AI-powered experiences.
           </p>
           
           {/* Key Benefits */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto lg:mx-0">
             <div className="flex items-center text-gray-200">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
-              <span>Free Consultation & Strategy Session</span>
+              <span>Strategy-first discovery & roadmap</span>
             </div>
             <div className="flex items-center text-gray-200">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
-              <span>13+ Years Experience</span>
+              <span>Senior engineers, not freelancers</span>
             </div>
             <div className="flex items-center text-gray-200">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
-              <span>50+ Projects Delivered</span>
+              <span>Dozens of launches across SaaS and enterprise</span>
             </div>
             <div className="flex items-center text-gray-200">
               <CheckCircle className="h-5 w-5 text-orange-400 mr-3 flex-shrink-0" aria-hidden="true" />
-              <span>24/7 Support & Maintenance</span>
+              <span>Ongoing support with measurable uptime</span>
             </div>
           </div>
           
@@ -145,13 +144,13 @@ const HeroSection = ({ onOpenConsultation }) => {
                   <Star key={i} className="h-4 w-4 fill-current" />
                 ))}
               </div>
-              <span className="text-sm">4.9/5 Client Rating</span>
+              <span className="text-sm">4.9/5 client satisfaction</span>
             </div>
             <div className="text-sm">
-              <span className="text-orange-400 font-semibold">50+</span> Happy Clients
+              <span className="text-orange-400 font-semibold">50+</span> launches delivered
             </div>
             <div className="text-sm">
-              <span className="text-orange-400 font-semibold">50</span> States Served
+              <span className="text-orange-400 font-semibold">Nationwide</span> collaboration
             </div>
           </div>
         </div>

@@ -19,7 +19,7 @@ const ContactPage = () => {
         "@id": `${canonical}#contact-page`,
         "name": `Contact ${companyInfo.name}`,
         "url": canonical,
-        "description": "Get in touch with Ondosoft for software development, freelancing, and SaaS solutions. Hire developers for your next project.",
+        "description": "Get in touch with Ondosoft for custom software, SaaS, and platform development support.",
         "mainEntity": {
           "@type": "Organization",
           "name": companyInfo.name,
@@ -50,9 +50,9 @@ const ContactPage = () => {
   return (
     <>
       <SEOHead
-        title={`Contact ${companyInfo.name} | Hire Developers for Software Development & SaaS Solutions`}
-        description={`Contact ${companyInfo.name} for professional software development, freelancing services, and SaaS solutions. Start your free consultation for your React, Node.js, Python, or Java project. Serving businesses across the USA. Call ${companyInfo.phoneDisplay} or email us today!`}
-        keywords="contact ondosoft, hire developers, software development contact, SaaS development quote, freelancing services, React developers, Node.js developers, Python developers"
+        title={`Contact ${companyInfo.name} | Software Development & Platform Support`}
+        description={`Contact ${companyInfo.name} for custom software, SaaS, and cloud development. Schedule a strategy call about your React, Node.js, Python, or platform project. Call ${companyInfo.phoneDisplay} or email us today.`}
+        keywords="contact ondosoft, software development contact, SaaS development quote, platform engineering, React developers, Node.js developers, Python developers"
         canonicalUrl={canonical}
         structuredData={contactStructuredData}
       />

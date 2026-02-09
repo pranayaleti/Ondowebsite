@@ -19,11 +19,11 @@ const AboutPage = () => {
         "@id": `${canonical}#about-page`,
         "name": "About Ondosoft",
         "url": canonical,
-        "description": "Learn about Ondosoft's mission, team, and expertise in software development, SaaS solutions, and freelancing services. Serving businesses across the USA with React, Node.js, Python, and cloud technologies.",
+        "description": "Learn about Ondosoft's mission, team, and expertise in software development, SaaS platforms, and product delivery. Serving businesses across the USA with React, Node.js, Python, and cloud technologies.",
         "mainEntity": {
           "@type": "Organization",
           "name": "Ondosoft",
-          "description": "Full stack software development, freelancing, and SaaS solutions company",
+          "description": "Full stack software development and SaaS solutions company",
           "foundingDate": companyInfo.foundingDate,
           "numberOfEmployees": "10-50",
           "industry": "Software Development",
@@ -33,8 +33,7 @@ const AboutPage = () => {
             "Python Development",
             "SaaS Development",
             "Mobile App Development",
-            "Cloud Deployment",
-            "Freelancing Services"
+            "Cloud Deployment"
           ]
         }
       },
@@ -61,9 +60,9 @@ const AboutPage = () => {
   return (
     <>
       <SEOHead
-        title="About Ondosoft | Full Stack Software Development Team & Company"
-        description="Learn about Ondosoft's mission to deliver exceptional software development, SaaS solutions, and freelancing services. Our team of React, Node.js, and Python developers serves businesses across the USA. Founded by Pranay Reddy Aleti, MS Computer Science."
-        keywords="about ondosoft, software development company, full stack developers, SaaS development team, freelancing company, React developers, Node.js team, Python developers"
+        title="About Ondosoft | Full Stack Software Development Team"
+        description="Learn about Ondosoft's mission to deliver exceptional software development and SaaS solutions. Our React, Node.js, and Python engineers partner with teams across the USA. Founded by Pranay Reddy Aleti, MS Computer Science."
+        keywords="about ondosoft, software development company, full stack developers, SaaS development team, React developers, Node.js team, Python developers"
         canonicalUrl={getCanonicalUrl('/about')}
         structuredData={aboutStructuredData}
       />

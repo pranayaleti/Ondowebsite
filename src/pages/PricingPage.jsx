@@ -23,7 +23,7 @@ const PricingPage = () => {
         "@type": "Service",
         "@id": `${canonical}#pricing`,
         "name": "Software Development Pricing",
-        "description": "Transparent pricing for software development, SaaS solutions, and freelancing services. Choose from small business websites to enterprise SaaS platforms.",
+        "description": "Transparent pricing for software development, SaaS solutions, and platform builds. Choose from starter websites to enterprise-grade launches.",
         "provider": {
           "@type": "Organization",
           "name": companyInfo.name
@@ -61,9 +61,9 @@ const PricingPage = () => {
   return (
     <>
       <SEOHead
-        title="Software Development Pricing | Ondosoft Freelancing & SaaS Solutions"
-        description="Transparent pricing for software development services. Get quotes for React, Node.js, Python web apps, SaaS platforms, and freelancing solutions. Serving businesses across the USA. Starting from $1,200 for starter websites."
-        keywords="software development pricing, hire developers cost, SaaS development pricing, freelancing rates, React development cost, Node.js pricing, web app development cost"
+        title="Software Development Pricing | Ondosoft"
+        description="Transparent pricing for software development services. Get quotes for React, Node.js, and Python web apps, SaaS platforms, and cloud builds. Serving businesses across the USA."
+        keywords="software development pricing, SaaS development pricing, React development cost, Node.js pricing, web app development cost, cloud development pricing"
         canonicalUrl={canonical}
         structuredData={pricingStructuredData}
       />

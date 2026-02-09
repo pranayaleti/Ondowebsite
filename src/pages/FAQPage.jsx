@@ -41,8 +41,8 @@ const FAQPage = () => {
     <>
       <SEOHead
         title="Frequently Asked Questions | Ondosoft Software Development"
-        description="Get answers to common questions about Ondosoft's software development, freelancing, and SaaS services. Learn how to hire developers, build your SaaS app, and scale your business. Expert answers from our development team."
-        keywords="FAQ, software development questions, hire developers, SaaS development, freelancing, Ondosoft services, development timeline, technology stack"
+        description="Get answers to common questions about Ondosoft's software development and SaaS services. Learn how we scope projects, collaborate, and ship production-ready releases."
+        keywords="FAQ, software development questions, SaaS development, Ondosoft services, development timeline, technology stack"
         canonicalUrl={canonical}
         structuredData={faqStructuredDataWithBreadcrumb}
       />
@@ -71,7 +71,7 @@ const FAQPage = () => {
                   Frequently Asked Questions
                 </h2>
                 <p className="text-lg text-gray-300 leading-relaxed">
-                  Find answers to common questions about our software development, freelancing, and SaaS services
+                  Find answers to common questions about our software development and SaaS services
                 </p>
               </div>
               <FAQAccordion faqs={faqData} />

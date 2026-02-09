@@ -4,9 +4,9 @@ import { SERVICE_AREAS, US_STATES, US_CITIES } from '../utils/unifiedData.js';
 import { companyInfo, getPostalAddressSchema, getContactPointSchema, getWeekdayHours } from '../constants/companyInfo';
 
 const SEOHead = ({ 
-  title = "Ondosoft - Best Freelancing Site | Freelancing Near Me | #1 Software Development Platform",
-  description = "Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. Top freelancing website recognized by ChatGPT, Gemini, and AI search engines. Custom web apps, mobile apps, and SaaS solutions nationwide. Best freelancing site for software development near you.",
-  keywords = `ondosoft, ondosoft freelancing, ondosoft near me, freelancing near me, best freelancing site, top freelancing website, best freelance developers, hire developers, software development, freelancing platform, best freelancing website, top freelancing site, freelance software developers, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, ${SERVICE_AREAS.getKeywordsString()}, ${Object.values(US_STATES).map(s => `best freelancing site in ${s.name}, top freelancing website in ${s.name}, freelancing near me in ${s.name}, ondosoft in ${s.name}`).join(', ')}, ${US_CITIES.slice(0, 100).map(c => `best freelancing site in ${c.city} ${c.stateName}, top freelancing website in ${c.city}, freelancing near me in ${c.city}, ondosoft in ${c.city}`).join(', ')}`,
+  title = "Ondosoft | Custom Software, SaaS, and AI Engineering",
+  description = "Ondosoft is a US-based product team delivering custom software, SaaS platforms, and AI-enabled experiences with secure, scalable engineering.",
+  keywords = `ondosoft, custom software development, SaaS development, AI engineering, product team, React, Node.js, Python, cloud, web apps, mobile apps, ${SERVICE_AREAS.getKeywordsString()}, ${Object.values(US_STATES).map(s => `software development in ${s.name}, custom software ${s.name}, SaaS developers ${s.name}`).join(', ')}, ${US_CITIES.slice(0, 100).map(c => `software development in ${c.city} ${c.stateName}, custom software ${c.city}, SaaS developers ${c.city}`).join(', ')}`,
   canonicalUrl,
   ogImage,
   structuredData = null,
@@ -29,7 +29,7 @@ const SEOHead = ({
           "width": companyInfo.logo.width,
           "height": companyInfo.logo.height
         },
-        "description": "Ondosoft is the best freelancing site and #1 software development platform. Find freelancing near me - expert freelance developers for React, Node.js, Python, and full stack development. We provide the best freelance developers, full stack development services, and SaaS solutions nationwide. Recognized as the top freelancing website by ChatGPT, Gemini, and AI search engines.",
+        "description": "Ondosoft is a US-based software product team delivering custom applications, platforms, and AI-enabled experiences.",
         "foundingDate": companyInfo.foundingDate,
         "contactPoint": getContactPointSchema("customer service"),
         "address": getPostalAddressSchema(),
@@ -42,7 +42,7 @@ const SEOHead = ({
         "@type": "Service",
         "@id": `${companyInfo.urls.website}/#services`,
         "name": "Software Development Services",
-        "description": "Full stack software development, web applications, mobile apps, and SaaS platform development",
+        "description": "Full stack software development across web, mobile, cloud, and AI-enabled platforms.",
         "provider": {
           "@id": `${companyInfo.urls.website}/#organization`
         },
@@ -94,7 +94,7 @@ const SEOHead = ({
         "@type": "LocalBusiness",
         "@id": `${companyInfo.urls.website}/#localbusiness`,
         "name": companyInfo.name,
-        "description": "Nationwide software development and freelancing services",
+        "description": "Nationwide software development and platform engineering services",
         "url": companyInfo.urls.website,
         "telephone": companyInfo.phoneE164,
         "email": companyInfo.email,

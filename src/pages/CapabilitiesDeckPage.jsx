@@ -87,7 +87,7 @@ const CapabilitiesDeckPage = () => {
                 <h2 className="text-3xl font-bold text-white mb-6 print:text-black">Company Overview</h2>
                 <div className="text-gray-300 space-y-4 print:text-gray-700">
                   <p className="text-lg leading-relaxed">
-                    <strong className="text-orange-500 print:text-orange-600">Ondosoft</strong> is a nationwide software development company specializing in freelancing, full stack development, and SaaS solutions for businesses across all 50 states. We combine technical expertise with business understanding to deliver high-quality software solutions that drive growth and innovation.
+                    <strong className="text-orange-500 print:text-orange-600">Ondosoft</strong> is a nationwide software development company specializing in full stack and SaaS solutions for businesses across all 50 states. We combine technical expertise with business understanding to deliver high-quality software that drives growth and innovation.
                   </p>
                   <div className="grid md:grid-cols-2 gap-6 mt-6">
                     <div>
