@@ -50,7 +50,7 @@ const SignInPage = () => {
     try {
       // Google OAuth implementation
       // For now, this is a placeholder - you'll need to integrate with Google OAuth
-      window.location.href = `${API_URL}/auth/google`;
+      window.location.href = `${API_BASE}/auth/google`;
     } catch (err) {
       setError(err.message || 'Google sign-in failed. Please try again.');
       setLoading(false);

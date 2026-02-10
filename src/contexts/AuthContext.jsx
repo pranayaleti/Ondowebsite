@@ -28,10 +28,11 @@ export const AuthProvider = ({ children }) => {
   const isCheckingSessionRef = useRef(false);
 
   useEffect(() => {
-    // Only check session once on mount
+    // Only check session once on mount. Do NOT set isCheckingSessionRef here—
+    // checkSession sets it to prevent concurrent calls; setting it here caused
+    // the guard inside checkSession to return early and never call getSession().
     if (!hasCheckedSessionRef.current && !isCheckingSessionRef.current) {
       hasCheckedSessionRef.current = true;
-      isCheckingSessionRef.current = true;
       checkSession();
     }
   }, []);
@@ -44,11 +45,10 @@ export const AuthProvider = ({ children }) => {
   }, [user, loading]);
 
   const checkSession = async () => {
-    // Prevent multiple simultaneous session checks
-    if (isCheckingSessionRef.current && hasCheckedSessionRef.current) {
+    // Prevent multiple simultaneous session checks (re-entrancy only)
+    if (isCheckingSessionRef.current) {
       return;
     }
-    
     try {
       isCheckingSessionRef.current = true;
       

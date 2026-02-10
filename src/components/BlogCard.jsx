@@ -20,9 +20,9 @@ const BlogCard = memo(({ post, featured = false }) => {
       >
         {/* Image - Gestalt: Figure/Ground separation */}
         <div className={`relative overflow-hidden ${featured ? 'h-64' : 'h-56'} bg-gray-700/50`}>
-          {post.image ? (
+          {(post.image ?? post.featuredImage) ? (
             <img
-              src={post.image}
+              src={post.image ?? post.featuredImage}
               alt={post.title}
               width={featured ? 768 : 384}
               height={featured ? 256 : 224}
@@ -31,12 +31,13 @@ const BlogCard = memo(({ post, featured = false }) => {
               decoding="async"
               onError={(e) => {
                 e.target.style.display = 'none';
-                e.target.nextSibling.style.display = 'flex';
+                const fallback = e.target.nextElementSibling;
+                if (fallback && fallback.style) fallback.style.display = 'flex';
               }}
             />
           ) : null}
           <div 
-            className={`absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center ${post.image ? 'hidden' : 'flex'}`}
+            className={`absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center ${(post.image ?? post.featuredImage) ? 'hidden' : 'flex'}`}
           >
             <div className="text-gray-500 text-5xl font-bold">
               {post.title.charAt(0)}
@@ -56,7 +57,7 @@ const BlogCard = memo(({ post, featured = false }) => {
           {/* Category - Gestalt: Common region */}
           <div className="mb-4">
             <span className="inline-block bg-orange-500/15 text-orange-400 px-3 py-1.5 rounded-lg text-xs font-semibold border border-orange-500/30 uppercase tracking-wide">
-              {post.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              {(post.category ?? '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </span>
           </div>
 
@@ -83,7 +84,7 @@ const BlogCard = memo(({ post, featured = false }) => {
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5" />
-                <span className="font-medium">{post.readTime}</span>
+                <span className="font-medium">{post.readTime ?? post.readingTime ?? ''}</span>
               </div>
             </div>
             <div className="flex items-center gap-2 text-orange-400 font-semibold text-sm group-hover:text-orange-300 transition-colors">

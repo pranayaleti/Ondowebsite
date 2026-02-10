@@ -15,9 +15,11 @@ const BlogPage = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogData, setBlogData] = useState(null);
+  const [blogLoadError, setBlogLoadError] = useState(false);
 
   // Lazy load blogData
   useEffect(() => {
+    setBlogLoadError(false);
     import('../data/blogData').then(module => {
       setBlogData({
         blogPosts: module.blogPosts,
@@ -25,6 +27,8 @@ const BlogPage = () => {
         getFeaturedPosts: module.getFeaturedPosts,
         getRecentPosts: module.getRecentPosts
       });
+    }).catch(() => {
+      setBlogLoadError(true);
     });
   }, []);
 
@@ -41,7 +45,7 @@ const BlogPage = () => {
     return blogData.blogPosts.filter(post => {
       const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+                           (Array.isArray(post.tags) && post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())));
       
       const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
       
@@ -101,6 +105,42 @@ const BlogPage = () => {
       ]
     };
   }, [blogData]);
+
+  // Show error state if blog data failed to load
+  if (blogLoadError) {
+    return (
+      <>
+        <SEOHead
+          title="Business Technology Blogs | Ondosoft"
+          description="Get expert insights on small business technology, automation, SaaS solutions, and web development."
+          canonicalUrl={getCanonicalUrl('/blogs')}
+        />
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <div className="text-center">
+            <p className="text-gray-300 mb-4">Unable to load blog posts.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setBlogLoadError(false);
+                setBlogData(null);
+                import('../data/blogData').then(module => {
+                  setBlogData({
+                    blogPosts: module.blogPosts,
+                    blogCategories: module.blogCategories,
+                    getFeaturedPosts: module.getFeaturedPosts,
+                    getRecentPosts: module.getRecentPosts
+                  });
+                }).catch(() => setBlogLoadError(true));
+              }}
+              className="bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   // Show loading state while blogData is loading
   if (!blogData) {

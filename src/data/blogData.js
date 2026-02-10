@@ -4556,7 +4556,7 @@ export const getFeaturedPosts = () => {
 };
 
 export const getRecentPosts = (limit = 3) => {
-  return blogPosts
+  return [...blogPosts]
     .sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate))
     .slice(0, limit);
 };
@@ -4566,7 +4566,7 @@ export const getRelatedPosts = (currentPost, limit = 3) => {
     .filter(post => 
       post.id !== currentPost.id && 
       (post.category === currentPost.category || 
-       post.tags.some(tag => currentPost.tags.includes(tag)))
+       (Array.isArray(post.tags) && Array.isArray(currentPost.tags) && post.tags.some(tag => currentPost.tags.includes(tag))))
     )
     .slice(0, limit);
 };

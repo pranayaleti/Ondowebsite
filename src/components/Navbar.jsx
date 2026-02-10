@@ -1,13 +1,17 @@
-import { useState, useEffect, useCallback, useMemo, memo } from "react";
+import { useState, useEffect, useCallback, useMemo, memo, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import OptimizedImage from "./OptimizedImage";
 import { navItems } from "../constants/data";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
+const HAMBURGER_GUARD_MS = 300;
+
 const Navbar = () => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const lastToggleTimeRef = useRef(0);
+  const mobileDrawerOpenRef = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, signout } = useAuth();
@@ -42,9 +46,28 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleNavbar = useCallback(() => {
-    setMobileDrawerOpen(prev => !prev);
+  const toggleNavbar = useCallback((source = 'unknown') => {
+    const now = Date.now();
+    const elapsed = now - lastToggleTimeRef.current;
+    const isCurrentlyOpen = mobileDrawerOpenRef.current;
+    // Only apply guard when CLOSING (prevents overlay/close from firing right after open).
+    // Never block OPEN so scroll + tap hamburger always works.
+    if (isCurrentlyOpen && elapsed < HAMBURGER_GUARD_MS) {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/4ed8e0b4-0b62-40c2-b89e-683e2b0cadf2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Navbar.jsx:toggleNavbar',message:'toggle ignored (guard on close)',data:{elapsed,source},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
+      return;
+    }
+    lastToggleTimeRef.current = now;
+    setMobileDrawerOpen(prev => {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/4ed8e0b4-0b62-40c2-b89e-683e2b0cadf2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Navbar.jsx:toggleNavbar',message:'toggle applied',data:{prev,next:!prev,source},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
+      return !prev;
+    });
   }, []);
+
+  mobileDrawerOpenRef.current = mobileDrawerOpen;
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -109,16 +132,17 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 py-3 transition-all duration-300 ${
+      className={`sticky top-0 left-0 right-0 z-[60] w-full overflow-visible py-3 transition-all duration-300 ${
         scrolled
           ? "backdrop-blur-lg border-b border-neutral-700/80 bg-white/95"
           : "bg-white/90 border-transparent"
       }`}
+      style={{ paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }}
     >
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between">
-          {/* Logo Section */}
-          <div className="flex items-center">
+      <div className="max-w-7xl mx-auto px-4 overflow-visible">
+        <div className="flex items-center justify-between gap-2 min-h-[44px]">
+          {/* Logo Section - min-w-0 so it can shrink and hamburger is never pushed off */}
+          <div className="flex items-center min-w-0 flex-1">
             <Link
               to="/"
               onClick={handleLogoClick}
@@ -146,7 +170,7 @@ const Navbar = () => {
                   }}
                 />
               </div>
-              <span className="text-2xl font-bold text-gray-800">
+              <span className="text-2xl font-bold text-gray-800 truncate">
                 Ondosoft
               </span>
             </Link>
@@ -199,11 +223,14 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden">
+          {/* Mobile Menu Button - flex-shrink-0 so always visible; min touch target 44px */}
+          <div className="lg:hidden relative z-10 flex-shrink-0">
             <button 
-              onClick={toggleNavbar}
-              className="text-gray-700 hover:text-orange-500 p-2 rounded-md hover:bg-orange-50 transition-colors"
+              type="button"
+              onClick={() => toggleNavbar('button')}
+              className="text-gray-700 hover:text-orange-500 p-2 rounded-md hover:bg-orange-50 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-expanded={mobileDrawerOpen}
+              aria-label={mobileDrawerOpen ? 'Close menu' : 'Open menu'}
             >
               {mobileDrawerOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -211,15 +238,16 @@ const Navbar = () => {
         </div>
         {/* Mobile Navigation Drawer */}
         {mobileDrawerOpen && (
-          <div className="lg:hidden">
+          <div className="lg:hidden" aria-hidden="false">
             <div 
-              className="fixed inset-0 z-50 bg-black bg-opacity-50" 
-              onClick={toggleNavbar}
+              className="fixed inset-0 z-[70] bg-black bg-opacity-50" 
+              onClick={() => toggleNavbar('overlay')}
               style={{ touchAction: 'none' }}
-            ></div>
+              aria-hidden="true"
+            />
             <div 
-              className="fixed top-0 right-0 z-50 bg-gradient-to-b from-black to-gray-900 w-80 h-full shadow-xl transform transition-transform duration-300 ease-in-out overflow-y-auto"
-              style={{ touchAction: 'pan-y' }}
+              className="fixed top-0 right-0 z-[70] w-80 min-h-screen bg-gradient-to-b from-black to-gray-900 shadow-xl transition-transform duration-300 ease-in-out overflow-y-auto"
+              style={{ touchAction: 'pan-y', paddingRight: 'env(safe-area-inset-right)', paddingTop: 'env(safe-area-inset-top)', paddingBottom: 'env(safe-area-inset-bottom)' }}
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">
@@ -243,8 +271,10 @@ const Navbar = () => {
                     <span className="text-xl font-bold text-white">OndoSoft</span>
                   </div>
                   <button 
-                    onClick={toggleNavbar}
+                    type="button"
+                    onClick={() => toggleNavbar('drawer-close')}
                     className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Close menu"
                   >
                     <X className="h-6 w-6" />
                   </button>

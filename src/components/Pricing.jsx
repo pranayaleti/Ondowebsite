@@ -222,20 +222,20 @@ const Pricing = ({ onConsult }) => {
   };
 
   return (
-    <div className="mt-20 mb-20 md:mb-24 lg:mb-32">
-      <h2 className="text-3xl sm:text-5xl lg:text-6xl text-center my-8 tracking-wide">
+    <div className="mt-20 mb-20 md:mb-24 lg:mb-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 className="text-3xl sm:text-5xl lg:text-6xl text-center my-8 tracking-wide break-words">
         <span className="text-white">Service</span>
         <br />
         <span className="bg-gradient-to-r from-orange-400 to-orange-600 text-transparent bg-clip-text drop-shadow-lg">
           Packages
         </span>
       </h2>
-      <p className="text-center text-neutral-200 text-lg mb-12 max-w-3xl mx-auto leading-relaxed">
+      <p className="text-center text-neutral-200 text-base sm:text-lg mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
         Choose the package that best fits your business needs. All packages include
         professional development, testing, and deployment.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
         {cards.map((option, index) => {
           const isSelected = selectedIndex === index;
           return (
@@ -278,9 +278,9 @@ const Pricing = ({ onConsult }) => {
                 />
               </div>
 
-              <p className="mb-8">
-                <span className="text-5xl mr-2 text-white font-bold">{option.price}</span>
-                <span className="text-neutral-300 tracking-tight">Starting Price</span>
+              <p className="mb-8 flex items-start gap-1">
+                <span className="text-5xl mr-1 text-white font-bold">{option.price}</span>
+                <span className="text-xl text-neutral-300 -mt-2">*</span>
               </p>
 
               <ul className="flex-grow">

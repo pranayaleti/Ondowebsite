@@ -37,13 +37,6 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const AI_NAME = 'Arjun';
   const AI_TITLE = 'AI Assistant';
 
-  // Initialize session and conversation
-  useEffect(() => {
-    if (isOpen && !conversationStarted && !isInitializingRef.current) {
-      initializeConversation();
-    }
-  }, [isOpen, conversationStarted, initializeConversation]);
-
   // End conversation when modal closes
   useEffect(() => {
     if (!isOpen) {
@@ -301,6 +294,15 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
     }
   }, [createWelcomeMessage, isAuthenticated, user]);
 
+  // Initialize session and conversation (must be after initializeConversation is defined).
+  // Effect depends only on isOpen/conversationStarted to avoid TDZ; init is called inside.
+  useEffect(() => {
+    if (isOpen && !conversationStarted && !isInitializingRef.current) {
+      initializeConversation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, conversationStarted]);
+
   const generateSessionId = () => {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   };
@@ -494,7 +496,25 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
       await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 800));
 
       // Generate contextual response based on user input
-      const lowerInput = userInput.toLowerCase();
+      const lowerInput = userInput.toLowerCase().trim();
+      // Normalize slang/short forms for better intent matching (e.g. "whats your ph no?" -> contact intent)
+      const normalized = lowerInput
+        .replace(/\bph\s*no\b/g, 'phone number')
+        .replace(/\bphone\s*no\b/g, 'phone number')
+        .replace(/\bcontact\s*no\b/g, 'contact number')
+        .replace(/\bwhats\b/g, 'what is')
+        .replace(/\bwhats\s+your\b/g, 'what is your')
+        .replace(/\bur\b/g, 'your')
+        .replace(/\bpls\b/g, 'please')
+        .replace(/\bplz\b/g, 'please')
+        .replace(/\bu\b/g, 'you')
+        .replace(/\btel\b/g, 'phone')
+        .replace(/\bmobile\b/g, 'phone')
+        .replace(/\bcell\b/g, 'phone')
+        .replace(/\bnum\b/g, 'number')
+        .replace(/\bcall\s*back\b/g, 'callback');
+      const inputForMatch = normalized.length > 0 ? normalized : lowerInput;
+
       let response = '';
       let quickReplies = [];
 
@@ -510,40 +530,40 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           { label: 'Schedule a Call', value: 'schedule_call' },
           { label: 'Learn About Services', value: 'services' },
         ];
-      } else if (lowerInput.includes('pricing') || lowerInput.includes('price') || lowerInput.includes('cost') || lowerInput.includes('how much') || lowerInput.includes('quote')) {
+      } else if (inputForMatch.includes('pricing') || inputForMatch.includes('price') || inputForMatch.includes('cost') || inputForMatch.includes('how much') || inputForMatch.includes('quote') || inputForMatch.includes('rate') || inputForMatch.includes('budget')) {
         response = `Our pricing is customized based on your project needs. To get an accurate quote, I'll need a few details:\n\n• What type of project are you looking for?\n• What's your timeline?\n• What's your budget range?\n\nWould you like to share these details or schedule a call with our team?`;
         quickReplies = [
           { label: 'Schedule a Call', value: 'schedule_call' },
           { label: 'Share My Email', value: 'share_email' },
           { label: 'Tell You About My Project', value: 'project_info' },
         ];
-      } else if (lowerInput.includes('service') || lowerInput.includes('what do you do') || lowerInput.includes('what can you do') || lowerInput.includes('offer')) {
+      } else if (inputForMatch.includes('service') || inputForMatch.includes('what do you do') || inputForMatch.includes('what can you do') || inputForMatch.includes('offer') || inputForMatch.includes('what you do') || inputForMatch.includes('what do you offer')) {
         response = `We specialize in:\n\n• Web Development & Design\n• SEO & Digital Marketing\n• Custom Software Solutions\n• SaaS Development\n\nWhat do you need help with? I can connect you with the right team member.`;
         quickReplies = [
           { label: 'Get a Quote', value: 'pricing' },
           { label: 'See Examples', value: 'portfolio' },
           { label: 'Schedule a Call', value: 'schedule_call' },
         ];
-      } else if (lowerInput.includes('start') || lowerInput.includes('get started') || lowerInput.includes('begin') || lowerInput.includes('project_info')) {
+      } else if (inputForMatch.includes('start') || inputForMatch.includes('get started') || inputForMatch.includes('begin') || inputForMatch.includes('project_info') || inputForMatch.includes('get started') || inputForMatch.includes('want to start')) {
         response = `Great! To get started, I need:\n\n• Your email address\n• Brief description of your project\n• Your timeline\n\nShare your email and I'll have our team reach out within 24 hours.`;
         quickReplies = [
           { label: 'Share My Email', value: 'share_email' },
           { label: 'Schedule a Call', value: 'schedule_call' },
         ];
-      } else if (lowerInput.includes('contact') || lowerInput.includes('phone') || lowerInput.includes('reach')) {
+      } else if (inputForMatch.includes('contact') || inputForMatch.includes('phone') || inputForMatch.includes('reach') || inputForMatch.includes('dial') || (inputForMatch.includes('number') && (inputForMatch.includes('your') || inputForMatch.includes('phone') || inputForMatch.includes('contact'))) || /\b(ph\s*no|tel|mobile|cell)\b/.test(lowerInput)) {
         response = `Contact us:\n\n📧 ${companyInfo.email}\n📞 ${companyInfo.phoneDisplay}\n\nWould you like to schedule a call or share your email for a callback?`;
         quickReplies = [
           { label: 'Schedule a Call', value: 'schedule_call' },
           { label: 'Share My Email', value: 'share_email' },
         ];
-      } else if (lowerInput.includes('about') || lowerInput.includes('who are you') || lowerInput.includes('company')) {
+      } else if (inputForMatch.includes('about') || inputForMatch.includes('who are you') || inputForMatch.includes('company') || inputForMatch.includes('tell me about') || inputForMatch.includes('who is')) {
         response = `We're a full-stack software development company specializing in custom web applications, SaaS solutions, and digital marketing.\n\nBased in ${companyInfo.location.full}, serving clients nationwide.\n\nWould you like to see our work or get a quote?`;
         quickReplies = [
           { label: 'See Our Work', value: 'portfolio' },
           { label: 'Get a Quote', value: 'pricing' },
           { label: 'Schedule a Call', value: 'schedule_call' },
         ];
-      } else if (lowerInput.includes('portfolio') || lowerInput.includes('work') || lowerInput.includes('examples') || lowerInput.includes('projects') || lowerInput.includes('link')) {
+      } else if (inputForMatch.includes('portfolio') || inputForMatch.includes('work') || inputForMatch.includes('examples') || inputForMatch.includes('projects') || inputForMatch.includes('link') || inputForMatch.includes('show me') && (inputForMatch.includes('work') || inputForMatch.includes('project')) || inputForMatch.includes('your work')) {
         const portfolioUrl = `${companyInfo.urls.website}/portfolio`;
         response = `We've built:\n\n• E-commerce platforms\n• SaaS applications\n• Custom web apps\n• Digital marketing campaigns\n\n📁 View our portfolio:\n${portfolioUrl}\n\nThis showcases our best work across different industries and project types. Ready to start your project?`;
         quickReplies = [
@@ -551,16 +571,16 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           { label: 'Schedule a Call', value: 'schedule_call' },
           { label: 'Share My Email', value: 'share_email' },
         ];
-      } else if (lowerInput.includes('testimonial') || lowerInput.includes('review') || lowerInput.includes('client')) {
+      } else if (inputForMatch.includes('testimonial') || inputForMatch.includes('review') || inputForMatch.includes('client') || inputForMatch.includes('reviews') || inputForMatch.includes('rating')) {
         const testimonialsUrl = `${companyInfo.urls.website}/testimonials`;
         response = `We have a ${companyInfo.ratings.display} rating with ${companyInfo.ratings.reviewCount}+ satisfied clients.\n\n⭐ See testimonials:\n${testimonialsUrl}\n\nReady to become our next success story?`;
         quickReplies = [
           { label: 'Get a Quote', value: 'pricing' },
           { label: 'Schedule a Call', value: 'schedule_call' },
         ];
-      } else if (lowerInput.includes('email') && !lowerInput.includes('contact') || lowerInput.includes('share_email')) {
+      } else if (inputForMatch.includes('email') && !inputForMatch.includes('contact') || inputForMatch.includes('share_email')) {
         // Check if user is expressing intent to share email
-        if (lowerInput.includes('want to share') || lowerInput.includes('share my email') || lowerInput.includes('here is my email') || lowerInput.includes('my email is')) {
+        if (inputForMatch.includes('want to share') || inputForMatch.includes('share my email') || inputForMatch.includes('here is my email') || inputForMatch.includes('my email is') || inputForMatch.includes('give you my email')) {
           response = `Great! Please go ahead and share your email address, and we'll reach out to you soon. We're looking forward to talking with you! 😊`;
         } else {
           response = `Please share your email address and I'll have our team reach out within 24 hours. We're looking forward to connecting with you!`;
@@ -568,9 +588,27 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
         quickReplies = [
           { label: 'Schedule a Call Instead', value: 'schedule_call' },
         ];
-      } else if (lowerInput.includes('schedule') || lowerInput.includes('call') || lowerInput.includes('demo') || lowerInput.includes('meeting')) {
-        const websiteUrl = companyInfo.urls.website;
-        response = `I can help you schedule a call with our team. Please share:\n\n• Your email address\n• Preferred date/time\n• Brief description of what you'd like to discuss\n\n🌐 Or visit our website to book directly:\n${websiteUrl}`;
+      } else if (inputForMatch.includes('timing') || inputForMatch.includes('hours') || inputForMatch.includes('availability') || inputForMatch.includes('when are you open') || inputForMatch.includes('what time') || inputForMatch.includes('open') && (inputForMatch.includes('?') || inputForMatch.length < 20) || inputForMatch.includes('business hours') || inputForMatch.includes('when can') || inputForMatch.includes('available')) {
+        // Business hours from companyInfo
+        const hoursLines = companyInfo.hours
+          .filter((h) => !h.closed)
+          .map((h) => `• ${h.day}: ${h.opens} – ${h.closes} (${h.timeZone || companyInfo.timezoneAbbr})`)
+          .join('\n');
+        const closedDays = companyInfo.hours.filter((h) => h.closed).map((h) => h.day).join(', ');
+        const calendlyUrl = companyInfo.calendlyUrl || 'https://calendly.com/scheduleondo';
+        response = `Here are our availability and how to book:\n\n**Business hours**\n${hoursLines}\n${closedDays ? `• ${closedDays}: Closed\n` : ''}\n📅 **Book a time that works for you:**\n${calendlyUrl}\n\nPick any open slot—we're in ${companyInfo.timezoneAbbr}.`;
+        quickReplies = [
+          { label: 'Book a Call', value: 'schedule_call' },
+          { label: 'Get a Quote', value: 'pricing' },
+          { label: 'Contact Us', value: 'contact' },
+        ];
+      } else if (inputForMatch.includes('schedule') || inputForMatch.includes('call') || inputForMatch.includes('demo') || inputForMatch.includes('meeting') || inputForMatch.includes('book a call') || inputForMatch.includes('set up a call') || inputForMatch.includes('have a call')) {
+        const calendlyUrl = companyInfo.calendlyUrl || 'https://calendly.com/scheduleondo';
+        const hoursLines = companyInfo.hours
+          .filter((h) => !h.closed)
+          .map((h) => `• ${h.day}: ${h.opens} – ${h.closes}`)
+          .join('\n');
+        response = `You can schedule a call with our team here:\n\n📅 **Book a time:**\n${calendlyUrl}\n\n**Our hours** (${companyInfo.timezoneAbbr}):\n${hoursLines}\n\nPick a slot that works for you, or share your email and we’ll suggest times.`;
         quickReplies = [
           { label: 'Share My Email', value: 'share_email' },
           { label: 'Get a Quote', value: 'pricing' },

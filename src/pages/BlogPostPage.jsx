@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
@@ -18,23 +18,35 @@ const BlogPostPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [blogData, setBlogData] = useState(null);
   const [post, setPost] = useState(null);
+  const [postLoading, setPostLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [categoryName, setCategoryName] = useState(null);
+  const slugRef = useRef(slug);
+  useEffect(() => { slugRef.current = slug; }, [slug]);
 
   // Scroll to top when navigating to a blog post
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [slug]);
 
-  // Lazy load blogData
+  // Lazy load blogData and resolve post for current slug (clear stale state when slug changes)
   useEffect(() => {
+    const currentSlug = slug;
+    slugRef.current = currentSlug;
+    setPost(null);
+    setRelatedPosts([]);
+    setCategoryName(null);
+    setPostLoading(true);
+
     import('../data/blogData').then(module => {
+      const foundPost = module.getPostBySlug(currentSlug);
+      // Only apply state if this effect is still for the current route (avoid stale update after nav)
+      if (slugRef.current !== currentSlug) return;
       setBlogData({
         getPostBySlug: module.getPostBySlug,
         getRelatedPosts: module.getRelatedPosts,
         blogCategories: module.blogCategories
       });
-      const foundPost = module.getPostBySlug(slug);
       setPost(foundPost);
       if (foundPost) {
         setRelatedPosts(module.getRelatedPosts(foundPost, 3));
@@ -44,6 +56,9 @@ const BlogPostPage = () => {
         setRelatedPosts([]);
         setCategoryName(null);
       }
+      setPostLoading(false);
+    }).catch(() => {
+      if (slugRef.current === currentSlug) setPostLoading(false);
     });
   }, [slug]);
 
@@ -80,14 +95,14 @@ const BlogPostPage = () => {
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.metaDescription || post.excerpt,
-      "image": post.socialImage || post.image,
+      "image": post.socialImage || post.image || post.featuredImage,
       "mainEntityOfPage": canonical,
       "url": canonical,
-      "keywords": post.tags,
+      "keywords": Array.isArray(post.tags) ? post.tags : [],
       "inLanguage": "en-US",
       "articleSection": categoryName || undefined,
       "datePublished": post.publishDate,
-      "dateModified": post.updatedAt || post.publishDate,
+      "dateModified": post.lastUpdated || post.updatedAt || post.publishDate,
       "author": {
         "@type": "Person",
         "name": post.author
@@ -109,8 +124,8 @@ const BlogPostPage = () => {
     };
   }, [post, categoryName]);
 
-  // Show loading state while blogData is loading
-  if (!blogData) {
+  // Show loading state while blogData is loading or post for current slug is resolving
+  if (!blogData || postLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
@@ -234,9 +249,9 @@ const BlogPostPage = () => {
       <SEOHead
         title={`${post.title} | Ondosoft Blogs`}
         description={post.metaDescription}
-        keywords={post.tags.join(', ')}
+        keywords={(post.tags ?? []).join(', ')}
         canonicalUrl={getCanonicalUrl(`/blogs/${post.slug}`)}
-        ogImage={post.socialImage}
+        ogImage={post.socialImage || post.image || post.featuredImage}
         structuredData={structuredData}
       />
       
@@ -280,7 +295,7 @@ const BlogPostPage = () => {
             </div>
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2 text-gray-400" />
-              {post.readTime}
+              {post.readTime ?? post.readingTime ?? ''}
             </div>
           </div>
 
@@ -294,7 +309,7 @@ const BlogPostPage = () => {
           {/* Featured Image */}
           <div className="mb-8">
             <img
-              src={post.image}
+              src={post.image ?? post.featuredImage ?? ''}
               alt={post.title}
               className="w-full h-64 md:h-96 object-cover rounded-xl"
             />
