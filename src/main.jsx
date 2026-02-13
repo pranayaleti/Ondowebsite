@@ -5,6 +5,17 @@ import App from './App.jsx'
 // Critical CSS is already inlined in index.html
 import './index.css'
 
+// bfcache: on restore, re-sync state (e.g. timers, subscriptions). No unload/beforeunload here.
+if (typeof window !== 'undefined') {
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      // Page was restored from bfcache; app state is already restored by React.
+      // Optional: dispatch custom event for components that need to re-sync.
+      window.dispatchEvent(new CustomEvent('bfcache-restore'));
+    }
+  });
+}
+
 // Defer non-critical error handling to avoid blocking initial render
 if (typeof window !== 'undefined') {
   // Use requestIdleCallback or setTimeout to defer error handling setup

@@ -49,6 +49,14 @@ class AnalyticsTracker {
     };
     // Use pagehide instead of beforeunload to allow bfcache
     window.addEventListener('pagehide', this.pageHideHandler);
+    // On bfcache restore (back/forward), re-track page view and report bfcache for performance metrics
+    this.pageshowHandler = (event) => {
+      if (event.persisted) {
+        this.trackPageView(window.location.pathname);
+        this.trackUserInteraction('bfcache_restore', { pathname: window.location.pathname });
+      }
+    };
+    window.addEventListener('pageshow', this.pageshowHandler);
     
     // Defer initial page view tracking to avoid blocking critical path
     // Use requestIdleCallback or setTimeout to ensure non-blocking
@@ -71,6 +79,10 @@ class AnalyticsTracker {
     if (this.pageHideHandler) {
       window.removeEventListener('pagehide', this.pageHideHandler);
       this.pageHideHandler = null;
+    }
+    if (this.pageshowHandler) {
+      window.removeEventListener('pageshow', this.pageshowHandler);
+      this.pageshowHandler = null;
     }
     
     // Remove popstate listener

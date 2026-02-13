@@ -56,10 +56,11 @@
     <!-- Reduced from 4+ preconnects to 1 to improve performance -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- Preload critical resources - optimized logo -->
-    <!-- Only preload if optimized versions exist to avoid 404s -->
-    <!-- Note: Run "npm run optimize:logo" to create optimized versions -->
-    <!-- Logo preload removed temporarily - will be added back after optimization -->
+    <!-- Preload LCP image (logo) for faster LCP - same-origin only -->
+    <link rel="preload" href="/logo.png" as="image" />
+    
+    <!-- DNS prefetch for deferred third-party (GA) so connection is ready when script loads -->
+    <link rel="dns-prefetch" href="//www.googletagmanager.com" />
     
     <!-- Load fonts early with font-display: swap for better FCP/LCP -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
@@ -117,14 +118,37 @@
     </div>
     <!-- Defer main script to improve FCP - Vite handles this in production -->
     <script type="module" src="/src/main.jsx"></script>
-    <!-- Prefetch likely next routes after page load -->
+    <!-- Speculation Rules API: prefetch + prerender (same-origin only). Modern browsers use this; fallback below. -->
+    <script type="speculationrules">
+      {
+        "prefetch": [
+          {
+            "source": "list",
+            "urls": ["/services", "/contact", "/about", "/pricing", "/portfolio", "/blogs", "/faq"],
+            "eagerness": "eager"
+          },
+          {
+            "source": "document",
+            "where": { "href_matches": "/*" },
+            "eagerness": "moderate"
+          }
+        ],
+        "prerender": [
+          {
+            "source": "list",
+            "urls": ["/services"],
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
+    <!-- Fallback: prefetch critical routes for browsers without Speculation Rules -->
     <script>
-      // Prefetch critical routes after page is interactive
       if ('requestIdleCallback' in window) {
         requestIdleCallback(function() {
-          const routes = ['/services', '/contact', '/about'];
+          var routes = ['/services', '/contact', '/about', '/pricing', '/portfolio', '/blogs', '/faq'];
           routes.forEach(function(route) {
-            const link = document.createElement('link');
+            var link = document.createElement('link');
             link.rel = 'prefetch';
             link.href = route;
             link.as = 'document';

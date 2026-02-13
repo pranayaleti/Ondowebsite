@@ -115,24 +115,23 @@ const AppRoutes = () => {
     }
   }, []);
 
-  // Prefetch likely next routes on idle (but NOT admin/portal routes)
+  // Prefetch public route chunks on idle (aligns with Speculation Rules in index.html; admin/portal load on-demand)
   useEffect(() => {
     if ('requestIdleCallback' in window) {
       const prefetchRoutes = () => {
-        // Only prefetch public routes - admin/portal routes should load on-demand
         const commonRoutes = [
           () => import('./pages/ServicesPage'),
           () => import('./pages/ContactPage'),
-          () => import('./pages/AboutPage')
+          () => import('./pages/AboutPage'),
+          () => import('./pages/PricingPage'),
+          () => import('./pages/PortfolioPage'),
+          () => import('./pages/BlogPage'),
+          () => import('./pages/FAQPage'),
         ];
-        
         commonRoutes.forEach((prefetchFn, index) => {
-          setTimeout(() => {
-            prefetchFn().catch(() => {});
-          }, index * 100); // Stagger prefetch requests
+          setTimeout(() => prefetchFn().catch(() => {}), index * 80);
         });
       };
-
       requestIdleCallback(prefetchRoutes, { timeout: 2000 });
     }
   }, []);

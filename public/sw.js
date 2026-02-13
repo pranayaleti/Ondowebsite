@@ -1,5 +1,5 @@
 // Service Worker for Ondosoft.com - Enhanced Caching Strategy
-const CACHE_VERSION = 'v2.1.1';
+const CACHE_VERSION = 'v2.2.0';
 const CACHE_NAME = `ondosoft-${CACHE_VERSION}`;
 const STATIC_CACHE = `ondosoft-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `ondosoft-dynamic-${CACHE_VERSION}`;
@@ -230,8 +230,8 @@ async function staleWhileRevalidate(request, cacheName) {
 self.addEventListener('sync', (event) => {
   if (event.tag === 'contact-form') {
     event.waitUntil(
-      // Handle form submission sync
-      console.log('Syncing contact form data...')
+      Promise.resolve()
+      // Handle form submission sync when backend supports it
     );
   }
 });

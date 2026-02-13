@@ -1,23 +1,15 @@
 // Performance optimization utilities
 import { lazy } from 'react';
 
-// Preload critical resources
+// Preload critical resources (idempotent; index.html already has logo preload and fonts)
 export const preloadCriticalResources = () => {
-  // Preload hero image
-  const heroImage = new Image();
-  heroImage.src = '/logo.png';
-  heroImage.fetchpriority = 'high';
-  
-  // Load critical fonts with font-display: swap
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'stylesheet';
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap';
-  fontLink.crossOrigin = 'anonymous';
-  fontLink.media = 'print';
-  fontLink.onload = function() {
-    this.media = 'all';
-  };
-  document.head.appendChild(fontLink);
+  if (typeof document === 'undefined' || !document.head) return;
+  const hasLogoPreload = document.querySelector('link[rel="preload"][href="/logo.png"]');
+  if (!hasLogoPreload) {
+    const heroImage = new Image();
+    heroImage.src = '/logo.png';
+    heroImage.fetchPriority = 'high';
+  }
 };
 
 // Lazy load non-critical scripts
@@ -64,54 +56,33 @@ export const optimizeImage = (src, width, height, quality = 75) => {
   return `${src}?${params.toString()}`;
 };
 
-// Service Worker registration
+// Service Worker registration (handled in main.jsx with requestIdleCallback; avoid duplicate registration)
 export const registerServiceWorker = () => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          if (import.meta.env.DEV) {
-            console.log('SW registered: ', registration);
-          }
-        })
-        .catch((registrationError) => {
-          // Only log in development to avoid console errors
-          if (import.meta.env.DEV) {
-            console.log('SW registration failed: ', registrationError);
-          }
-        });
-    });
-  }
+  // No-op: SW is registered in main.jsx for single registration and bfcache-friendly timing
 };
 
-// Resource hints for performance
+// Resource hints for performance (idempotent; index.html already has dns-prefetch/preconnect for fonts)
 export const addResourceHints = () => {
-  // DNS prefetch for external domains
-  const dnsPrefetchDomains = [
-    'https://fonts.googleapis.com',
-    'https://fonts.gstatic.com',
-    'https://www.googletagmanager.com'
-  ];
-  
-  dnsPrefetchDomains.forEach(domain => {
-    const link = document.createElement('link');
-    link.rel = 'dns-prefetch';
-    link.href = domain;
-    document.head.appendChild(link);
+  if (typeof document === 'undefined' || !document.head) return;
+  const hasHint = (rel, domain) => Array.from(document.querySelectorAll(`link[rel="${rel}"]`)).some((el) => (el.getAttribute('href') || '').includes(domain));
+  const dnsPrefetchDomains = ['fonts.googleapis.com', 'fonts.gstatic.com', 'googletagmanager.com'];
+  dnsPrefetchDomains.forEach((domain) => {
+    if (!hasHint('dns-prefetch', domain)) {
+      const link = document.createElement('link');
+      link.rel = 'dns-prefetch';
+      link.href = `//${domain}`;
+      document.head.appendChild(link);
+    }
   });
-  
-  // Preconnect to critical domains
-  const preconnectDomains = [
-    'https://fonts.googleapis.com',
-    'https://fonts.gstatic.com'
-  ];
-  
-  preconnectDomains.forEach(domain => {
-    const link = document.createElement('link');
-    link.rel = 'preconnect';
-    link.href = domain;
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
+  const preconnectDomains = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+  preconnectDomains.forEach((domain) => {
+    if (!hasHint('preconnect', domain)) {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = `https://${domain}`;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    }
   });
 };
 
@@ -120,19 +91,8 @@ export const loadComponent = (importFunction) => {
   return lazy(importFunction);
 };
 
-// Critical CSS extraction
-export const extractCriticalCSS = () => {
-  const criticalCSS = `
-    /* Critical above-the-fold styles */
-    .hero-section { display: block; }
-    .navbar { position: fixed; top: 0; }
-    .cta-button { background: linear-gradient(45deg, #f97316, #ea580c); }
-  `;
-  
-  const style = document.createElement('style');
-  style.textContent = criticalCSS;
-  document.head.appendChild(style);
-};
+// Critical CSS extraction (no-op: index.html inlines critical CSS for FCP/LCP)
+export const extractCriticalCSS = () => {};
 
 // Performance monitoring
 export const initPerformanceMonitoring = () => {
@@ -222,10 +182,29 @@ export const initPerformanceMonitoring = () => {
     } catch (e) {
       // CLS observer not supported
     }
+
+    // INP (Interaction to Next Paint) - report slow interactions where supported
+    try {
+      const inpObserver = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const delay = entry.processingStart - entry.startTime;
+          if (window.gtag && typeof delay === 'number' && delay >= 40) {
+            window.gtag('event', 'web_vitals', {
+              name: 'INP',
+              value: Math.round(delay),
+              event_category: 'Performance'
+            });
+          }
+        }
+      });
+      inpObserver.observe({ type: 'event', buffered: true });
+    } catch (e) {
+      // INP / event timing not supported
+    }
   }
 };
 
-// Initialize all performance optimizations
+// Initialize all performance optimizations (bfcache-safe: no unload/beforeunload)
 export const initPerformanceOptimizations = () => {
   preloadCriticalResources();
   addResourceHints();
