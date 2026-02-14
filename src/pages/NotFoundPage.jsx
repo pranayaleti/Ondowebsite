@@ -2,10 +2,8 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Home, ArrowLeft, Compass, AlertCircle, Sparkles, ArrowRight } from "lucide-react";
 import SEOHead from "../components/SEOHead";
-import ConsultationWidget from "../components/ConsultationWidget";
-
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const CalendlyModal = lazy(() => import("../components/CalendlyModal"));
 const Footer = lazy(() => import("../components/Footer"));
 
 const NotFoundPage = () => {
@@ -130,10 +128,9 @@ const NotFoundPage = () => {
         <Suspense fallback={<div className="h-32" />}>
           <Footer />
         </Suspense>
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

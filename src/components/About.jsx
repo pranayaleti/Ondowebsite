@@ -258,7 +258,7 @@ const About = () => {
             <div className="bg-gradient-to-r from-orange-900 to-gray-900 rounded-xl p-6 border border-orange-500">
               <h3 className="text-xl font-bold text-white mb-4">Ready to Ship?</h3>
               <p className="text-gray-300 text-sm mb-4">
-                Start a free consultation. We'll design, build, and scale your next product—on time.
+                Schedule a meeting. We'll design, build, and scale your next product—on time.
               </p>
               <a href="/contact" className="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors mb-4">
                 Schedule a Meeting
@@ -284,7 +284,7 @@ const About = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="/contact" className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
-              Start Free Consultation
+              Schedule a meeting
             </a>
             <a href="/capabilities-deck" className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
               Download Capabilities Deck

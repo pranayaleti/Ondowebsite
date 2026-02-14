@@ -54,10 +54,10 @@ const AIChatWidget = () => {
   };
 
   const handleScheduleMeeting = () => {
-    // Open calendly or schedule meeting
     localStorage.setItem('ai_chat_interacted', 'true');
-    window.open('https://calendly.com/scheduleondo', '_blank');
     setShowPrompt(false);
+    const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '') || '/';
+    window.location.href = `${base}/contact#book`;
   };
 
   const handleClose = () => {

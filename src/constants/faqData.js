@@ -199,6 +199,19 @@ export const faqData = [
   }
 ];
 
+// Group FAQs by category for easier browsing (faqData order must match slices below)
+export const faqCategories = [
+  { category: "Software Development & Company", faqs: faqData.slice(0, 3) },
+  { category: "Full Stack Development", faqs: faqData.slice(3, 6) },
+  { category: "SaaS Development", faqs: faqData.slice(6, 9) },
+  { category: "Hiring & Working With Us", faqs: faqData.slice(9, 12) },
+  { category: "Location & Availability", faqs: faqData.slice(12, 15) },
+  { category: "Services & Technology", faqs: faqData.slice(15, 18) },
+  { category: "Pricing & Process", faqs: faqData.slice(18, 21) },
+  { category: "SEO & Visibility", faqs: faqData.slice(21, 29) },
+  { category: "General & Concepts", faqs: faqData.slice(29) }
+];
+
 // Generate structured data for FAQPage schema
 export const generateFAQStructuredData = (faqs) => {
   return {

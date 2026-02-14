@@ -57,7 +57,8 @@ const ScriptOptimizer = () => {
       }
     };
 
-    // Load Facebook Pixel with lazy loading (only if configured)
+    // Load Facebook Pixel with lazy loading (only if configured).
+    // Load fbevents.js in a single script tag so we can attach onerror and avoid console noise when blocked by ad-blockers.
     const loadFacebookPixel = () => {
       const pixelId = import.meta.env.VITE_FACEBOOK_PIXEL_ID;
       if (!pixelId || pixelId === 'YOUR_PIXEL_ID' || pixelId.trim() === '') {
@@ -65,17 +66,30 @@ const ScriptOptimizer = () => {
       }
 
       try {
+        // Stub fbq so any calls before script loads are queued (real fbevents.js will process the queue)
+        window.fbq =
+          window.fbq ||
+          function () {
+            (window.fbq.queue = window.fbq.queue || []).push(arguments);
+          };
+        window.fbq.queue = [];
+
         const fbScript = document.createElement('script');
-        // Use textContent instead of innerHTML for security
-        const fbCode = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '${pixelId}');fbq('track', 'PageView');`;
-        fbScript.textContent = fbCode;
         fbScript.async = true;
-        fbScript.defer = true;
-        // Add error handler to prevent console errors if blocked
+        fbScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
         fbScript.onerror = () => {
-          // Silently handle if blocked by ad blocker
+          // Silently ignore when blocked by ad blocker (ERR_BLOCKED_BY_CLIENT)
         };
-        document.head.appendChild(fbScript);
+        fbScript.onload = () => {
+          try {
+            window.fbq('init', pixelId);
+            window.fbq('track', 'PageView');
+          } catch (e) {
+            if (import.meta.env.DEV) console.warn('Facebook Pixel init failed:', e);
+          }
+        };
+        const firstScript = document.getElementsByTagName('script')[0];
+        firstScript.parentNode.insertBefore(fbScript, firstScript);
       } catch (error) {
         if (import.meta.env.DEV) {
           console.warn('Facebook Pixel loading failed:', error);

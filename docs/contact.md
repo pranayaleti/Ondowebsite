@@ -26,8 +26,8 @@ OndoSoft makes it easy to reach out and start a conversation about your project.
 
 ## Schedule a Call
 
-### Calendly Booking
-**Book a Consultation**: https://calendly.com/scheduleondo
+### Book a Call
+**Book a consultation** using the scheduler on this page (below) or on the website [Contact page](/contact#book).
 
 **What to Expect**:
 - 30-60 minute consultation call
@@ -61,7 +61,7 @@ OndoSoft makes it easy to reach out and start a conversation about your project.
 
 ### Step 1: Initial Contact
 Choose your preferred method:
-- **Schedule a Call**: https://calendly.com/scheduleondo (recommended)
+- **Schedule a Call**: Use the scheduler on the [Contact page](/contact#book) (recommended)
 - **Send an Email**: pranay1917@gmail.com
 - **Call Us**: +1 (408) 538-0420
 
@@ -116,11 +116,11 @@ Once you're ready:
 - **Email**: pranay1917@gmail.com
 
 ### Project Inquiries
-- **Schedule a Call**: https://calendly.com/scheduleondo (recommended)
+- **Schedule a Call**: Use the scheduler on the [Contact page](/contact#book) (recommended)
 - **Email**: pranay1917@gmail.com
 
 ### Getting a Quote
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Email**: pranay1917@gmail.com (include project details)
 
 ### Ongoing Support
@@ -152,7 +152,7 @@ Connect with us on social media:
 We respond to emails within 24 hours on business days. For urgent matters, call us during business hours for immediate assistance.
 
 ### Do you offer free consultations?
-Yes! We offer free consultation calls to discuss your project, answer questions, and provide recommendations. Schedule at https://calendly.com/scheduleondo
+Yes! We offer free consultation calls to discuss your project, answer questions, and provide recommendations. Use the scheduler on the [Contact page](/contact#book)
 
 ### Can I visit your office?
 We primarily work remotely but are based in Lehi, Utah. If you're in the area and would like to meet in person, let us know and we can arrange a meeting.
@@ -166,7 +166,7 @@ For an accurate quote, we need to understand your project type, features require
 ## Ready to Get Started?
 
 **Choose Your Preferred Method**:
-1. **Schedule a Call** (Recommended): https://calendly.com/scheduleondo
+1. **Schedule a Call** (Recommended): [Contact page](/contact#book)
 2. **Send an Email**: pranay1917@gmail.com
 3. **Call Us**: +1 (408) 538-0420
 

@@ -222,5 +222,5 @@ We stay updated with:
 
 If you have questions about our technology choices:
 - **Contact Us**: pranay1917@gmail.com or +1 (408) 538-0420
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Discuss Your Project**: We'll recommend the best tech stack for your needs

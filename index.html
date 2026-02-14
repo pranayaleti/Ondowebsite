@@ -61,6 +61,9 @@
     
     <!-- DNS prefetch for deferred third-party (GA) so connection is ready when script loads -->
     <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+    <!-- Calendly embed: preconnect so widget loads faster when user opens schedule modal -->
+    <link rel="dns-prefetch" href="https://assets.calendly.com" />
+    <link rel="preconnect" href="https://assets.calendly.com" crossorigin />
     
     <!-- Load fonts early with font-display: swap for better FCP/LCP -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
@@ -154,6 +157,12 @@
             link.as = 'document';
             document.head.appendChild(link);
           });
+          // Preload Calendly widget script when idle so schedule modal opens faster
+          var cal = document.createElement('link');
+          cal.rel = 'preload';
+          cal.href = 'https://assets.calendly.com/assets/external/widget.js';
+          cal.as = 'script';
+          document.head.appendChild(cal);
         }, { timeout: 3000 });
       }
     </script>

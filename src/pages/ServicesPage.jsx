@@ -2,12 +2,11 @@ import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import ServiceSchema from "../components/ServiceSchema";
 import HeroCTA from "../components/HeroCTA";
-import ConsultationWidget from "../components/ConsultationWidget";
 import { companyInfo } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const Services = lazy(() => import("../components/Services"));
-const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const CalendlyModal = lazy(() => import("../components/CalendlyModal"));
 const Footer = lazy(() => import("../components/Footer"));
 
 const ServicesPage = () => {
@@ -114,15 +113,14 @@ const ServicesPage = () => {
         </div>
         
         {/* Hero CTA Section */}
-        <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
+        <HeroCTA onOpenSchedule={() => setIsModalOpen(true)} />
         
         <Suspense fallback={<div className="h-32" />}>
           <Footer />
         </Suspense>
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

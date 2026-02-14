@@ -3,7 +3,7 @@ import { useState, useEffect, memo, useCallback } from "react";
 import { ArrowRight, CheckCircle, Star, Zap } from "lucide-react";
 import FancyHeading from "./FancyHeading";
 
-const HeroSection = ({ onOpenConsultation }) => {
+const HeroSection = ({ onOpenSchedule }) => {
   // Rotating fancy headings - cycle through every 2 seconds
   const fancyHeadings = [
     { firstWord: "Development", secondWord: "Services" },
@@ -30,11 +30,11 @@ const HeroSection = ({ onOpenConsultation }) => {
     return () => clearInterval(interval);
   }, [fancyHeadings.length]);
 
-  const handleConsultationClick = useCallback(() => {
-    if (onOpenConsultation) {
-      onOpenConsultation();
+  const handleScheduleClick = useCallback(() => {
+    if (onOpenSchedule) {
+      onOpenSchedule();
     }
-  }, [onOpenConsultation]);
+  }, [onOpenSchedule]);
 
   return (
     <div className="max-w-7xl mx-auto px-4">
@@ -107,23 +107,23 @@ const HeroSection = ({ onOpenConsultation }) => {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-            {onOpenConsultation ? (
+            {onOpenSchedule ? (
               <button
                 type="button"
-                onClick={handleConsultationClick}
+                onClick={handleScheduleClick}
                 className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-                aria-label="Start free consultation for your software development project"
+                aria-label="Schedule a meeting"
               >
-                Start Free Consultation
+                Schedule a meeting
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             ) : (
               <Link
                 to="/contact"
                 className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-                aria-label="Start free consultation for your software development project"
+                aria-label="Schedule a meeting"
               >
-                Start Free Consultation
+                Schedule a meeting
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             )}

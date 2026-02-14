@@ -1,12 +1,11 @@
 import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
-import ConsultationWidget from "../components/ConsultationWidget";
 import { pricingPlans } from "../constants/pricing";
 import { companyInfo, getCanonicalUrl } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const Pricing = lazy(() => import("../components/Pricing"));
-const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const CalendlyModal = lazy(() => import("../components/CalendlyModal"));
 const Footer = lazy(() => import("../components/Footer"));
 
 const PricingPage = () => {
@@ -78,10 +77,9 @@ const PricingPage = () => {
         <Suspense fallback={<div className="h-32" />}>
           <Footer />
         </Suspense>
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} preset={preset} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

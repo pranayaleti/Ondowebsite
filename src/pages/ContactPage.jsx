@@ -1,14 +1,13 @@
-import { useState, lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
 import Contact from "../components/Contact";
 
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const CalendlyEmbed = lazy(() => import("../components/CalendlyEmbed"));
 const Footer = lazy(() => import("../components/Footer"));
 import { companyInfo, getPostalAddressSchema, getContactPointSchema } from "../constants/companyInfo";
 
 const ContactPage = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const canonical = `${companyInfo.urls.website}/contact`;
   const contactStructuredData = {
@@ -59,17 +58,40 @@ const ContactPage = () => {
       <div>
         <div className="mx-auto pt-20">
           <div id="contact" className="scroll-mt-20">
-            <Contact onOpenConsultation={() => setIsModalOpen(true)} />
+            <Contact />
           </div>
         </div>
+        <section id="book" className="mx-auto max-w-6xl px-4 mt-12">
+          <div className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-6 md:p-8 shadow-lg shadow-orange-500/10">
+            <div className="flex flex-col gap-3 mb-6">
+              <p className="text-sm font-semibold uppercase tracking-wide text-orange-400">
+                Book instantly
+              </p>
+              <h3 className="text-2xl md:text-3xl font-bold text-white">
+                See live availability and lock a time without leaving this page.
+              </h3>
+              <p className="text-gray-300 max-w-3xl">
+                We’ll meet for 30 minutes to map your goals, timeline, and budget. Choose any open
+                slot below—your timezone is auto-detected by Calendly.
+              </p>
+            </div>
+            <Suspense fallback={<div className="h-[720px] bg-neutral-800/60 rounded-xl animate-pulse" />}>
+              <CalendlyEmbed
+                utmParams={{
+                  utm_source: "website",
+                  utm_medium: "contact_page",
+                  utm_campaign: "consultation",
+                }}
+                height={720}
+                title="Schedule with Ondosoft"
+                description="Pick a time that works for you—no redirects."
+              />
+            </Suspense>
+          </div>
+        </section>
         <Suspense fallback={<div className="h-32" />}>
           <Footer hideFeedbackCta />
         </Suspense>
-        {isModalOpen && (
-          <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-          </Suspense>
-        )}
       </div>
     </>
   );

@@ -1,10 +1,8 @@
 import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
-import ConsultationWidget from '../components/ConsultationWidget';
-
 // Lazy load heavy components
 const Footer = lazy(() => import('../components/Footer'));
-const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import ContactInfo from '../components/ContactInfo';
 import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award, Clock, Target, TrendingUp } from 'lucide-react';
@@ -362,7 +360,7 @@ const CapabilitiesDeckPage = () => {
                     onClick={() => setIsModalOpen(true)}
                     className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
                   >
-                    Schedule Free Consultation
+                    Schedule a meeting
                   </button>
                 </div>
               </div>
@@ -375,10 +373,9 @@ const CapabilitiesDeckPage = () => {
         <Footer />
       </Suspense>
       <div className="print:hidden">
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

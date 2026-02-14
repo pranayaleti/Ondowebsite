@@ -242,7 +242,7 @@ Read what our clients say about working with us at https://ondosoft.com/testimon
 Whether you need a simple website or a complex SaaS platform, we can help bring your vision to life.
 
 **Get Started**:
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Email Us**: pranay1917@gmail.com
 - **Call Us**: +1 (408) 538-0420
 - **Share Your Project**: Tell us about your project and we'll show you similar work we've done
@@ -259,5 +259,5 @@ Whether you need a simple website or a complex SaaS platform, we can help bring 
 
 If you'd like to see specific examples or discuss your project:
 - **Contact Us**: pranay1917@gmail.com or +1 (408) 538-0420
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Visit Our Website**: https://ondosoft.com

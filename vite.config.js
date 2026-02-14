@@ -1,10 +1,36 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// In dev, handle /api/analytics/track* so they never hit the proxy when backend is down (avoids ECONNREFUSED spam).
+function analyticsProxyStub() {
+  return {
+    name: 'analytics-proxy-stub',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.method !== 'POST' || !req.url) {
+          next()
+          return
+        }
+        const path = req.url.split('?')[0]
+        if (path === '/api/analytics/track' || path === '/api/analytics/track-batch') {
+          // Consume body so the request is fully read, then respond 204 (no proxy)
+          req.on('data', () => {})
+          req.on('end', () => {
+            res.statusCode = 204
+            res.end()
+          })
+          return
+        }
+        next()
+      })
+    }
+  }
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base:'/',
-  plugins: [react()],
+  plugins: [react(), analyticsProxyStub()],
   publicDir: 'public',
   build: {
     rollupOptions: {

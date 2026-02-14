@@ -198,5 +198,5 @@ Website maintenance includes regular updates, security patches, content updates,
 
 If you don't see your question here:
 - **Contact Us**: pranay1917@gmail.com or +1 (408) 538-0420
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: Use the scheduler on the [Contact page](/contact#book)
 - **Visit Our Website**: https://ondosoft.com

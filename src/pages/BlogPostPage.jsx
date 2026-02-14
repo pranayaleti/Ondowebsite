@@ -3,13 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
 import ShareButtons from '../components/ShareButtons';
-import ConsultationWidget from '../components/ConsultationWidget';
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import { formatDateUserTimezone } from '../utils/dateFormat.js';
 import { sanitizeHtml } from '../utils/security.js';
 
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 const Footer = lazy(() => import('../components/Footer'));
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react';
 
@@ -347,10 +346,9 @@ const BlogPostPage = () => {
         <Suspense fallback={<div className="h-32" />}>
           <Footer />
         </Suspense>
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

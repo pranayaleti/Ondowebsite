@@ -226,5 +226,5 @@ OndoSoft uses agile development methodologies to deliver high-quality software s
 
 If you have questions about our development process:
 - **Contact Us**: pranay1917@gmail.com or +1 (408) 538-0420
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Learn More**: Visit our website at https://ondosoft.com

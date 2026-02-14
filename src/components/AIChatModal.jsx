@@ -595,20 +595,18 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           .map((h) => `• ${h.day}: ${h.opens} – ${h.closes} (${h.timeZone || companyInfo.timezoneAbbr})`)
           .join('\n');
         const closedDays = companyInfo.hours.filter((h) => h.closed).map((h) => h.day).join(', ');
-        const calendlyUrl = companyInfo.calendlyUrl || 'https://calendly.com/scheduleondo';
-        response = `Here are our availability and how to book:\n\n**Business hours**\n${hoursLines}\n${closedDays ? `• ${closedDays}: Closed\n` : ''}\n📅 **Book a time that works for you:**\n${calendlyUrl}\n\nPick any open slot—we're in ${companyInfo.timezoneAbbr}.`;
+        response = `Here are our availability and how to book:\n\n**Business hours**\n${hoursLines}\n${closedDays ? `• ${closedDays}: Closed\n` : ''}\n📅 **Book a time:** use the scheduler on our [Contact page](/contact#book)—pick a slot without leaving the site. We're in ${companyInfo.timezoneAbbr}.`;
         quickReplies = [
           { label: 'Book a Call', value: 'schedule_call' },
           { label: 'Get a Quote', value: 'pricing' },
           { label: 'Contact Us', value: 'contact' },
         ];
       } else if (inputForMatch.includes('schedule') || inputForMatch.includes('call') || inputForMatch.includes('demo') || inputForMatch.includes('meeting') || inputForMatch.includes('book a call') || inputForMatch.includes('set up a call') || inputForMatch.includes('have a call')) {
-        const calendlyUrl = companyInfo.calendlyUrl || 'https://calendly.com/scheduleondo';
         const hoursLines = companyInfo.hours
           .filter((h) => !h.closed)
           .map((h) => `• ${h.day}: ${h.opens} – ${h.closes}`)
           .join('\n');
-        response = `You can schedule a call with our team here:\n\n📅 **Book a time:**\n${calendlyUrl}\n\n**Our hours** (${companyInfo.timezoneAbbr}):\n${hoursLines}\n\nPick a slot that works for you, or share your email and we’ll suggest times.`;
+        response = `You can schedule a call on our [Contact page](/contact#book)—use the scheduler there to pick a time. No redirects.\n\n**Our hours** (${companyInfo.timezoneAbbr}):\n${hoursLines}’ll suggest times.`;
         quickReplies = [
           { label: 'Share My Email', value: 'share_email' },
           { label: 'Get a Quote', value: 'pricing' },

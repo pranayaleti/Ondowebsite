@@ -5,7 +5,7 @@ import HiddenSEOSection from "../components/HiddenSEOSection";
 import FancyHeading from "../components/FancyHeading";
 
 // Lazy load heavy components - defer non-critical sections for faster LCP
-const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const CalendlyModal = lazy(() => import("../components/CalendlyModal"));
 const Footer = lazy(() => import("../components/Footer"));
 const HeroCTA = lazy(() => import("../components/HeroCTA"));
 const TrustBadges = lazy(() => import("../components/TrustBadges"));
@@ -99,7 +99,7 @@ const HomePage = () => {
       <div>
         {/* Hero Section */}
         <div id="top" className="mx-auto pt-20">
-          <HeroSection onOpenConsultation={() => setIsModalOpen(true)} />
+          <HeroSection onOpenSchedule={() => setIsModalOpen(true)} />
         </div>
 
         {/* Value Proposition Section */}
@@ -200,9 +200,9 @@ const HomePage = () => {
                   type="button" 
                   onClick={() => setIsModalOpen(true)} 
                   className="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform"
-                  aria-label="Start free consultation for custom web applications"
+                  aria-label="Schedule a meeting for custom web applications"
                 >
-                  Start Free Consultation <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
+                  Schedule a meeting <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
                 </button>
               </div>
               
@@ -304,7 +304,7 @@ const HomePage = () => {
 
         {/* Hero CTA Section - Lazy loaded for better initial performance */}
         <Suspense fallback={<div className="h-32" />}>
-          <HeroCTA onOpenConsultation={() => setIsModalOpen(true)} />
+          <HeroCTA onOpenSchedule={() => setIsModalOpen(true)} />
         </Suspense>
 
         {/* Trust Badges & Success Story - Lazy loaded for better initial performance */}
@@ -320,10 +320,10 @@ const HomePage = () => {
         <HiddenSEOSection />
       </div>
       
-      {/* Consultation Modal */}
+      {/* Schedule meeting modal */}
       {isModalOpen && (
         <Suspense fallback={null}>
-          <ConsultationModal 
+          <CalendlyModal 
             isOpen={isModalOpen} 
             onClose={() => setIsModalOpen(false)} 
           />

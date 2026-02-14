@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
 import BlogCard from '../components/BlogCard';
-import ConsultationWidget from '../components/ConsultationWidget';
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 const Footer = lazy(() => import('../components/Footer'));
 import { Search, Filter } from 'lucide-react';
 
@@ -308,10 +307,9 @@ const BlogPage = () => {
         <Suspense fallback={<div className="h-32" />}>
           <Footer />
         </Suspense>
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

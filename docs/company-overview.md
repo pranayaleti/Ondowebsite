@@ -17,7 +17,7 @@ OndoSoft is a full-stack software development company specializing in custom web
 - **Email**: pranay1917@gmail.com
 - **Phone**: +1 (408) 538-0420
 - **Address**: 2701 N Thanksgiving Way, Lehi, Utah 84043, United States
-- **Calendly Booking**: https://calendly.com/scheduleondo
+- **Book a call**: Use the scheduler on the [Contact page](/contact#book)
 
 ## Business Hours
 

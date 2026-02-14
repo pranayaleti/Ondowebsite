@@ -1,9 +1,7 @@
 import { generateRobotsTxt } from '../utils/sitemapGenerator.js';
 import { useEffect, useState, lazy, Suspense } from 'react';
-import ConsultationWidget from '../components/ConsultationWidget';
-
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 
 const RobotsPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,10 +31,9 @@ const RobotsPage = () => {
         <h1 className="text-2xl font-bold mb-4">Robots.txt Generated</h1>
         <p className="text-gray-600">Your robots.txt file has been downloaded.</p>
       </div>
-      <ConsultationWidget />
       {isModalOpen && (
         <Suspense fallback={null}>
-          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </Suspense>
       )}
     </div>

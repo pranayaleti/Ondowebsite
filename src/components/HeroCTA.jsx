@@ -1,6 +1,6 @@
 import { ArrowRight, Calculator, MessageCircle, Star, CheckCircle } from 'lucide-react';
 
-const HeroCTA = ({ onOpenConsultation }) => {
+const HeroCTA = ({ onOpenSchedule }) => {
   return (
     <section className="py-16 border-t border-b border-gray-700/50">
       <div className="max-w-7xl mx-auto px-4">
@@ -10,31 +10,31 @@ const HeroCTA = ({ onOpenConsultation }) => {
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Join 200+ businesses that have scaled with our custom software solutions. 
-            Start your free consultation and get a project estimate in under 24 hours.
+            Schedule a meeting and get a project estimate in under 24 hours.
           </p>
         </div>
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          {onOpenConsultation ? (
-            <button 
+          {onOpenSchedule ? (
+            <button
               type="button"
-              onClick={onOpenConsultation}
+              onClick={onOpenSchedule}
               className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-              aria-label="Start free consultation for your software development project"
+              aria-label="Schedule a meeting"
             >
               <MessageCircle className="h-5 w-5 mr-2" />
-              Start Free Consultation
+              Schedule a meeting
               <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
           ) : (
-            <a 
-              href="/contact" 
+            <a
+              href="/contact"
               className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-              aria-label="Start free consultation for your software development project"
+              aria-label="Schedule a meeting"
             >
               <MessageCircle className="h-5 w-5 mr-2" />
-              Start Free Consultation
+              Schedule a meeting
               <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </a>
           )}

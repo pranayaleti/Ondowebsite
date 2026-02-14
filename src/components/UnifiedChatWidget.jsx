@@ -4,15 +4,27 @@ import { companyInfo } from '../constants/companyInfo';
 
 // Direct imports to avoid dynamic import failures in some environments
 import AIChatModal from './AIChatModal';
-import ConsultationModal from './ConsultationModal';
+import CalendlyModal from './CalendlyModal';
 
 const UnifiedChatWidget = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const [showConsultation, setShowConsultation] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [hasShownAutoPrompt, setHasShownAutoPrompt] = useState(false);
   const autoPromptTimerRef = useRef(null);
   const dismissedRef = useRef(false);
+
+  // When user opens the prompt, preload Calendly script so "Schedule a meeting" opens faster
+  useEffect(() => {
+    if (!showPrompt) return;
+    const href = 'https://assets.calendly.com/assets/external/widget.js';
+    if (document.querySelector(`link[href="${href}"]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = href;
+    link.as = 'script';
+    document.head.appendChild(link);
+  }, [showPrompt]);
 
   // Auto-show prompt after 120 seconds
   useEffect(() => {
@@ -25,7 +37,7 @@ const UnifiedChatWidget = () => {
     }
 
     autoPromptTimerRef.current = setTimeout(() => {
-      if (!showPrompt && !showChat && !showConsultation && !dismissedRef.current) {
+      if (!showPrompt && !showChat && !showScheduleModal && !dismissedRef.current) {
         setShowPrompt(true);
         setHasShownAutoPrompt(true);
       }
@@ -36,7 +48,7 @@ const UnifiedChatWidget = () => {
         clearTimeout(autoPromptTimerRef.current);
       }
     };
-  }, [showPrompt, showChat, showConsultation]);
+  }, [showPrompt, showChat, showScheduleModal]);
 
   const handleOpen = () => {
     if (autoPromptTimerRef.current) {
@@ -53,16 +65,13 @@ const UnifiedChatWidget = () => {
 
   const handleScheduleMeeting = () => {
     localStorage.setItem('ai_chat_interacted', 'true');
-    // Option 1: Open Calendly directly
-    // window.open(companyInfo.calendlyUrl || 'https://calendly.com/scheduleondo', '_blank');
-    // Option 2: Open consultation form
     setShowPrompt(false);
-    setShowConsultation(true);
+    setShowScheduleModal(true);
   };
 
   const handleOpenConsultation = () => {
     setShowPrompt(false);
-    setShowConsultation(true);
+    setShowScheduleModal(true);
   };
 
   const handleClose = () => {
@@ -71,7 +80,7 @@ const UnifiedChatWidget = () => {
     }
     setShowPrompt(false);
     setShowChat(false);
-    setShowConsultation(false);
+    setShowScheduleModal(false);
   };
 
   return (
@@ -146,17 +155,6 @@ const UnifiedChatWidget = () => {
                 Chat with AI Agent
               </button>
 
-              {/* Privacy Policy Link */}
-              <p className="text-xs text-gray-400 text-center mt-2">
-                <a
-                  href="/privacy-policy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-orange-600 underline hover:text-orange-700"
-                >
-                  Privacy Policy
-                </a>
-              </p>
             </div>
           </div>
         </div>
@@ -171,10 +169,9 @@ const UnifiedChatWidget = () => {
         />
       )}
 
-      {/* Consultation Modal */}
-      {showConsultation && (
-        <ConsultationModal 
-          isOpen={showConsultation} 
+      {showScheduleModal && (
+        <CalendlyModal
+          isOpen={showScheduleModal}
           onClose={handleClose}
           utmMedium="unified_widget"
         />

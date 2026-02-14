@@ -151,7 +151,7 @@ All page components are lazy-loaded. Route groups:
 | Area | Technology / Location |
 |------|------------------------|
 | **Widget** | `UnifiedChatWidget` – floating chat + consultation; `AIChatPrompt` (start chat / schedule meeting); `AIChatModal` (conversation UI). Lazy-loaded. |
-| **UX** | Auto-prompt after 120s (unless dismissed); localStorage for prompt dismissed / interacted; option to open consultation form or Calendly. |
+| **UX** | Auto-prompt after 120s (unless dismissed); localStorage for prompt dismissed / interacted; option to open consultation form or go to Contact page scheduler. |
 | **API** | `/api/ai-chat/conversations` (GET by session, POST create), `/api/ai-chat/conversations/:id/messages` (POST – returns `assistantReply` when AI is configured), `/api/ai-chat/conversations/:id/feedback` (POST), PATCH conversation, POST end. Session-based; UTM and context stored. |
 | **Backend AI** | `backend/services/aiService.js` – optional OpenAI (OPENAI_API_KEY) or Anthropic (ANTHROPIC_API_KEY). When set, POST messages returns an assistant reply; otherwise frontend falls back to rule-based responses. `backend/constants/companyContext.js` – company context for AI system prompt (env overrides: COMPANY_NAME, COMPANY_WEBSITE, etc.). |
 | **Data** | `ai_conversations` (session_id, page_url, referrer, user_agent, ip_address, timezone, language, viewport, utm_*, status, started_at, ended_at); `ai_messages` (conversation_id, role, content, message_index). |

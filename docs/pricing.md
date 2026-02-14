@@ -157,7 +157,7 @@ To get an accurate quote, we need to understand:
 5. **Ongoing Needs**: Maintenance, updates, support requirements
 
 **Ways to Get a Quote**:
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Email**: pranay1917@gmail.com
 - **Phone**: +1 (408) 538-0420
 - **Share Project Details**: Describe your project and we'll provide a detailed quote
@@ -194,5 +194,5 @@ To get an accurate quote, we need to understand:
 
 If you have questions about pricing or need help choosing the right plan:
 - **Contact Us**: pranay1917@gmail.com or +1 (408) 538-0420
-- **Schedule a Call**: https://calendly.com/scheduleondo
+- **Schedule a Call**: [Contact page](/contact#book)
 - **Share Your Project**: We'll provide a customized quote

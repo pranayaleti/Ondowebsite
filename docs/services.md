@@ -202,7 +202,7 @@ All our services include:
 ## Getting Started
 
 To learn more about our services or get a quote:
-1. **Schedule a Call**: Book a consultation at https://calendly.com/scheduleondo
+1. **Schedule a Call**: Use the scheduler on the [Contact page](/contact#book)
 2. **Email Us**: pranay1917@gmail.com
 3. **Call Us**: +1 (408) 538-0420
 4. **Share Your Project**: Tell us about your project and we'll provide a detailed quote

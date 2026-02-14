@@ -2,6 +2,8 @@ export const companyInfo = {
   name: "Ondosoft",
   email: "pranay1917@gmail.com",
   calendlyUrl: "https://calendly.com/scheduleondo",
+  // Use an event-type URL here so the embed shows the calendar and time slots (e.g. .../30min). If missing, the root URL shows only the event picker.
+  calendlyEmbedUrl: "https://calendly.com/scheduleondo/30min",
   timezoneAbbr: "MST",
   timezoneIANA: "America/Denver",
   // Optional: if set, submissions will be POSTed here in addition to localStorage capture

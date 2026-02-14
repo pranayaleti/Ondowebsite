@@ -1,10 +1,9 @@
 import { useState, useRef, lazy, Suspense, useEffect, useMemo } from 'react';
 import SEOHead from '../components/SEOHead';
-import ConsultationWidget from '../components/ConsultationWidget';
 import { getCanonicalUrl, companyInfo } from '../constants/companyInfo';
 
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 const Footer = lazy(() => import('../components/Footer'));
 import { ArrowRight, TrendingUp, Users, Clock, CheckCircle, Star, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import PMT from '../assets/PMT_optimized.webm';
@@ -546,7 +545,7 @@ const PortfolioPage = () => {
                 onClick={() => setIsModalOpen(true)}
                 className="border-2 border-gray-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 hover:border-gray-500 transition-colors flex items-center justify-center"
               >
-                Start Free Consultation
+                Schedule a meeting
               </button>
             </div>
           </div>
@@ -555,10 +554,9 @@ const PortfolioPage = () => {
         <Suspense fallback={<div className="h-32" />}>
           <Footer />
         </Suspense>
-        <ConsultationWidget />
         {isModalOpen && (
           <Suspense fallback={null}>
-            <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+            <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           </Suspense>
         )}
       </div>

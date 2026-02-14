@@ -1,12 +1,10 @@
 import { useState, lazy, Suspense } from 'react';
 import SEOHead from '../components/SEOHead';
 import FAQAccordion from '../components/FAQAccordion';
-import ConsultationWidget from '../components/ConsultationWidget';
-
 // Lazy load heavy components
-const ConsultationModal = lazy(() => import('../components/ConsultationModal'));
+const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 const Footer = lazy(() => import('../components/Footer'));
-import { faqData, generateFAQStructuredData } from '../constants/faqData';
+import { faqData, faqCategories, generateFAQStructuredData } from '../constants/faqData';
 import { companyInfo, getCanonicalUrl } from "../constants/companyInfo";
 
 const FAQPage = () => {
@@ -66,15 +64,7 @@ const FAQPage = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-white mb-4 drop-shadow-sm">
-                  Frequently Asked Questions
-                </h2>
-                <p className="text-lg text-gray-300 leading-relaxed">
-                  Find answers to common questions about our software development and SaaS services
-                </p>
-              </div>
-              <FAQAccordion faqs={faqData} />
+              <FAQAccordion faqCategories={faqCategories} />
             </div>
           </div>
         </section>
@@ -90,12 +80,13 @@ const FAQPage = () => {
                 Contact our team for personalized answers about your specific project needs
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="/contact"
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(true)}
                   className="bg-gray-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-600 transition-all duration-200 shadow-lg border border-gray-600"
                 >
-                  Contact Us Today
-                </a>
+                  Schedule a meeting
+                </button>
                 <a
                   href={`tel:${companyInfo.phoneE164}`}
                   className="border-2 border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-200"
@@ -111,10 +102,9 @@ const FAQPage = () => {
       <Suspense fallback={<div className="h-32" />}>
         <Footer />
       </Suspense>
-      <ConsultationWidget />
       {isModalOpen && (
         <Suspense fallback={null}>
-          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </Suspense>
       )}
     </>

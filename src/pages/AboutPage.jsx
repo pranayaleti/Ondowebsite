@@ -1,11 +1,10 @@
 import { useState, lazy, Suspense } from "react";
 import SEOHead from "../components/SEOHead";
-import ConsultationWidget from "../components/ConsultationWidget";
 import { companyInfo, getCanonicalUrl } from "../constants/companyInfo";
 
 // Lazy load heavy components
 const About = lazy(() => import("../components/About"));
-const ConsultationModal = lazy(() => import("../components/ConsultationModal"));
+const CalendlyModal = lazy(() => import("../components/CalendlyModal"));
 
 const AboutPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,10 +68,9 @@ const AboutPage = () => {
       <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>}>
         <About />
       </Suspense>
-      <ConsultationWidget />
       {isModalOpen && (
         <Suspense fallback={null}>
-          <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <CalendlyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </Suspense>
       )}
     </>

@@ -1,9 +1,9 @@
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { CheckCircle, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { sanitizeInput, validateFormData, validationRules, rateLimiter, generateCSRFToken } from "../utils/security.js";
 import { companyInfo } from "../constants/companyInfo";
 
-const Contact = ({ onOpenConsultation }) => {
+const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -161,59 +161,6 @@ const Contact = ({ onOpenConsultation }) => {
         </div>
       )}
       
-      <div className="flex flex-col lg:flex-row gap-10 max-w-4xl mx-auto">
-        {/* Contact Info */}
-        <div className="flex-1 bg-neutral-900 p-8 rounded-xl border border-neutral-700 flex flex-col justify-center mb-6 lg:mb-0">
-          <h3 className="text-2xl font-semibold text-white mb-6">Get In Touch</h3>
-          <p className="text-neutral-400 mb-6">
-            Whether you're a small business owner looking for a simple website or a startup 
-            building the next big SaaS platform, we're here to help. Let's discuss your project!
-          </p>
-          <div className="flex items-center mb-4 text-neutral-300">
-            <Mail className="mr-3 text-orange-500" />
-            <a href={`mailto:${companyInfo.email}`} className="hover:text-orange-400 transition-colors">
-              {companyInfo.email}
-            </a>
-          </div>
-          <div className="flex items-center mb-4 text-neutral-300">
-            <Phone className="mr-3 text-orange-500" />
-            <a href={`tel:${companyInfo.phoneE164}`} className="hover:text-orange-400 transition-colors">
-              {companyInfo.phoneDisplay}
-            </a>
-          </div>
-          <div className="flex items-center text-neutral-300">
-            <MapPin className="mr-3 text-orange-500" />
-            <a 
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-orange-400 transition-colors"
-            >
-              {`${companyInfo.address.streetAddress}, ${companyInfo.address.addressLocality}, ${companyInfo.address.addressRegion} ${companyInfo.address.postalCode}`}
-            </a>
-          </div>
-        </div>
-        
-        {/* Consultation CTA replacing form */}
-        <div className="flex-1 bg-neutral-900 p-8 rounded-xl shadow-md flex flex-col gap-6 border border-neutral-700">
-          <h3 className="text-2xl font-semibold text-white">Book Your Free Consultation</h3>
-          <p className="text-neutral-400">30-minute expert session to scope your idea, timeline, and budget. We’ll ask a few quick questions and then send you to booking.</p>
-          <ul className="text-neutral-300 space-y-2 text-sm">
-            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Project type and goals</li>
-            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Timeline and constraints</li>
-            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Budget range</li>
-            <li className="flex items-center"><CheckCircle className="text-orange-500 mr-2" /> Key requirements</li>
-          </ul>
-          <button
-            type="button"
-            onClick={onOpenConsultation}
-            className="mt-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-3 rounded-md text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center"
-            aria-label="Open consultation modal"
-          >
-            <Send className="mr-2 h-5 w-5" /> Start Free Consultation
-          </button>
-        </div>
-      </div>
       <style>{`
         input:-webkit-autofill,
         input:-webkit-autofill:focus,
