@@ -278,6 +278,7 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    allowedHosts: ['3000-ix2dlb48gz0pekd8429o0-6bb112db.us2.manus.computer'],
     // Enable compression in dev
     middlewareMode: false,
     // Proxy API requests to backend server

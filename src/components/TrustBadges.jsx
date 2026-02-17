@@ -1,4 +1,5 @@
 import { Shield, Award, Clock, Users, TrendingUp, CheckCircle, Star } from 'lucide-react';
+import techstartDashboard from '../assets/portfolio/techstart-dashboard.jpg';
 
 const TrustBadges = () => {
   const successStory = {
@@ -137,35 +138,35 @@ const TrustBadges = () => {
             </div>
 
             {/* Visual Elements */}
-            <div className="relative">
-              <div className="bg-gray-700/30 rounded-2xl p-8 backdrop-blur-sm border border-gray-600">
-                <div className="text-center">
-                  <div className="text-6xl font-bold mb-4">{successStory.results.users}</div>
-                  <div className="text-gray-300 text-lg mb-6">Users Served</div>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-300">User Growth</span>
-                      <div className="flex items-center">
-                        <TrendingUp className="h-5 w-5 text-green-400 mr-2" />
-                        <span className="text-green-400 font-semibold">+{successStory.results.growth}</span>
-                      </div>
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              <div className="relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                <img 
+                  src={techstartDashboard} 
+                  alt="TechStart Dashboard" 
+                  className="w-full h-auto object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white font-bold">Live Dashboard</span>
+                    <div className="flex items-center">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                      <span className="text-green-400 text-xs font-medium">System Online</span>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-300">Efficiency</span>
-                      <div className="flex items-center">
-                        <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                        <span className="text-green-400 font-semibold">+{successStory.results.efficiency}</span>
-                      </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-gray-800/80 backdrop-blur-sm rounded p-2 text-center">
+                      <div className="text-orange-400 font-bold text-sm">{successStory.results.users}</div>
+                      <div className="text-gray-400 text-[10px]">Users</div>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-300">Satisfaction</span>
-                      <div className="flex items-center">
-                        <Star className="h-5 w-5 text-yellow-400 mr-2" />
-                        <span className="text-yellow-400 font-semibold">{successStory.results.satisfaction}</span>
-                      </div>
+                    <div className="bg-gray-800/80 backdrop-blur-sm rounded p-2 text-center">
+                      <div className="text-orange-400 font-bold text-sm">{successStory.results.growth}</div>
+                      <div className="text-gray-400 text-[10px]">Growth</div>
+                    </div>
+                    <div className="bg-gray-800/80 backdrop-blur-sm rounded p-2 text-center">
+                      <div className="text-orange-400 font-bold text-sm">{successStory.results.satisfaction}</div>
+                      <div className="text-gray-400 text-[10px]">Rating</div>
                     </div>
                   </div>
                 </div>

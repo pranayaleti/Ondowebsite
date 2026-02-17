@@ -9,6 +9,17 @@ import { ArrowRight, TrendingUp, Users, Clock, CheckCircle, Star, ExternalLink, 
 import PMT from '../assets/PMT_optimized.webm';
 import { checklistItems } from '../constants/data';
 
+// Portfolio Images
+import techstartDashboard from '../assets/portfolio/techstart-dashboard.jpg';
+import techstartAnalytics from '../assets/portfolio/techstart-analytics.jpg';
+import techstartMobile from '../assets/portfolio/techstart-mobile.jpg';
+import retailmaxHomepage from '../assets/portfolio/retailmax-homepage.jpg';
+import retailmaxProduct from '../assets/portfolio/retailmax-product.jpg';
+import retailmaxCheckout from '../assets/portfolio/retailmax-checkout.jpg';
+import dataflowDashboard from '../assets/portfolio/dataflow-dashboard.jpg';
+import dataflowAnalytics from '../assets/portfolio/dataflow-analytics.jpg';
+import dataflowReports from '../assets/portfolio/dataflow-reports.jpg';
+
 const PortfolioPage = () => {
   const [selectedProject, setSelectedProject] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,9 +127,9 @@ const PortfolioPage = () => {
         }
       },
       screenshots: [
-        "/assets/portfolio-1-dashboard.jpg",
-        "/assets/portfolio-1-analytics.jpg",
-        "/assets/portfolio-1-mobile.jpg"
+        techstartDashboard,
+        techstartAnalytics,
+        techstartMobile
       ]
     },
     {
@@ -155,9 +166,9 @@ const PortfolioPage = () => {
         }
       },
       screenshots: [
-        "/assets/portfolio-2-homepage.jpg",
-        "/assets/portfolio-2-product.jpg",
-        "/assets/portfolio-2-checkout.jpg"
+        retailmaxHomepage,
+        retailmaxProduct,
+        retailmaxCheckout
       ]
     },
     {
@@ -194,9 +205,9 @@ const PortfolioPage = () => {
         }
       },
       screenshots: [
-        "/assets/portfolio-3-dashboard.jpg",
-        "/assets/portfolio-3-analytics.jpg",
-        "/assets/portfolio-3-reports.jpg"
+        dataflowDashboard,
+        dataflowAnalytics,
+        dataflowReports
       ]
     }
   ];

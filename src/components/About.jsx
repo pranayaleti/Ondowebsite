@@ -8,6 +8,7 @@ import {
   Star,
 } from "lucide-react";
 import Footer from "./Footer";
+import founderImage from "../assets/profile-pictures/pranay-aleti.jpg";
 
 const About = () => {
   return (
@@ -63,12 +64,9 @@ const About = () => {
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="flex-shrink-0">
                   <img
-                    src="/assets/founder.jpg"
+                    src={founderImage}
                     alt="Pranay Reddy Aleti - Founder of Ondosoft"
                     className="w-48 h-48 rounded-lg object-cover border-2 border-orange-500/30 shadow-lg"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
                   />
                 </div>
                 <div className="flex-1">
