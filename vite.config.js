@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 
 // In dev, handle /api/analytics/track* so they never hit the proxy when backend is down (avoids ECONNREFUSED spam).
 function analyticsProxyStub() {
@@ -13,7 +14,6 @@ function analyticsProxyStub() {
         }
         const path = req.url.split('?')[0]
         if (path === '/api/analytics/track' || path === '/api/analytics/track-batch') {
-          // Consume body so the request is fully read, then respond 204 (no proxy)
           req.on('data', () => {})
           req.on('end', () => {
             res.statusCode = 204
@@ -30,7 +30,145 @@ function analyticsProxyStub() {
 // https://vitejs.dev/config/
 export default defineConfig({
   base:'/',
-  plugins: [react(), analyticsProxyStub()],
+  plugins: [
+    react(),
+    analyticsProxyStub(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: [
+        'logo.png',
+        'robots.txt',
+        'sitemap.xml',
+        'offline.html',
+        'icons/icon-72x72.png',
+        'icons/icon-96x96.png',
+        'icons/icon-128x128.png',
+        'icons/icon-144x144.png',
+        'icons/icon-152x152.png',
+        'icons/icon-192x192.png',
+        'icons/icon-384x384.png',
+        'icons/icon-512x512.png'
+      ],
+      manifest: {
+        name: 'Ondosoft - Software Development Services',
+        short_name: 'Ondosoft',
+        description: 'Trusted software development with on-time delivery. Full stack, SaaS, and custom web apps.',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#000000',
+        theme_color: '#f97316',
+        orientation: 'portrait-primary',
+        lang: 'en-US',
+        id: '/',
+        scope: '/',
+        categories: ['business', 'productivity', 'technology'],
+        icons: [
+          { src: '/icons/icon-72x72.png', sizes: '72x72', type: 'image/png' },
+          { src: '/icons/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+          { src: '/icons/icon-128x128.png', sizes: '128x128', type: 'image/png' },
+          { src: '/icons/icon-144x144.png', sizes: '144x144', type: 'image/png' },
+          { src: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+          { src: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icons/icon-384x384.png', sizes: '384x384', type: 'image/png' },
+          { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+        ],
+        shortcuts: [
+          {
+            name: 'Contact Us',
+            short_name: 'Contact',
+            description: 'Get in touch with our development team',
+            url: '/contact',
+            icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }]
+          },
+          {
+            name: 'Our Services',
+            short_name: 'Services',
+            description: 'View our software development services',
+            url: '/services',
+            icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }]
+          },
+          {
+            name: 'Portfolio',
+            short_name: 'Portfolio',
+            description: 'See our development portfolio',
+            url: '/products',
+            icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }]
+          }
+        ]
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globIgnores: ['**/logo.backup*'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        navigateFallback: 'index.html',
+        navigateFallbackDenylist: [/^\/api\//, /^\/sitemap\.xml$/, /^\/robots\.txt$/],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            urlPattern: /\/api\/(?!auth\/).*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 5 },
+              networkTimeoutSeconds: 10,
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            urlPattern: /\.(?:woff|woff2|ttf|eot|otf)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'font-cache',
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/assets\.calendly\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'calendly-cache',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          }
+        ],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true
+      },
+      devOptions: {
+        enabled: false
+      }
+    })
+  ],
   publicDir: 'public',
   build: {
     rollupOptions: {

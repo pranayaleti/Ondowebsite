@@ -1,16 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-// CSS import - will be loaded asynchronously by Vite in production
-// Critical CSS is already inlined in index.html
 import './index.css'
+
+// PWA: auto-update service worker via vite-plugin-pwa
+import { registerSW } from 'virtual:pwa-register'
 
 // bfcache: on restore, re-sync state (e.g. timers, subscriptions). No unload/beforeunload here.
 if (typeof window !== 'undefined') {
   window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
-      // Page was restored from bfcache; app state is already restored by React.
-      // Optional: dispatch custom event for components that need to re-sync.
       window.dispatchEvent(new CustomEvent('bfcache-restore'));
     }
   });
@@ -102,46 +101,33 @@ if (typeof window !== 'undefined') {
   }
 }
 
-// Resource hints are now handled in index.html for better performance
-// This section removed to reduce blocking JavaScript
-
-// Register service worker for PWA functionality (only in production)
-// Note: StorageType.persistent deprecation warnings may come from browser internals or third-party libraries
-// The default cache storage API is sufficient and doesn't require explicit persistence
-if ('serviceWorker' in navigator) {
-  if (import.meta.env.PROD) {
-    // Use requestIdleCallback for non-critical service worker registration
-    const registerSW = () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          if (import.meta.env.DEV) {
-            console.log('SW registered: ', registration);
-          }
-        })
-        .catch((registrationError) => {
-          if (import.meta.env.DEV) {
-            console.log('SW registration failed: ', registrationError);
-          }
-        });
-    };
-
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(registerSW, { timeout: 2000 });
-    } else {
-      window.addEventListener('load', registerSW);
+// PWA service worker registration via vite-plugin-pwa (Workbox)
+// Auto-updates the SW when a new version is deployed
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm('New content is available. Reload to update?')) {
+      updateSW(true);
     }
-  } else {
-    // Unregister service worker in development to avoid conflicts
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (let registration of registrations) {
-        registration.unregister();
-        if (import.meta.env.DEV) {
-          console.log('SW unregistered for development');
-        }
-      }
-    });
+  },
+  onOfflineReady() {
+    if (import.meta.env.DEV) {
+      console.log('App is ready to work offline');
+    }
+  },
+  onRegisteredSW(swUrl, registration) {
+    if (registration) {
+      // Periodically check for SW updates (every hour)
+      setInterval(() => {
+        registration.update();
+      }, 60 * 60 * 1000);
+    }
+  },
+  onRegisterError(error) {
+    if (import.meta.env.DEV) {
+      console.error('SW registration failed:', error);
+    }
   }
-}
+});
 
 // Render app immediately - don't block on other initialization
 const root = document.getElementById('root');

@@ -19,6 +19,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { initPerformanceOptimizations } from "./utils/performance.js";
 import analyticsTracker from "./utils/analytics.js";
 import UnifiedChatWidget from "./components/UnifiedChatWidget";
+import InstallPrompt from "./components/InstallPrompt";
+import OfflineIndicator from "./components/OfflineIndicator";
 
 // Lazy load page components for better performance
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -219,6 +221,8 @@ const AppRoutes = () => {
         </Routes>
         </Suspense>
         <UnifiedChatWidget />
+        <InstallPrompt />
+        <OfflineIndicator />
       </div>
     </ErrorBoundary>
   );
