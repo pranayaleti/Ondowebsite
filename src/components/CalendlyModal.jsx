@@ -31,10 +31,10 @@ const CalendlyModal = ({ isOpen, onClose, utmMedium = "website" }) => {
           <button
             type="button"
             onClick={onClose}
-            className="flex-shrink-0 p-2 rounded-full text-gray-400 hover:text-white hover:bg-neutral-700 transition-colors"
+            className="flex-shrink-0 p-2 rounded-full text-gray-400 hover:text-white hover:bg-neutral-700 transition-colors flex items-center justify-center"
             aria-label="Close schedule meeting"
           >
-            <X className="h-6 w-6" />
+            <X className="h-6 w-6 shrink-0" />
           </button>
         </div>
 

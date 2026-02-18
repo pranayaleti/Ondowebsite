@@ -10,6 +10,7 @@ import QuickReplies from './chat/QuickReplies.jsx';
 import ChatInput from './chat/ChatInput.jsx';
 import TypingIndicator from './chat/TypingIndicator.jsx';
 import EmptyState from './chat/EmptyState.jsx';
+import CalendlyModal from './CalendlyModal.jsx';
 
 const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const { user, isAuthenticated } = useAuth();
@@ -27,6 +28,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [copiedMessageId, setCopiedMessageId] = useState(null);
   const [error, setError] = useState(null);
+  const [calendlyOpen, setCalendlyOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
@@ -365,6 +367,23 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
   };
 
   const handleQuickReply = async (value) => {
+    if (value === 'schedule_call') {
+      const userMessage = {
+        id: Date.now(),
+        role: 'user',
+        content: 'Schedule a call',
+        timestamp: new Date(),
+        buttonClicks: [{ button: value, timestamp: new Date() }],
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setInputMessage('');
+      setCalendlyOpen(true);
+      if (conversationId) {
+        postUserMessageAndGetReply(conversationId, userMessage).catch(() => {});
+      }
+      return;
+    }
+
     const quickReplyMessages = {
       pricing: 'I need a quote',
       portfolio: 'Show me your work',
@@ -833,7 +852,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleMaximize}
-              className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+              className="text-white hover:bg-white/20 rounded p-1 transition-colors flex items-center justify-center"
               aria-label={isMaximized ? "Minimize" : "Maximize"}
             >
               {isMaximized ? (
@@ -844,10 +863,10 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
             </button>
             <button
               onClick={onClose}
-              className="text-white hover:bg-white/20 rounded-full p-1 transition-colors"
+              className="text-white hover:bg-white/20 rounded-full p-1 transition-colors flex items-center justify-center"
               aria-label="Close chat"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 shrink-0" />
             </button>
           </div>
         </div>
@@ -936,17 +955,6 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
             isLoading={isLoading}
             placeholder="Type a message... (Shift+Enter for new line)"
           />
-          <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
-            <p className="text-xs text-gray-500">
-              This chat may be recorded and used in line with our{' '}
-              <a href="/privacy-policy" className="text-orange-600 underline" target="_blank" rel="noopener noreferrer">
-                Privacy Policy
-              </a>
-            </p>
-            <p id="input-help-text" className="text-xs text-gray-400">
-              <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Enter</kbd> to send, <kbd className="px-1 py-0.5 bg-gray-100 rounded text-xs">Shift+Enter</kbd> for new line
-            </p>
-          </div>
         </form>
         
         {/* Resize Handle */}
@@ -961,6 +969,7 @@ const AIChatModal = ({ isOpen, onClose, position = 'center' }) => {
           />
         )}
       </div>
+      <CalendlyModal isOpen={calendlyOpen} onClose={() => setCalendlyOpen(false)} utmMedium="chat" />
     </div>
   );
 };

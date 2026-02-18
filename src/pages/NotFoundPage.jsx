@@ -30,7 +30,7 @@ const NotFoundPage = () => {
     <>
       <SEOHead
         title="404 - Page Not Found | Ondosoft Software Development"
-        description="The page you're looking for doesn't exist. Return to Ondosoft's homepage for software development, SaaS solutions, and freelancing services."
+        description="The page you're looking for doesn't exist. Return to Ondosoft's homepage for software development, SaaS solutions, and custom project development."
         noIndex={true}
       />
       <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex flex-col">

@@ -172,8 +172,11 @@ Long-term relationships with regular updates, maintenance, and feature additions
 ### Dedicated Teams
 Exclusive team members working on your projects. Ensures consistency and deep understanding of your business.
 
-### Freelancing Services
-Flexible engagement for short-term or part-time development needs. Available for projects of any size.
+### Custom Project Development
+Flexible engagement for projects of any type or size—web, mobile, SaaS, prototypes, or integrations. We work on any project.
+
+### AI & Video Code Assistance
+Complete and refine AI-generated code or code from video tutorials. We fix incomplete implementations, debug issues, and bring drafts to production-ready quality.
 
 ## What's Included
 

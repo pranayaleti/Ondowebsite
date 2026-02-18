@@ -107,7 +107,7 @@ const LegalPage = () => {
                       <h3 className="text-xl font-semibold text-white mb-2">Business Details</h3>
                       <p className="text-gray-300"><strong>Company Name:</strong> Ondosoft</p>
                       <p className="text-gray-300"><strong>Business Type:</strong> Software Development & Technology Services</p>
-                      <p className="text-gray-300"><strong>Services:</strong> Freelancing, Full Stack Development, SaaS Applications</p>
+                      <p className="text-gray-300"><strong>Services:</strong> Custom Project Development, Full Stack Development, SaaS Applications, AI & Video Code Assistance</p>
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white mb-2">Contact Information</h3>

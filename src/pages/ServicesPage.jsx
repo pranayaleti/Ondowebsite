@@ -61,8 +61,16 @@ const ServicesPage = () => {
               "@type": "Offer",
               "itemOffered": {
                 "@type": "Service",
-                "name": "Freelancing Services",
-                "description": "Flexible software development and consulting services for businesses"
+                "name": "Custom Project Development",
+                "description": "Software development for any project type—web, mobile, SaaS, and beyond. Flexible engagement for projects of any scope."
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "AI & Video Code Assistance",
+                "description": "Complete and refine AI-generated or video tutorial code. We finish incomplete implementations and bring them to production."
               }
             }
           ]

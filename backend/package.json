@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node index.js",
+    "dev:all": "npm run dev:all --prefix ..",
     "seed": "node seed.js"
   },
   "dependencies": {
@@ -17,12 +18,21 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "openai": "^4.73.0",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "web-push": "^3.6.7"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": ["express", "api", "backend", "postgresql", "ai", "openai", "anthropic"],
+  "keywords": [
+    "express",
+    "api",
+    "backend",
+    "postgresql",
+    "ai",
+    "openai",
+    "anthropic"
+  ],
   "author": "",
   "license": "ISC"
 }

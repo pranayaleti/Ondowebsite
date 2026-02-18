@@ -60,7 +60,7 @@ const CityServiceSchema = ({ city, state, serviceName, serviceDescription }) => 
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": `${companyInfo.name} - ${serviceName} in ${city}, ${state}`,
-    "description": `${serviceDescription} services in ${city}, ${state}. Professional software development, freelancing, and SaaS solutions.`,
+    "description": `${serviceDescription} services in ${city}, ${state}. Professional software development, custom projects, and SaaS solutions.`,
     "url": `${companyInfo.urls.website}/services/${serviceName.toLowerCase().replace(/\s+/g, '-')}/${city.toLowerCase().replace(/\s+/g, '-')}-${state.toLowerCase()}`,
     "telephone": companyInfo.phoneE164,
     "email": companyInfo.email,

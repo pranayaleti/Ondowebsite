@@ -5,7 +5,7 @@ const Footer = lazy(() => import('../components/Footer'));
 const CalendlyModal = lazy(() => import('../components/CalendlyModal'));
 import { companyInfo, getCanonicalUrl } from '../constants/companyInfo';
 import ContactInfo from '../components/ContactInfo';
-import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award, Clock, Target, TrendingUp } from 'lucide-react';
+import { CheckCircle, Code, Cloud, Smartphone, Globe, Zap, Shield, Users, Award, Clock, Target, TrendingUp, Bot } from 'lucide-react';
 
 const CapabilitiesDeckPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -135,9 +135,15 @@ const CapabilitiesDeckPage = () => {
                     },
                     {
                       icon: <Zap className="h-8 w-8 text-orange-500" />,
-                      title: "Freelancing Services",
-                      description: "Flexible software development and consulting services. Project-based work, dedicated teams, and ongoing support.",
-                      features: ["Project-Based Work", "Dedicated Teams", "Technical Consulting", "Code Reviews", "Ongoing Support"]
+                      title: "Custom Project Development",
+                      description: "Software development for any project type. Flexible engagement—web, mobile, SaaS, prototypes, or integrations. We work on projects of any scope.",
+                      features: ["Any Project Type", "Project-Based or Ongoing", "Technical Consulting", "Code Reviews", "Ongoing Support"]
+                    },
+                    {
+                      icon: <Bot className="h-8 w-8 text-orange-500" />,
+                      title: "AI & Video Code Assistance",
+                      description: "Complete and refine AI-generated code or code from video tutorials. We fix incomplete implementations, debug issues, and bring drafts to production.",
+                      features: ["AI-Generated Code Completion", "Video Tutorial Code", "Bug Fixing & Refinement", "Production Readiness", "Code Reviews"]
                     },
                     {
                       icon: <Shield className="h-8 w-8 text-orange-500" />,

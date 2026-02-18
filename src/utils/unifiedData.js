@@ -60,7 +60,8 @@ export const SERVICE_TYPES = [
   'web-development',
   'custom-apps',
   'saas-development',
-  'freelancing',
+  'custom-projects',
+  'ai-code-assistance',
   'website-building',
   'ecommerce-solutions',
   'mobile-apps',
@@ -522,9 +523,9 @@ export const SERVICE_AREAS = {
   getKeywordsString: () => {
     const stateNames = STATES.map(state => state.name).join(', ');
     const cityNames = TOP_CITIES.map(city => city.displayName).join(', ');
-    const stateKeywords = STATES.map(state => `best freelancing site in ${state.name}, top freelancing website in ${state.name}`).join(', ');
-    const cityKeywords = TOP_CITIES.map(city => `best freelancing site in ${city.displayName}, top freelancing website in ${city.name}`).join(', ');
-    return `best freelancing site, top freelancing website, best freelance developers, hire developers, software development, freelancing platform, best freelancing website, top freelancing site, freelance software developers, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, software development, freelancing, full stack, SaaS, web apps, mobile apps, Ondosoft, US software company, hire developers, React, Node.js, Python, Java, cloud deployment, custom software, ${stateNames}, ${cityNames}, ${stateKeywords}, ${cityKeywords}`;
+    const stateKeywords = STATES.map(state => `custom software projects in ${state.name}, software development services in ${state.name}`).join(', ');
+    const cityKeywords = TOP_CITIES.map(city => `custom software projects in ${city.displayName}, software development services in ${city.name}`).join(', ');
+    return `custom software projects, project-based development, hire developers, software development, AI code completion, video coding assistance, best software development company, hire developers, software development, full stack development, SaaS development, React developers, Node.js developers, Python developers, mobile app development, web development, custom software, software development, full stack, SaaS, web apps, mobile apps, Ondosoft, US software company, React, Node.js, Python, Java, cloud deployment, custom software, AI-generated code refinement, ${stateNames}, ${cityNames}, ${stateKeywords}, ${cityKeywords}`;
   },
   
   // Generate hidden SEO content for pages
@@ -532,13 +533,13 @@ export const SERVICE_AREAS = {
     states: STATES.map(state => ({
       name: state.name,
       slug: state.slug,
-      linkText: `Software development services in ${state.name} - Freelancing, full stack development, and SaaS solutions`,
+      linkText: `Software development services in ${state.name} - Custom projects, full stack development, and SaaS solutions`,
       url: `/services/${state.slug}`
     })),
     cities: TOP_CITIES.map(city => ({
       name: city.displayName,
       slug: city.slug,
-      linkText: `Freelancing and full stack development in ${city.displayName} - Custom software and SaaS solutions`,
+      linkText: `Custom software projects and full stack development in ${city.displayName} - Web, mobile, and SaaS solutions`,
       url: `/services/${city.slug}`
     }))
   }),
