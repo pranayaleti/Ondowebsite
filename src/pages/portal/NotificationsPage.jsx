@@ -3,6 +3,8 @@ import { Bell, MessageSquare, FileText, AlertCircle, CheckCircle2, Clock, Trash2
 import { portalAPI } from '../../utils/auth.js';
 import { useAuth } from '../../contexts/AuthContext';
 import SEOHead from '../../components/SEOHead';
+import PushNotificationPrompt from '../../components/PushNotificationPrompt';
+import AddToHomeScreenPrompt from '../../components/AddToHomeScreenPrompt';
 import { useNavigate } from 'react-router-dom';
 import { formatDateTimeUserTimezone } from '../../utils/dateFormat.js';
 
@@ -145,6 +147,9 @@ const NotificationsPage = () => {
             </button>
           )}
         </div>
+
+        <AddToHomeScreenPrompt />
+        <PushNotificationPrompt />
 
         {error && (
           <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 text-red-400 mb-6 flex items-center justify-between">

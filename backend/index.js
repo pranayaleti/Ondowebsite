@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import webPush from 'web-push';
 import { isConfigured as aiConfigured, generateReply as generateAIReply, MAX_HISTORY as AI_MAX_HISTORY } from './services/aiService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -128,6 +129,47 @@ pool.query('SELECT NOW()', (err, res) => {
     console.log('Database connected successfully');
   }
 });
+
+// Web Push (VAPID) – optional; if keys are set, push notifications are enabled
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || null;
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || null;
+if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
+  webPush.setVapidDetails(
+    'mailto:support@ondosoft.com',
+    VAPID_PUBLIC_KEY,
+    VAPID_PRIVATE_KEY
+  );
+}
+
+/**
+ * Send Web Push to all subscriptions for a user (no-op if VAPID not configured).
+ * @param {number} userId
+ * @param {{ title: string, body: string, link?: string }} payload
+ */
+async function sendPushForUser(userId, { title, body, link }) {
+  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return;
+  try {
+    const { rows } = await pool.query(
+      'SELECT endpoint, p256dh, auth FROM push_subscriptions WHERE user_id = $1',
+      [userId]
+    );
+    const payload = JSON.stringify({ title, body, link: link || '/' });
+    await Promise.allSettled(
+      rows.map((sub) =>
+        webPush.sendNotification(
+          {
+            endpoint: sub.endpoint,
+            keys: { p256dh: sub.p256dh, auth: sub.auth },
+          },
+          payload,
+          { TTL: 86400 }
+        )
+      )
+    );
+  } catch (err) {
+    console.error('sendPushForUser error:', err.message);
+  }
+}
 
 // Create tables if they don't exist
 const createTables = async () => {
@@ -441,6 +483,17 @@ const createTables = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        endpoint TEXT NOT NULL,
+        p256dh TEXT NOT NULL,
+        auth TEXT NOT NULL,
+        user_agent TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(endpoint)
+      );
+
       CREATE TABLE IF NOT EXISTS ai_conversations (
         id SERIAL PRIMARY KEY,
         session_id VARCHAR(255) NOT NULL,
@@ -685,6 +738,11 @@ const createIndexes = async () => {
       CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read);
       CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
       CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, is_read);
+    `);
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_push_subscriptions_user_id ON push_subscriptions(user_id);
+      CREATE INDEX IF NOT EXISTS idx_push_subscriptions_endpoint ON push_subscriptions(endpoint);
     `);
 
     // Indexes for analytics tables
@@ -5875,6 +5933,11 @@ app.post('/api/dashboard/tickets', authenticateToken, async (req, res) => {
           `/admin/tickets/${ticket.id}`
         ]
       );
+      sendPushForUser(assignedToId, {
+        title: 'New Ticket Assigned',
+        body: `A new ticket "${subject}" has been assigned to you`,
+        link: `/admin/tickets/${ticket.id}`,
+      }).catch(() => {});
     }
 
     res.status(201).json({ ticket });
@@ -6020,6 +6083,11 @@ app.post('/api/dashboard/tickets/:id/messages', authenticateToken, async (req, r
             link
           ]
         );
+        sendPushForUser(assignee.id, {
+          title: 'New Message on Ticket',
+          body: `Client responded to ticket: "${ticket.subject}"`,
+          link,
+        }).catch(() => {});
       }
     } else {
       const adminUsers = await pool.query("SELECT id FROM users WHERE role = 'ADMIN'");
@@ -6033,6 +6101,11 @@ app.post('/api/dashboard/tickets/:id/messages', authenticateToken, async (req, r
             `/admin/tickets/${req.params.id}`
           ]
         );
+        sendPushForUser(admin.id, {
+          title: 'New Message on Ticket',
+          body: `Client responded to ticket: "${ticket.subject}"`,
+          link: `/admin/tickets/${req.params.id}`,
+        }).catch(() => {});
       }
     }
 
@@ -6194,6 +6267,11 @@ app.post('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res)
         ownerLink
       ]
     );
+    sendPushForUser(ownerId, {
+      title: 'New Ticket Created',
+      body: `A new ticket "${subject}" has been created for you`,
+      link: ownerLink,
+    }).catch(() => {});
 
     if (assignedToId && assignedToId !== ownerId) {
       const assignedUser = assignedUserResult ? assignedUserResult.rows[0] : null;
@@ -6210,6 +6288,11 @@ app.post('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res)
           assignedLink
         ]
       );
+      sendPushForUser(assignedToId, {
+        title: 'New Ticket Assigned',
+        body: `Ticket "${subject}" has been assigned to you`,
+        link: assignedLink,
+      }).catch(() => {});
     }
 
     res.status(201).json({ ticket });
@@ -6434,6 +6517,11 @@ app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req,
           `/portal/tickets/${req.params.id}`
         ]
       );
+      sendPushForUser(ticket.user_id, {
+        title: 'Ticket Updated',
+        body: notificationMessage,
+        link: `/portal/tickets/${req.params.id}`,
+      }).catch(() => {});
     }
 
     // Notify new assignee if applicable
@@ -6460,6 +6548,11 @@ app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req,
             link
           ]
         );
+        sendPushForUser(assignedToId, {
+          title: 'Ticket Assigned',
+          body: `Ticket "${ticket.subject}" has been assigned to you`,
+          link,
+        }).catch(() => {});
       }
     } else if (ticket.assigned_to) {
       const assigneeLookup = await pool.query(
@@ -6487,6 +6580,11 @@ app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req,
             link
           ]
         );
+        sendPushForUser(ticket.assigned_to, {
+          title: 'Ticket Updated',
+          body: assignedMessage,
+          link,
+        }).catch(() => {});
       }
     }
 
@@ -6512,6 +6610,11 @@ app.patch('/api/admin/tickets/:id', authenticateToken, requireAdmin, async (req,
             previousLink
           ]
         );
+        sendPushForUser(previousAssignee.id, {
+          title: 'Ticket Unassigned',
+          body: `Ticket "${ticket.subject}" is no longer assigned to you`,
+          link: previousLink,
+        }).catch(() => {});
       }
     }
 
@@ -6559,6 +6662,11 @@ app.post('/api/admin/tickets/:id/messages', authenticateToken, requireAdmin, asy
             `/portal/tickets/${req.params.id}`
           ]
         );
+        sendPushForUser(ticket.user_id, {
+          title: 'New Message on Ticket',
+          body: `Admin responded to your ticket: "${ticket.subject}"`,
+          link: `/portal/tickets/${req.params.id}`,
+        }).catch(() => {});
       }
     }
 
@@ -6566,6 +6674,56 @@ app.post('/api/admin/tickets/:id/messages', authenticateToken, requireAdmin, asy
   } catch (error) {
     console.error('Add message error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Web Push – public key for subscription (no auth required)
+app.get('/api/vapid-public-key', (req, res) => {
+  if (!VAPID_PUBLIC_KEY) {
+    return res.status(503).json({ error: 'Push notifications are not configured' });
+  }
+  res.json({ publicKey: VAPID_PUBLIC_KEY });
+});
+
+// Subscribe to push (portal or admin – same user)
+app.post('/api/dashboard/push-subscribe', authenticateToken, async (req, res) => {
+  if (!VAPID_PUBLIC_KEY) {
+    return res.status(503).json({ error: 'Push notifications are not configured' });
+  }
+  try {
+    const { subscription } = req.body;
+    if (!subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) {
+      return res.status(400).json({ error: 'Invalid subscription: endpoint and keys.p256dh, keys.auth required' });
+    }
+    const userAgent = req.get('user-agent') || null;
+    await pool.query(
+      `INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth, user_agent)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (endpoint) DO UPDATE SET user_id = $1, p256dh = $3, auth = $4, user_agent = $5`,
+      [req.user.id, subscription.endpoint, subscription.keys.p256dh, subscription.keys.auth, userAgent]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Push subscribe error:', err);
+    res.status(500).json({ error: 'Failed to save subscription' });
+  }
+});
+
+// Unsubscribe from push
+app.delete('/api/dashboard/push-unsubscribe', authenticateToken, async (req, res) => {
+  try {
+    const { endpoint } = req.body || {};
+    if (!endpoint) {
+      return res.status(400).json({ error: 'endpoint required' });
+    }
+    await pool.query(
+      'DELETE FROM push_subscriptions WHERE user_id = $1 AND endpoint = $2',
+      [req.user.id, endpoint]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Push unsubscribe error:', err);
+    res.status(500).json({ error: 'Failed to remove subscription' });
   }
 });
 

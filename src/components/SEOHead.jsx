@@ -168,7 +168,7 @@ const SEOHead = ({
       <meta property="og:image" content={finalOgImage} />
       <meta property="og:image:width" content={companyInfo.ogImage.width} />
       <meta property="og:image:height" content={companyInfo.ogImage.height} />
-      <meta property="og:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Freelancing Services" />
+      <meta property="og:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Custom Project Development" />
       <meta property="og:site_name" content={companyInfo.name} />
       <meta property="og:locale" content="en_US" />
       
@@ -180,7 +180,7 @@ const SEOHead = ({
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={finalOgImage} />
-      <meta name="twitter:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Freelancing Services" />
+      <meta name="twitter:image:alt" content="Ondosoft - Full Stack Software Development, SaaS Solutions & Custom Project Development" />
       
       {/* Additional SEO Meta Tags */}
       <meta name="author" content={companyInfo.name} />

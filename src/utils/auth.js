@@ -701,6 +701,37 @@ export const portalAPI = {
 
     return response.json();
   },
+
+  /** Get VAPID public key for push subscription (no auth). */
+  async getVapidPublicKey() {
+    const response = await fetch(`${API_URL}/vapid-public-key`, { credentials: 'include' });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.publicKey || null;
+  },
+
+  /** Register push subscription with the backend. */
+  async subscribePush(subscription) {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/push-subscribe`, {
+      method: 'POST',
+      body: JSON.stringify({ subscription }),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to enable push notifications');
+    }
+    return response.json();
+  },
+
+  /** Remove push subscription. */
+  async unsubscribePush(endpoint) {
+    const response = await authenticatedFetch(`${API_URL}/dashboard/push-unsubscribe`, {
+      method: 'DELETE',
+      body: JSON.stringify({ endpoint }),
+    });
+    if (!response.ok) throw new Error('Failed to disable push notifications');
+    return response.json();
+  },
 };
 
 // Admin API functions

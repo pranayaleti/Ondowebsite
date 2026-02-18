@@ -201,8 +201,12 @@ const SitemapPage = () => {
                   <h2 className="text-3xl font-bold text-white mb-6">Our Services</h2>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
-                      <h3 className="text-lg font-semibold text-white mb-2">Freelancing</h3>
-                      <p className="text-sm text-gray-400">Flexible software development services</p>
+                      <h3 className="text-lg font-semibold text-white mb-2">Custom Projects</h3>
+                      <p className="text-sm text-gray-400">Software development for any project type</p>
+                    </div>
+                    <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                      <h3 className="text-lg font-semibold text-white mb-2">AI & Video Code</h3>
+                      <p className="text-sm text-gray-400">Complete AI-generated or tutorial code</p>
                     </div>
                     <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
                       <h3 className="text-lg font-semibold text-white mb-2">Full Stack Development</h3>

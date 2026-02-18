@@ -1,4 +1,8 @@
 // Blog data structure and utilities
+import automationHero from '../assets/blog/automation-hero.jpg';
+import saasGrowthHero from '../assets/blog/saas-growth-hero.jpg';
+import hiringDevelopersHero from '../assets/blog/hiring-developers-hero.jpg';
+
 export const blogCategories = [
   {
     id: 'small-business-tech',
@@ -39,7 +43,7 @@ export const blogPosts = [
     metaDescription: 'Discover how custom software automation can transform your small business operations. Learn practical strategies to save 20+ hours weekly, reduce costs, and scale efficiently with proven automation techniques.',
     keywords: 'small business automation, custom software, business process automation, workflow optimization, productivity tools, small business technology',
     readingTime: '8 min read',
-    featuredImage: '/assets/blog/automation-hero.jpg',
+    featuredImage: automationHero,
     author: 'Pranay Reddy Aleti',
     authorRole: 'Founder & Lead Developer',
     publishDate: '2024-01-15',
@@ -175,7 +179,7 @@ Ready to automate your business? Let's talk about your specific needs and create
     tags: ['automation', 'small-business', 'productivity', 'custom-software'],
     readTime: '8 min read',
     featured: true,
-    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=600&fit=crop',
+    image: automationHero,
     metaDescription: 'Learn how small businesses can automate operations with custom apps to save 20+ hours per week and serve more customers without hiring more staff.',
     socialImage: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=630&fit=crop'
   },
@@ -187,7 +191,7 @@ Ready to automate your business? Let's talk about your specific needs and create
     metaDescription: 'Discover the 5 critical signs your business needs a SaaS solution for growth. Learn how to identify scaling bottlenecks and choose the right software to accelerate your business expansion.',
     keywords: 'SaaS solution, business growth, software as a service, business scaling, SaaS benefits, growth indicators, business technology',
     readingTime: '6 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    featuredImage: saasGrowthHero,
     author: 'Pranay Reddy Aleti',
     authorRole: 'Founder & Lead Developer',
     publishDate: '2024-01-20',
@@ -1804,7 +1808,7 @@ Ready to automate your business processes? Let's identify which processes would 
     tags: ['automation', 'business-processes', 'workflow', 'productivity'],
     readTime: '11 min read',
     featured: false,
-    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=600&fit=crop',
+    image: automationHero,
     metaDescription: 'Complete guide to business process automation with practical strategies and tools.',
     socialImage: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200&h=630&fit=crop'
   },
@@ -2763,7 +2767,7 @@ Ready to transform your business? Let's discuss your specific needs and create a
     metaDescription: 'Explore the future of SaaS with trends and predictions for 2024. Discover emerging technologies and market opportunities.',
     keywords: 'SaaS trends, SaaS future, software as a service trends, SaaS predictions, SaaS industry',
     readingTime: '9 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    featuredImage: saasGrowthHero,
     author: 'Pranay Reddy Aleti',
     authorRole: 'Founder & Lead Developer',
     publishDate: '2024-03-05',
@@ -4244,7 +4248,7 @@ Ready to hire a React or full-stack developer? [Schedule your free consultation]
     metaDescription: 'OndoSoft offers affordable website design and SEO management services as an alternative to Fiverr and Upwork. Expert website design, SEO optimization, and digital branding without platform fees.',
     keywords: 'website design and SEO management agency, freelance digital marketing and SEO agency, custom website development in the USA, affordable software development services, Fiverr alternative, Upwork alternative',
     readingTime: '9 min read',
-    featuredImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=600&fit=crop',
+    featuredImage: saasGrowthHero,
     author: 'Pranay Reddy Aleti',
     authorRole: 'Founder & Lead Developer',
     publishDate: '2024-03-30',
