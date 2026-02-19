@@ -127,12 +127,12 @@ const Footer = ({ hideFeedbackCta = false }) => {
             {!hideFeedbackCta && (
               <div className="mt-4 p-4 rounded-lg border border-orange-500/30 bg-neutral-800/60">
                 <p className="text-orange-400 font-semibold text-sm">Got ideas? We're listening!</p>
-                <p className="text-gray-200 text-xs mt-1 mb-2">Share feedback to help us build better experiences.</p>
+                <p className="text-gray-200 text-xs mt-1 mb-2">We'd love to hear your feedback and questions.</p>
                 <Link
-                  to="/contact"
+                  to="/feedback"
                   className="inline-block text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 px-3 py-2 rounded-md hover:from-orange-600 hover:to-orange-700 transition-colors"
                 >
-                  Share feedback
+                  Share your ideas
                 </Link>
               </div>
             )}

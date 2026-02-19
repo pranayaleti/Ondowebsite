@@ -256,7 +256,7 @@ const About = () => {
               <p className="text-gray-300 text-sm mb-4">
                 Schedule a meeting. We'll design, build, and scale your next product—on time.
               </p>
-              <a href="/contact" className="w-full block text-center bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors mb-4">
+              <a href="/contact" className="w-full block text-center min-h-[48px] bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors mb-4 flex items-center justify-center">
                 Schedule a Meeting
               </a>
               <div className="text-center">
@@ -279,10 +279,10 @@ const About = () => {
             Strategy-first discovery, production-grade engineering—from MVPs to scale-ready platforms.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
+            <a href="/contact" className="min-h-[48px] bg-gray-700 hover:bg-gray-600 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600 flex items-center justify-center">
               Schedule a meeting
             </a>
-            <a href="/capabilities-deck" className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600">
+            <a href="/capabilities-deck" className="min-h-[48px] bg-gray-800 hover:bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-bold transition-colors border border-gray-600 flex items-center justify-center">
               Download Capabilities Deck
             </a>
           </div>

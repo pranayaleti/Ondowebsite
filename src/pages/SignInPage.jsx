@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../utils/apiConfig.js';
 import SEOHead from '../components/SEOHead';
-import { Mail, Lock, ArrowRight, Loader, CheckCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader, CheckCircle, Calendar, LayoutDashboard } from 'lucide-react';
 import { companyInfo } from '../constants/companyInfo';
 
 const SignInPage = () => {
@@ -94,6 +94,28 @@ const SignInPage = () => {
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
               <p className="text-gray-400">Access your dashboard</p>
+            </div>
+
+            {/* Not a client yet? Request Demo / View Sample */}
+            <div className="mb-6 p-5 bg-gray-900/80 border border-gray-700 rounded-xl">
+              <h3 className="text-lg font-bold text-orange-400 mb-1">Not a client yet?</h3>
+              <p className="text-gray-400 text-sm mb-4">See what we build or request a demo to get started.</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  to="/contact"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-orange-500/50 text-orange-400 hover:bg-orange-500/10 font-medium text-sm transition-colors"
+                >
+                  <Calendar className="w-4 h-4" />
+                  Request Demo
+                </Link>
+                <Link
+                  to="/demo"
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700/50 font-medium text-sm transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  View Sample Dashboard
+                </Link>
+              </div>
             </div>
 
             {/* Test Credentials */}

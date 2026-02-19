@@ -106,6 +106,14 @@ const SitemapPage = () => {
                       <h3 className="text-lg font-semibold text-white mb-1">Contact</h3>
                       <p className="text-sm text-gray-400">Get in touch with us</p>
                     </Link>
+                    <Link to="/demo" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
+                      <h3 className="text-lg font-semibold text-white mb-1">Sample Dashboard</h3>
+                      <p className="text-sm text-gray-400">View a read-only demo of the client portal</p>
+                    </Link>
+                    <Link to="/feedback" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
+                      <h3 className="text-lg font-semibold text-white mb-1">Feedback</h3>
+                      <p className="text-sm text-gray-400">Share your ideas and suggestions</p>
+                    </Link>
                     <Link to="/faq" className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
                       <h3 className="text-lg font-semibold text-white mb-1">FAQ</h3>
                       <p className="text-sm text-gray-400">Frequently asked questions</p>

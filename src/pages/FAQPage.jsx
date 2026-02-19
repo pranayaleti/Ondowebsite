@@ -83,13 +83,13 @@ const FAQPage = () => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="bg-gray-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-600 transition-all duration-200 shadow-lg border border-gray-600"
+                  className="min-h-[48px] bg-gray-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-600 transition-all duration-200 shadow-lg border border-gray-600 flex items-center justify-center"
                 >
                   Schedule a meeting
                 </button>
                 <a
                   href={`tel:${companyInfo.phoneE164}`}
-                  className="border-2 border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-200"
+                  className="min-h-[48px] border-2 border-gray-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 hover:border-gray-500 transition-all duration-200 flex items-center justify-center"
                 >
                   Call {companyInfo.phoneDisplay}
                 </a>

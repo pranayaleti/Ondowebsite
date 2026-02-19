@@ -13,6 +13,8 @@ export const generateSitemap = () => {
     { url: '/testimonials', priority: '0.6', changefreq: 'monthly', lastmod: today },
     { url: '/portfolio', priority: '0.8', changefreq: 'monthly', lastmod: today },
     { url: '/contact', priority: '0.7', changefreq: 'monthly', lastmod: today },
+    { url: '/demo', priority: '0.6', changefreq: 'monthly', lastmod: today },
+    { url: '/feedback', priority: '0.7', changefreq: 'monthly', lastmod: today },
     { url: '/about', priority: '0.6', changefreq: 'monthly', lastmod: today },
     { url: '/faq', priority: '0.6', changefreq: 'monthly', lastmod: today },
     { url: '/blogs', priority: '0.8', changefreq: 'weekly', lastmod: today },

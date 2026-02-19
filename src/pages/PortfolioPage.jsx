@@ -403,7 +403,12 @@ const PortfolioPage = () => {
                 >
                   <div className="mb-4">
                     <h3 className="text-lg font-semibold text-white mb-2">{project.title}</h3>
-                    <p className="text-gray-300 text-sm">{project.client} • {project.industry}</p>
+                    <p className="text-gray-300 text-sm mb-2">{project.client} • {project.industry}</p>
+                    <p className="text-gray-400 text-xs">
+                      Built with {project.technologies.length > 2
+                        ? project.technologies.slice(0, -1).join(', ') + ' & ' + project.technologies[project.technologies.length - 1]
+                        : project.technologies.join(' & ')}
+                    </p>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -546,7 +551,7 @@ const PortfolioPage = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center border border-gray-600"
+                className="min-h-[48px] bg-gray-700 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center border border-gray-600"
               >
                 Start Your Project
                 <ArrowRight className="h-5 w-5 ml-2" />
@@ -554,7 +559,7 @@ const PortfolioPage = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="border-2 border-gray-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 hover:border-gray-500 transition-colors flex items-center justify-center"
+                className="min-h-[48px] border-2 border-gray-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 hover:border-gray-500 transition-colors flex items-center justify-center"
               >
                 Schedule a meeting
               </button>

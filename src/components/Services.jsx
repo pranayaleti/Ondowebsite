@@ -1,7 +1,95 @@
 import { features, workflowItems } from "../constants/data";
 import { CheckCircle2 } from "lucide-react";
-import OptimizedImage from "./OptimizedImage";
-import codeImage from "../assets/code.jpg";
+
+const steps = [
+  { id: "01", label: "Discovery & Planning", short: "Discover" },
+  { id: "02", label: "Design & Prototyping", short: "Design" },
+  { id: "03", label: "Development & Testing", short: "Build" },
+  { id: "04", label: "Launch & Support", short: "Launch" },
+];
+
+function AgileProcessDiagram() {
+  return (
+    <svg
+      viewBox="0 0 560 320"
+      className="w-full max-w-[600px] h-auto rounded-lg shadow-lg"
+      role="img"
+      aria-label="Agile development process: Discovery, Design, Development, Launch"
+    >
+      <defs>
+        <linearGradient id="ondoOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#f97316" />
+          <stop offset="100%" stopColor="#ea580c" />
+        </linearGradient>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.15" />
+        </filter>
+      </defs>
+      {/* Connector line (horizontal) */}
+      <path
+        d="M 80 160 L 480 160"
+        stroke="url(#ondoOrange)"
+        strokeWidth="2"
+        strokeDasharray="8 6"
+        fill="none"
+        opacity="0.7"
+      />
+      {steps.map((step, i) => {
+        const x = 80 + (400 / (steps.length - 1)) * i;
+        const y = 160;
+        return (
+          <g key={step.id}>
+            {/* Node circle */}
+            <circle
+              cx={x}
+              cy={y}
+              r="36"
+              fill="rgb(38 38 38)"
+              stroke="url(#ondoOrange)"
+              strokeWidth="2.5"
+              filter="url(#shadow)"
+            />
+            <text
+              x={x}
+              y={y - 4}
+              textAnchor="middle"
+              className="text-sm font-bold"
+              fill="#f97316"
+              style={{ fontFamily: "system-ui, sans-serif", fontSize: "14px", fontWeight: "700" }}
+            >
+              {step.id}
+            </text>
+            {/* Label below */}
+            <text
+              x={x}
+              y={y + 88}
+              textAnchor="middle"
+              fill="#e5e5e5"
+              style={{ fontFamily: "system-ui, sans-serif", fontSize: "11px", fontWeight: "600" }}
+            >
+              {step.label.split(" ").slice(0, 2).join(" ")}
+            </text>
+            <text
+              x={x}
+              y={y + 102}
+              textAnchor="middle"
+              fill="#a3a3a3"
+              style={{ fontFamily: "system-ui, sans-serif", fontSize: "10px" }}
+            >
+              {step.label.split(" ").slice(2).join(" ")}
+            </text>
+          </g>
+        );
+      })}
+      {/* Arrowheads on the dashed line */}
+      <polygon
+        points="472,155 482,160 472,165"
+        fill="#f97316"
+        opacity="0.9"
+      />
+    </svg>
+  );
+}
 
 const Services = () => {
   return (
@@ -54,15 +142,8 @@ const Services = () => {
         </p>
         
         <div className="flex flex-wrap justify-center mt-12">
-          <div className="p-2 w-full lg:w-1/2">
-            <OptimizedImage 
-              src={codeImage}
-              alt="Software development workflow showing code on screen with modern development tools and technologies"
-              width={600}
-              height={400}
-              className="rounded-lg shadow-lg w-full h-auto"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-            />
+          <div className="p-2 w-full lg:w-1/2 flex items-center justify-center">
+            <AgileProcessDiagram />
           </div>
           <div className="pt-12 w-full lg:w-1/2">
             <div className="space-y-8" role="list" aria-label="Development process steps">

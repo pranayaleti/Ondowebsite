@@ -195,10 +195,10 @@ const HomePage = () => {
                     Database Design & Integration
                   </li>
                 </ul>
-                <button 
-                  type="button" 
-                  onClick={() => setIsModalOpen(true)} 
-                  className="inline-flex items-center text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform"
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(true)}
+                  className="inline-flex items-center min-h-[48px] min-w-[48px] py-3 pr-4 pl-2 -ml-2 text-orange-400 hover:text-orange-300 font-semibold group-hover:translate-x-1 transition-transform"
                   aria-label="Schedule a meeting for custom web applications"
                 >
                   Schedule a meeting <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />

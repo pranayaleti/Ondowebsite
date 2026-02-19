@@ -141,10 +141,12 @@ const TrustBadges = () => {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
               <div className="relative bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
-                <img 
-                  src={techstartDashboard} 
-                  alt="TechStart Dashboard" 
+                <img
+                  src={techstartDashboard}
+                  alt="TechStart Dashboard"
                   className="w-full h-auto object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent"></div>
                 <div className="absolute bottom-0 left-0 right-0 p-6">

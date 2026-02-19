@@ -574,6 +574,19 @@ const createTables = async () => {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
 
+      CREATE TABLE IF NOT EXISTS site_feedback (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        message TEXT NOT NULL,
+        page_url TEXT,
+        user_agent TEXT,
+        ip_address VARCHAR(45),
+        status VARCHAR(50) DEFAULT 'new',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS pricing_page_interactions (
         id SERIAL PRIMARY KEY,
         session_id VARCHAR(255) NOT NULL,
@@ -804,6 +817,11 @@ const createIndexes = async () => {
       CREATE INDEX IF NOT EXISTS idx_feedback_status ON feedback(status);
       CREATE INDEX IF NOT EXISTS idx_feedback_created_at ON feedback(created_at);
       CREATE INDEX IF NOT EXISTS idx_feedback_type_rating ON feedback(type, rating);
+
+      CREATE INDEX IF NOT EXISTS idx_site_feedback_email ON site_feedback(email);
+      CREATE INDEX IF NOT EXISTS idx_site_feedback_category ON site_feedback(category);
+      CREATE INDEX IF NOT EXISTS idx_site_feedback_status ON site_feedback(status);
+      CREATE INDEX IF NOT EXISTS idx_site_feedback_created_at ON site_feedback(created_at);
       
       CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_session_id ON pricing_page_interactions(session_id);
       CREATE INDEX IF NOT EXISTS idx_pricing_page_interactions_user_id ON pricing_page_interactions(user_id);
@@ -5038,6 +5056,71 @@ app.get('/api/pricing/interactions/:sessionId', async (req, res) => {
     });
   } catch (error) {
     console.error('Get pricing page interactions error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+});
+
+// Submit site feedback / ideas (public endpoint)
+app.post('/api/feedback/ideas', async (req, res) => {
+  try {
+    const { name, email, category, message } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: 'Name is required' });
+    }
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    const emailTrimmed = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
+      return res.status(400).json({ error: 'Please enter a valid email address' });
+    }
+    if (!category || !category.trim()) {
+      return res.status(400).json({ error: 'Category is required' });
+    }
+    const allowedCategories = ['idea', 'suggestion', 'bug', 'praise', 'other'];
+    if (!allowedCategories.includes(category)) {
+      return res.status(400).json({ error: 'Invalid category' });
+    }
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+    if (message.trim().length < 10) {
+      return res.status(400).json({ error: 'Message must be at least 10 characters' });
+    }
+    if (message.trim().length > 2000) {
+      return res.status(400).json({ error: 'Message must be at most 2000 characters' });
+    }
+
+    const ipAddress = req.ip || req.connection?.remoteAddress || (req.headers['x-forwarded-for'] && req.headers['x-forwarded-for'].split(',')[0]) || null;
+    const userAgent = req.headers['user-agent'] || null;
+    const pageUrl = req.body.page_url || req.get('Referer') || null;
+
+    const result = await pool.query(
+      `INSERT INTO site_feedback (name, email, category, message, page_url, user_agent, ip_address)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, created_at`,
+      [
+        name.trim().slice(0, 255),
+        emailTrimmed.slice(0, 255),
+        category,
+        message.trim().slice(0, 2000),
+        pageUrl,
+        userAgent,
+        ipAddress
+      ]
+    );
+
+    res.status(201).json({
+      success: true,
+      id: result.rows[0].id,
+      createdAt: result.rows[0].created_at
+    });
+  } catch (error) {
+    console.error('Site feedback submission error:', error);
     res.status(500).json({
       error: 'Internal server error',
       message: process.env.NODE_ENV === 'development' ? error.message : undefined

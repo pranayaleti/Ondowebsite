@@ -112,7 +112,7 @@ const HeroSection = ({ onOpenSchedule }) => {
               <button
                 type="button"
                 onClick={handleScheduleClick}
-                className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+                className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 min-h-[48px] rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
                 aria-label="Book Strategy Call"
               >
                 Book Strategy Call
@@ -121,7 +121,7 @@ const HeroSection = ({ onOpenSchedule }) => {
             ) : (
               <Link
                 to="/contact"
-                className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+                className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 min-h-[48px] rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
                 aria-label="Schedule a meeting"
               >
                 Schedule a meeting
@@ -130,7 +130,7 @@ const HeroSection = ({ onOpenSchedule }) => {
             )}
             <Link
               to="/portfolio"
-              className="border-2 border-orange-500 text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300 flex items-center justify-center"
+              className="border-2 border-orange-500 text-orange-500 px-8 py-4 min-h-[48px] rounded-lg text-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300 flex items-center justify-center"
               aria-label="View Case Studies"
             >
               View Case Studies

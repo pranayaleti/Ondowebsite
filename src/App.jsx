@@ -32,6 +32,7 @@ const PortfolioPage = lazy(() => import("./pages/PortfolioPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const FeedbackPage = lazy(() => import("./pages/FeedbackPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const SitemapPage = lazy(() => import("./pages/SitemapPage"));
 const SitemapXMLPage = lazy(() => import("./pages/SitemapXMLPage"));
@@ -44,6 +45,7 @@ const NDAPage = lazy(() => import("./pages/NDAPage"));
 const LicensingPage = lazy(() => import("./pages/LicensingPage"));
 const AccessibilityPage = lazy(() => import("./pages/AccessibilityPage"));
 const CapabilitiesDeckPage = lazy(() => import("./pages/CapabilitiesDeckPage"));
+const DemoPage = lazy(() => import("./pages/DemoPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
@@ -158,6 +160,7 @@ const AppRoutes = () => {
           <Route path="/blogs" element={<BlogPage />} />
           <Route path="/blogs/:slug" element={<BlogPostPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/faq" element={<FAQPage />} />
           <Route path="/legal" element={<LegalPage />} />
@@ -167,6 +170,7 @@ const AppRoutes = () => {
           <Route path="/licensing" element={<LicensingPage />} />
           <Route path="/accessibility" element={<AccessibilityPage />} />
           <Route path="/capabilities-deck" element={<CapabilitiesDeckPage />} />
+          <Route path="/demo" element={<DemoPage />} />
           <Route path="/sitemap" element={<SitemapPage />} />
           <Route path="/sitemap.xml" element={<SitemapXMLPage />} />
           <Route path="/robots.txt" element={<RobotsPage />} />

@@ -9,7 +9,7 @@ const AIChatPrompt = ({ onStartChat, onScheduleMeeting, onClose }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10 min-w-[44px] min-h-[44px] flex items-center justify-center -m-1"
           aria-label="Close"
         >
           <X className="w-6 h-6" />
@@ -46,14 +46,14 @@ const AIChatPrompt = ({ onStartChat, onScheduleMeeting, onClose }) => {
           {/* Buttons */}
           <button
             onClick={onScheduleMeeting}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-xl transition-colors shadow-md"
+            className="w-full min-h-[48px] bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center"
           >
             Schedule a meeting
           </button>
 
           <button
             onClick={onStartChat}
-            className="w-full bg-purple-500/80 hover:bg-purple-500 text-white font-medium py-3 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
+            className="w-full min-h-[48px] bg-purple-500/80 hover:bg-purple-500 text-white font-medium py-3 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
           >
             <Sparkles className="w-5 h-5" />
             Chat with our AI Agent

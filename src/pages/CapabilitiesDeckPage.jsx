@@ -364,7 +364,7 @@ const CapabilitiesDeckPage = () => {
                 <div className="mt-6 print:hidden">
                   <button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                    className="min-h-[48px] bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
                   >
                     Schedule a meeting
                   </button>

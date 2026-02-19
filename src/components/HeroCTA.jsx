@@ -20,7 +20,7 @@ const HeroCTA = ({ onOpenSchedule }) => {
             <button
               type="button"
               onClick={onOpenSchedule}
-              className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+              className="group bg-white text-orange-600 px-8 py-4 min-h-[48px] rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
               aria-label="Schedule a meeting"
             >
               <MessageCircle className="h-5 w-5 mr-2" />
@@ -30,7 +30,7 @@ const HeroCTA = ({ onOpenSchedule }) => {
           ) : (
             <a
               href="/contact"
-              className="group bg-white text-orange-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
+              className="group bg-white text-orange-600 px-8 py-4 min-h-[48px] rounded-lg text-lg font-semibold hover:bg-orange-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
               aria-label="Schedule a meeting"
             >
               <MessageCircle className="h-5 w-5 mr-2" />
@@ -39,9 +39,9 @@ const HeroCTA = ({ onOpenSchedule }) => {
             </a>
           )}
           
-          <a 
-            href="/pricing" 
-            className="group border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-orange-600 transition-all duration-300 flex items-center justify-center"
+          <a
+            href="/pricing"
+            className="group border-2 border-white text-white px-8 py-4 min-h-[48px] rounded-lg text-lg font-semibold hover:bg-white hover:text-orange-600 transition-all duration-300 flex items-center justify-center"
             aria-label="View pricing and estimate project cost"
           >
             <Calculator className="h-5 w-5 mr-2" />

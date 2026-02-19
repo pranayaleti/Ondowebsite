@@ -270,10 +270,10 @@ const Navbar = () => {
                     </div>
                     <span className="text-xl font-bold text-white">OndoSoft</span>
                   </div>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => toggleNavbar('drawer-close')}
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="text-gray-400 hover:text-white transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center -m-2"
                     aria-label="Close menu"
                   >
                     <X className="h-6 w-6" />
@@ -289,8 +289,8 @@ const Navbar = () => {
                         onMouseEnter={() => handleNavHover(item.href)}
                         className={
                           isActive(item.href)
-                            ? "block py-3 px-4 rounded-md bg-orange-500 text-white font-semibold"
-                            : "block py-3 px-4 rounded-md text-gray-300 hover:text-orange-400 hover:bg-gray-800/50 transition-all duration-200 font-medium"
+                            ? "block min-h-[44px] py-3 px-4 rounded-md bg-orange-500 text-white font-semibold flex items-center"
+                            : "block min-h-[44px] py-3 px-4 rounded-md text-gray-300 hover:text-orange-400 hover:bg-gray-800/50 transition-all duration-200 font-medium flex items-center"
                         }
                       >
                         {item.label}
@@ -305,13 +305,13 @@ const Navbar = () => {
                       <Link
                         to={user?.role === 'ADMIN' ? '/admin' : '/dashboard'}
                         onClick={() => setMobileDrawerOpen(false)}
-                        className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                        className="block w-full min-h-[48px] py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center justify-center"
                       >
                         {user?.role === 'ADMIN' ? 'Admin' : 'Dashboard'}
                       </Link>
                       <button
                         onClick={handleSignOut}
-                        className="block w-full py-3 px-4 rounded-md bg-gray-800 text-gray-200 font-semibold text-center hover:bg-gray-700 transition-all duration-200"
+                        className="block w-full min-h-[48px] py-3 px-4 rounded-md bg-gray-800 text-gray-200 font-semibold text-center hover:bg-gray-700 transition-all duration-200 flex items-center justify-center"
                       >
                         Sign Out
                       </button>
@@ -320,7 +320,7 @@ const Navbar = () => {
                     <Link
                       to="/auth/signin"
                       onClick={() => setMobileDrawerOpen(false)}
-                      className="block w-full py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+                      className="block w-full min-h-[48px] py-3 px-4 rounded-md bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold text-center hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center justify-center"
                     >
                       Dashboard
                     </Link>
