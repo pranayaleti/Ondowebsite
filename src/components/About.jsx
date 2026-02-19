@@ -59,7 +59,7 @@ const About = () => {
             <div className="bg-gray-900 rounded-xl p-8 border border-gray-800">
               <div className="flex items-center mb-6">
                 <User className="text-orange-400 h-7 w-7 mr-4" />
-                <h2 className="text-3xl font-bold text-white">Who We Are</h2>
+                <h2 className="text-3xl font-bold text-white">The Studio</h2>
               </div>
               <div className="flex flex-col md:flex-row gap-6 mb-6">
                 <div className="flex-shrink-0">
@@ -71,17 +71,15 @@ const About = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-gray-300 text-lg leading-relaxed mb-4">
-                    <strong className="text-orange-400">Ondosoft</strong> was founded by 
-                    <strong className="text-orange-400"> Pranay Reddy Aleti</strong>, a software engineer with a Master's degree in Computer Science. We're a senior product team that moves quickly without cutting corners.
+                    <strong className="text-orange-400">Ondosoft</strong> is a premium engineering studio founded by <strong className="text-orange-400">Pranay Reddy Aleti</strong>. We operate as a high-performance extension of your team, bringing senior-level expertise to every architectural decision.
                   </p>
                   <p className="text-gray-300 text-lg leading-relaxed">
-                    We design, build, and scale <strong className="text-orange-400">secure software</strong>—from custom websites and SEO to SaaS platforms and enterprise applications. 
-                    We pair <strong className="text-orange-400">strategy-first discovery</strong> with <strong className="text-orange-400">production-grade engineering</strong> for web, mobile, and AI-powered experiences.
+                    We specialize in architecting <strong className="text-orange-400">high-stakes software</strong> for funded startups and established enterprises. Our approach integrates <strong className="text-orange-400">strategic product leadership</strong> with <strong className="text-orange-400">production-grade engineering</strong> to ensure your technology is a driver of growth, not a bottleneck.
                   </p>
                 </div>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Our mission is to make professional software development accessible to every business—delivering on time, with ongoing support and measurable uptime.
+                Our mission is to redefine the standard of software partnership—delivering elite technical solutions that command market leadership and long-term scalability.
               </p>
             </div>
 
