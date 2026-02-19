@@ -6,11 +6,11 @@ import FancyHeading from "./FancyHeading";
 const HeroSection = ({ onOpenSchedule }) => {
   // Rotating fancy headings - cycle through every 2 seconds
   const fancyHeadings = [
-    { firstWord: "Development", secondWord: "Services" },
-    { firstWord: "Full Stack", secondWord: "Solutions" },
-    { firstWord: "SaaS Platform", secondWord: "Development" },
-    { firstWord: "Custom Software", secondWord: "Solutions" },
-    { firstWord: "Enterprise", secondWord: "Excellence" }
+    { firstWord: "Scalable", secondWord: "Architecture" },
+    { firstWord: "Strategic", secondWord: "Growth" },
+    { firstWord: "Product", secondWord: "Engineering" },
+    { firstWord: "Enterprise", secondWord: "Performance" },
+    { firstWord: "SaaS", secondWord: "Excellence" }
   ];
   
   const [currentHeadingIndex, setCurrentHeadingIndex] = useState(0);
@@ -49,7 +49,8 @@ const HeroSection = ({ onOpenSchedule }) => {
           </div>
           
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-4 sm:mb-5 md:mb-6">
-            <span className="text-white block">Premium Software</span>
+            <span className="text-white block">High-Performance</span>
+            <span className="text-orange-500 block">Engineering Studio</span>
           </h1>
           
           {/* Rotating Fancy Heading - Enhanced Connective Style */}
@@ -82,7 +83,7 @@ const HeroSection = ({ onOpenSchedule }) => {
           </div>
           
           <p className="text-lg sm:text-xl text-gray-200 mb-6 sm:mb-7 md:mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-            <strong className="text-orange-400 font-semibold">Ondosoft</strong> is a senior product team that designs, builds, and scales secure software. We move quickly without cutting corners—pairing clear strategy with production-grade engineering for web, mobile, and AI-powered experiences.
+            We architect the technical foundations for funded startups and scaling SaaS companies. <strong className="text-orange-400 font-semibold">Ondosoft</strong> bridges the gap between visionary product strategy and production-grade engineering.
           </p>
           
           {/* Key Benefits */}
@@ -112,9 +113,9 @@ const HeroSection = ({ onOpenSchedule }) => {
                 type="button"
                 onClick={handleScheduleClick}
                 className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
-                aria-label="Schedule a meeting"
+                aria-label="Book Strategy Call"
               >
-                Schedule a meeting
+                Book Strategy Call
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             ) : (
@@ -128,11 +129,11 @@ const HeroSection = ({ onOpenSchedule }) => {
               </Link>
             )}
             <Link
-              to="/services"
+              to="/portfolio"
               className="border-2 border-orange-500 text-orange-500 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-orange-500 hover:text-white transition-all duration-300 flex items-center justify-center"
-              aria-label="View our software development services"
+              aria-label="View Case Studies"
             >
-              View Our Services
+              View Case Studies
             </Link>
           </div>
           

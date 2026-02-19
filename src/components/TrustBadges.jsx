@@ -51,10 +51,10 @@ const TrustBadges = () => {
         {/* Trust Badges */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Why Businesses <span className="text-orange-500">Trust Ondosoft</span>
+            Engineered for <span className="text-orange-500">Performance & Trust</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            We've earned the trust of businesses across the USA with our proven track record and commitment to excellence.
+            We partner with ambitious companies to deliver technical excellence and measurable business impact.
           </p>
         </div>
 
@@ -84,7 +84,7 @@ const TrustBadges = () => {
               </div>
               
               <h3 className="text-3xl md:text-4xl font-bold mb-6">
-                How {successStory.company} Scaled with <span className="text-orange-500">Ondosoft</span>
+                Case Study: Scaling {successStory.company} to <span className="text-orange-500">10k+ Users</span>
               </h3>
               
               <div className="space-y-4 mb-8">
@@ -130,9 +130,9 @@ const TrustBadges = () => {
 
               <a 
                 href="/contact" 
-                className="inline-flex items-center bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-600 transition-colors border border-gray-600"
+                className="inline-flex items-center bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors border border-orange-400 shadow-lg"
               >
-                Start Your Success Story
+                Scale Your Venture
                 <TrendingUp className="h-5 w-5 ml-2" />
               </a>
             </div>

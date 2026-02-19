@@ -176,11 +176,10 @@ const HomePage = () => {
                   <div className="bg-orange-500/20 p-3 rounded-lg mr-4">
                     <Code className="h-8 w-8 text-orange-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Custom Web Applications</h3>
+                  <h3 className="text-2xl font-bold text-white">Product Engineering</h3>
                 </div>
                 <p className="text-gray-200 mb-6 leading-relaxed">
-                  Build powerful web applications with React, Node.js, and modern frameworks. 
-                  Perfect for businesses looking to digitize their operations.
+                  We build high-performance web applications that scale. From complex enterprise tools to visionary consumer products, we deliver production-grade code.
                 </p>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center text-gray-200">
@@ -211,11 +210,10 @@ const HomePage = () => {
                   <div className="bg-orange-500/20 p-3 rounded-lg mr-4">
                     <Cloud className="h-8 w-8 text-orange-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">SaaS Platform Development</h3>
+                  <h3 className="text-2xl font-bold text-white">SaaS Architecture</h3>
                 </div>
                 <p className="text-gray-200 mb-6 leading-relaxed">
-                  Launch your software-as-a-service platform with our end-to-end SaaS development expertise. 
-                  From MVP to enterprise scale.
+                  Scale your SaaS with multi-tenant architecture, robust security, and seamless payment integrations. We help you build for the next million users.
                 </p>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center text-gray-200">
@@ -241,11 +239,10 @@ const HomePage = () => {
                   <div className="bg-orange-500/20 p-3 rounded-lg mr-4">
                     <Smartphone className="h-8 w-8 text-orange-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Mobile App Development</h3>
+                  <h3 className="text-2xl font-bold text-white">Strategic Mobile Solutions</h3>
                 </div>
                 <p className="text-neutral-300 mb-6 leading-relaxed">
-                  Create stunning mobile applications for iOS and Android with our cross-platform 
-                  and native development expertise.
+                  Deliver seamless mobile experiences across iOS and Android. We focus on performance, user retention, and native-level quality.
                 </p>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center text-neutral-300">
