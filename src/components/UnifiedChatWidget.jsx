@@ -115,21 +115,21 @@ const UnifiedChatWidget = () => {
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors z-10 bg-white/80 rounded-full p-1"
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors z-10 bg-white/80 rounded-full p-1 flex items-center justify-center"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
 
             {/* Header Section - Dark Orange/Black */}
-            <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white p-4 pb-3">
+            <div className="bg-gradient-to-r from-orange-600 to-orange-700 text-white p-4 pb-3 pr-10">
               {/* Title */}
-              <h2 className="text-xl font-bold mb-1">
+              <h2 className="text-xl font-bold mb-1 text-center">
                 👋 Have questions?
               </h2>
 
               {/* Subtitle */}
-              <p className="text-orange-100 text-xs">
+              <p className="text-orange-100 text-xs text-center">
                 Chat with our AI or schedule a meeting.
               </p>
             </div>

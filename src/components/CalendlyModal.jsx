@@ -10,13 +10,19 @@ const CalendlyModal = ({ isOpen, onClose, utmMedium = "website" }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="calendly-modal-title"
+      onClick={(e) => {
+        // Close modal when clicking on backdrop
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
-      <div className="bg-gradient-to-b from-black to-gray-900 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-neutral-700 shadow-2xl">
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 p-6 pb-4 bg-gradient-to-b from-black to-gray-900 border-b border-neutral-700">
+      <div className="bg-gradient-to-b from-black to-gray-900 rounded-2xl w-full max-w-4xl max-h-[90vh] sm:max-h-[95vh] overflow-y-auto border border-neutral-700 shadow-2xl relative mx-auto">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 p-4 sm:p-6 pb-4 bg-gradient-to-b from-black to-gray-900 border-b border-neutral-700">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-400 mb-1">
               Book instantly
@@ -38,7 +44,7 @@ const CalendlyModal = ({ isOpen, onClose, utmMedium = "website" }) => {
           </button>
         </div>
 
-        <div className="p-6 pt-4">
+        <div className="p-4 sm:p-6 pt-4">
           <CalendlyEmbed
             utmParams={{
               utm_source: "website",
